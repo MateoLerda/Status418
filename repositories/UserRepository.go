@@ -5,7 +5,6 @@ import (
 	"context"
 	"errors"
 	"os"
-	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -29,10 +28,6 @@ func NewUserRepository(db DB) *UserRepository {
 }
 
 func (ur UserRepository) GetAll() (*[]models.User, error) {
-	envRes := godotenv.Load(".env")
-	if envRes != nil {
-		return nil, envRes
-	}
 	DBNAME := os.Getenv("DB_NAME")
 	filtro := bson.M{}
 	data, err := ur.db.GetClient().Database(DBNAME).Collection("Users").Find(context.TODO(), filtro)
@@ -51,10 +46,6 @@ func (ur UserRepository) GetAll() (*[]models.User, error) {
 }
 
 func (ur UserRepository) GetById(id int) (*models.User, error) {
-	envRes := godotenv.Load(".env")
-	if envRes != nil {
-		return nil, envRes
-	}
 	DBNAME := os.Getenv("DB_NAME")
 	filtro := bson.M{"user_id": id}
 	data := ur.db.GetClient().Database(DBNAME).Collection("Users").FindOne(context.TODO(), filtro)
@@ -73,10 +64,6 @@ func (ur UserRepository) GetById(id int) (*models.User, error) {
 }
 
 func (ur UserRepository) Create(user *models.User) (*mongo.InsertOneResult, error) {
-	envRes := godotenv.Load(".env")
-	if envRes != nil {
-		return nil, envRes
-	}
 	DBNAME := os.Getenv("DB_NAME")
 
 	result, err := ur.db.GetClient().Database(DBNAME).Collection("Users").InsertOne(context.TODO(), user)

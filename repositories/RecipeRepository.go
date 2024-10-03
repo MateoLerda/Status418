@@ -4,9 +4,8 @@ import (
 	"Status418/enums"
 	"Status418/models"
 	"context"
+	"errors"
 	"os"
-
-	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -30,10 +29,6 @@ func NewRecipeRepository(db DB) *RecipeRepository {
 }
 
 func (rr RecipeRepository) Create(recipe *models.Recipe) error  {
-	envRes := godotenv.Load(".env")
-	if envRes != nil{
-		return envRes
-	}
 	DBNAME:= os.Getenv("DB_NAME")
 	_, err:= rr.db.GetClient().Database(DBNAME).Collection("Recipes").InsertOne(context.TODO(), recipe)
 	if err!= nil{
@@ -44,10 +39,6 @@ func (rr RecipeRepository) Create(recipe *models.Recipe) error  {
 }
 
 func (rr RecipeRepository) Delete(id int) error {
-	envRes := godotenv.Load(".env")
-	if envRes != nil{
-		return envRes
-	}
 	DBNAME:= os.Getenv("DB_NAME")
 	filtro:= bson.M{"id_recipe": id}
 	_, err:= rr.db.GetClient().Database(DBNAME).Collection("Recipes").DeleteOne(context.TODO(),filtro)
@@ -59,10 +50,6 @@ func (rr RecipeRepository) Delete(id int) error {
 }
 
 func (rr RecipeRepository) Update(recipe *models.Recipe) error {
-	envRes := godotenv.Load(".env")
-	if envRes!= nil{
-		return envRes
-	}
 	DBNAME := os.Getenv("DB_NAME")
 	filtro := bson.M{"id_recipe": recipe.Id_Recipe}
 	_, err := rr.db.GetClient().Database(DBNAME).Collection("Recipes").UpdateOne(context.TODO(),filtro,recipe)
@@ -78,15 +65,21 @@ func (rr RecipeRepository) GetByMoment(moment enums.Moment) (*[]models.Recipe, e
 }
 
 func (rr RecipeRepository) GetByType(types enums.FoodType) (*[]models.Recipe, error) {
+	
 	return &[]models.Recipe{}, nil
 }
 
 func (rr RecipeRepository) GetAll() (*[]models.Recipe, error) {
-	envRes := godotenv.Load(".env")
-	if envRes != nil{
-		return envRes
+	DBNAME := os.Getenv("DB_NAME")
+	filtro := bson.M{}
+	data, err := rr.db.GetClient().Database(DBNAME).Collection("Recipes").Find(context.TODO(),filtro)
+	var recipes []models.Recipe
+	err = data.All(context.TODO(), &recipes)
+	if err != nil{
+		err = errors.New("failed to get all recipes")
 	}
-	DBNAME := os.Getenv
 	
-	return &[]models.Recipe{}, nil
+	return &recipes, nil
 }
+
+

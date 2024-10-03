@@ -6,8 +6,8 @@ import (
 	"errors"
 	"os"
 
-	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type FoodRepositoryInterface interface {
@@ -29,87 +29,57 @@ func NewFoodRepository(db DB) *FoodRepository {
 }
 
 func (fr FoodRepository) GetAll() (*[]models.Food, error) {
-	envRes := godotenv.Load(".env")
-	if envRes != nil {
-		return nil, envRes
-	}
 	DBNAME := os.Getenv("DB_NAME")
 	filtro := bson.M{}
 
-	data, err := fr.db.GetClient().Database(DBNAME).Collection("Foods").Find(context.TODO(), filtro)
+	cursor, err := fr.db.GetClient().Database(DBNAME).Collection("Foods").Find(context.TODO(), filtro)
 
-	var foods []models.Food
-	err = data.All(context.TODO(), &foods)
 	if err != nil {
 		err = errors.New("failed to get foods")
 		return nil, err
 	}
+
+	defer cursor.Close(context.TODO())
+
+	var foods []models.Food
+	err = cursor.All(context.TODO(), &foods)
+
+	if err != nil {
+		err = errors.New("failed to parse food documents")
+		return nil, err
+	}
 	return &foods, nil
-
-	//MAPEO DE DATOS
-	// var foods []models.Food
-	// 	err = data.All(context.TODO(), &foods)
-
-	// 	if err != nil {
-	// 		err = errors.New("failed to get foods")
-	// 		return nil, err
-	// 	}
-
-	// 	var foodDTOs []dto.FoodDTO
-	// 	for _, food := range foods {
-	// 		foodDTO := dto.FoodDTO{
-	// 			Type:            food.Type,
-	// 			Moment:          food.Moment,
-	// 			Name:            food.Name,
-	// 			UnitPrice:       food.UnitPrice,
-	// 			CurrentQuantity: food.CurrentQuantity,
-	// 			MinimumQuantity: food.MinimumQuantity,
-	// 			UserId:          food.UserId,
-	// 		}
-	// 		foodDTOs = append(foodDTOs, foodDTO)
-	// 	}
-
 }
 
 func (fr FoodRepository) GetByCode(id int) (*models.Food, error) {
-	envRes := godotenv.Load(".env")
-	if envRes != nil {
-		return nil, envRes
-	}
 	DBNAME := os.Getenv("DB_NAME")
 
 	filtro := bson.M{"food_code": id}
 	data := fr.db.GetClient().Database(DBNAME).Collection("Foods").FindOne(context.TODO(), filtro)
+	
 	var food models.Food
-
 	err := data.Decode(&food)
 	if err != nil {
 		err = errors.New("failed to get food")
+		return nil, err
 	}
 	return &food, err
 
 }
 
-func (fr FoodRepository) Create(food *models.Food) error {
-	envRes := godotenv.Load(".env")
-	if envRes != nil{
-		return envRes
-	}
+func (fr FoodRepository) Create(food *models.Food) (*mongo.InsertOneResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
-	_, err:= fr.db.GetClient().Database(DBNAME).Collection("Foods").InsertOne(context.TODO(), food)
+	res, err:= fr.db.GetClient().Database(DBNAME).Collection("Foods").InsertOne(context.TODO(), food)
 
 	if err != nil {
 		err = errors.New("failed to create food")
-		return err
+		return nil, err
 	}
-	return nil
+	
+	return res, nil
 }
 
 func (fr FoodRepository) Update(food *models.Food) error {
-	envRes := godotenv.Load(".env")
-	if envRes != nil{
-		return envRes
-	}
 	DBNAME := os.Getenv("DB_NAME")
 	filtro := bson.M{"food_code": food.Code}
 	_, err := fr.db.GetClient().Database(DBNAME).Collection("Foods").UpdateOne(context.TODO(), filtro, food)
@@ -121,10 +91,6 @@ func (fr FoodRepository) Update(food *models.Food) error {
 }
 
 func (fr FoodRepository) Delete(id int) error {
-	envRes := godotenv.Load(".env")
-	if envRes != nil{
-		return envRes
-	}
 	DBNAME:= os.Getenv("DB_NAME")
 	filtro := bson.M{"food_code": id}
 	_, err := fr.db.GetClient().Database(DBNAME).Collection("Foods").DeleteOne(context.TODO(), filtro)

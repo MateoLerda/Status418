@@ -5,7 +5,6 @@ import (
 	"context"
 	"errors"
 	"os"
-	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -25,10 +24,6 @@ func NewPurchaseRepository(db DB) *PurchaseRepository {
 }
 
 func (pr PurchaseRepository) GetFoodWithQuantityLessThanMinimum() (*[]models.Food,error) {
-	envRes := godotenv.Load(".env")
-	if envRes != nil {
-		return nil, envRes
-	}
 	DBNAME := os.Getenv("DB_NAME")
 	filtro:= bson.M{ 
 		"$expr": bson.M{
@@ -50,19 +45,15 @@ func (pr PurchaseRepository) GetFoodWithQuantityLessThanMinimum() (*[]models.Foo
 }
 
 func (pr PurchaseRepository) Create(purchase *models.Purchase) error {
-	envRes := godotenv.Load(".env")
-	if envRes != nil {
-		return envRes
-	}
 	DBNAME := os.Getenv("DB_NAME")
 	data, err := pr.GetFoodWithQuantityLessThanMinimum()
 	if err != nil {
-		err = errors.New("Cannot make the list of foods with quantity less than minimum")
+		err = errors.New("cannot get the list of foods with quantity less than minimum")
 		return err
 	}
-	var foodsLessThanMinimum = *data
-	for _, food := range foodsLessThanMinimum {
-		purchase.Food = food
+	
+	for _, purchase := range *data {
+
 		_, err := pr.db.GetClient().Database(DBNAME).Collection("Purchases").InsertOne(context.TODO(), purchase)
 		if err != nil {
 			err = errors.New("failed to create purchase")
