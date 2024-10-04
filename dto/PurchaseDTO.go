@@ -1,7 +1,5 @@
 package dto
 
-
-
 type PurchaseDTO struct {
 	UserId    int                   
 	TotalCost float64                

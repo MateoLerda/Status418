@@ -10,12 +10,12 @@ import (
 )
 
 type RecipeRepositoryInterface interface {
-	Create(newRecipe models.Recipe) error
+	Create(newRecipe *models.Recipe) error
 	Delete(id int) error
-	Update(updateRecipe models.Recipe) error
-	GetByMoment(moment enums.Moment) ([]models.Recipe, error)
-	GetByType(types enums.FoodType) ([]models.Recipe, error)
-	GetAll() ([]models.Recipe, error)
+	Update(updateRecipe *models.Recipe) error
+	GetByMoment(moment enums.Moment) (*[]models.Recipe, error)
+	GetByType(types enums.FoodType) (*[]models.Recipe, error)
+	GetAll() (*[]models.Recipe, error)
 }
 
 type RecipeRepository struct {
@@ -40,8 +40,8 @@ func (rr RecipeRepository) Create(recipe *models.Recipe) error  {
 
 func (rr RecipeRepository) Delete(id int) error {
 	DBNAME:= os.Getenv("DB_NAME")
-	filtro:= bson.M{"id_recipe": id}
-	_, err:= rr.db.GetClient().Database(DBNAME).Collection("Recipes").DeleteOne(context.TODO(),filtro)
+	filter:= bson.M{"id_recipe": id}
+	_, err:= rr.db.GetClient().Database(DBNAME).Collection("Recipes").DeleteOne(context.TODO(),filter)
 	if err!= nil{
 		err = errors.New("failed to delete recipe")
 		return err
@@ -51,8 +51,8 @@ func (rr RecipeRepository) Delete(id int) error {
 
 func (rr RecipeRepository) Update(recipe *models.Recipe) error {
 	DBNAME := os.Getenv("DB_NAME")
-	filtro := bson.M{"id_recipe": recipe.Id_Recipe}
-	_, err := rr.db.GetClient().Database(DBNAME).Collection("Recipes").UpdateOne(context.TODO(),filtro,recipe)
+	filter := bson.M{"id_recipe": recipe.Id_Recipe}
+	_, err := rr.db.GetClient().Database(DBNAME).Collection("Recipes").UpdateOne(context.TODO()	,filter,recipe)
 	if err!= nil{
 		err = errors.New("failed to update recipe")
 		return err
@@ -71,8 +71,8 @@ func (rr RecipeRepository) GetByType(types enums.FoodType) (*[]models.Recipe, er
 
 func (rr RecipeRepository) GetAll() (*[]models.Recipe, error) {
 	DBNAME := os.Getenv("DB_NAME")
-	filtro := bson.M{}
-	data, err := rr.db.GetClient().Database(DBNAME).Collection("Recipes").Find(context.TODO(),filtro)
+	filter := bson.M{}
+	data, err := rr.db.GetClient().Database(DBNAME).Collection("Recipes").Find(context.TODO(),filter)
 	var recipes []models.Recipe
 	err = data.All(context.TODO(), &recipes)
 	if err != nil{

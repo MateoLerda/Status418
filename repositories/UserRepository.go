@@ -4,17 +4,17 @@ import (
 	"Status418/models"
 	"context"
 	"errors"
-	"os"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"os"
 )
 
 type UserRepositoryInterface interface {
-	GetAll() ([]models.User, error)
-	GetById(id int) (models.User, error)
-	Create(models.User) error
-	Update(models.User) error
-	Delete(id int) error
+	GetAll() (*[]models.User, error)
+	GetById(id int) (*models.User, error)
+	Create(models.User) (*mongo.InsertOneResult, error)
+	Update(models.User) (*mongo.UpdateResult, error) 
+	Delete(id int) (*mongo.DeleteResult, error)
 }
 
 type UserRepository struct {
@@ -29,8 +29,8 @@ func NewUserRepository(db DB) *UserRepository {
 
 func (ur UserRepository) GetAll() (*[]models.User, error) {
 	DBNAME := os.Getenv("DB_NAME")
-	filtro := bson.M{}
-	data, err := ur.db.GetClient().Database(DBNAME).Collection("Users").Find(context.TODO(), filtro)
+	filter := bson.M{}
+	data, err := ur.db.GetClient().Database(DBNAME).Collection("Users").Find(context.TODO(), filter)
 	if err != nil {
 		err = errors.New("failed to get users")
 		return nil, err
@@ -47,16 +47,13 @@ func (ur UserRepository) GetAll() (*[]models.User, error) {
 
 func (ur UserRepository) GetById(id int) (*models.User, error) {
 	DBNAME := os.Getenv("DB_NAME")
-	filtro := bson.M{"user_id": id}
-	data := ur.db.GetClient().Database(DBNAME).Collection("Users").FindOne(context.TODO(), filtro)
-	if data == nil {
-		err := errors.New("Failed to get the user with ID ")
-		return nil, err
-	}
+	filter := bson.M{"user_id": id}
+	data := ur.db.GetClient().Database(DBNAME).Collection("Users").FindOne(context.TODO(), filter)
+
 	var user models.User
 	err := data.Decode(&user)
 	if err != nil {
-		err = errors.New("Failed to get the user with ID ")
+		err = errors.New("failed to get the user")
 		return nil, err
 	}
 	return &user, nil
@@ -66,19 +63,40 @@ func (ur UserRepository) GetById(id int) (*models.User, error) {
 func (ur UserRepository) Create(user *models.User) (*mongo.InsertOneResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
 
-	result, err := ur.db.GetClient().Database(DBNAME).Collection("Users").InsertOne(context.TODO(), user)
+	res, err := ur.db.GetClient().Database(DBNAME).Collection("Users").InsertOne(context.TODO(), user)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return result, nil
+	return res, nil
 }
-func (ur UserRepository) Update(user *models.User) error {
-	
-	return nil
+func (ur UserRepository) Update(user *models.User) (*mongo.UpdateResult, error) {
+	DBNAME := os.Getenv("DB_NAME")
+
+	filter := bson.M{"user_id": user.UserId}
+	update := bson.M{
+		"$set": user,
+	}
+	res, err := ur.db.GetClient().Database(DBNAME).Collection("Users").UpdateOne(context.TODO(), filter, update)
+
+	if err != nil {
+		err = errors.New("failed to update the user")
+		return nil, err
+	}
+	return res, nil
 }
 
-func (ur UserRepository) Delete(id int) error {
-	return nil
+func (ur UserRepository) Delete(id int) (*mongo.DeleteResult, error) {
+	DBNAME := os.Getenv("DB_NAME")
+
+	filter := bson.M{
+		"user_id": id,
+	}
+	res, err := ur.db.GetClient().Database(DBNAME).Collection("Users").DeleteOne(context.TODO(), filter)
+	if err != nil {
+		err = errors.New("failed to delete the user")
+		return nil, err
+	}
+	return res, nil
 }

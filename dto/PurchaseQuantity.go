@@ -1,4 +1,4 @@
-package models
+package dto
 
 type PurchaseQuantity struct {
 	FoodCode int `bson:"food_code"`
