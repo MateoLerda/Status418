@@ -26,7 +26,7 @@ func (ps *PurchaseService) GetFoodWithQuantityLessThanMinimum() (*[]dto.FoodDTO,
 	for _, food := range *foods {
 		foodDTO := dto.FoodDTO{
 			Type:            food.Type,
-			Moment:          food.Moment,
+			Moments:         food.Moments,
 			Name:            food.Name,
 			UnitPrice:       food.UnitPrice,
 			CurrentQuantity: food.CurrentQuantity,

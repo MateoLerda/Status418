@@ -4,7 +4,7 @@ import "Status418/enums"
 
 type FoodDTO struct {
 	Type      enums.FoodType 
-	Moment    enums.Moment 
+	Moments    []enums.Moment 
 	Name      string 
 	UnitPrice float64 
 	CurrentQuantity int
@@ -12,10 +12,10 @@ type FoodDTO struct {
 	UserId int 
 }
 
-func NewFoodDTO(ftype enums.FoodType, moment enums.Moment, name string, unitprice float64, currentquantity int, minimumquantity int, userid int) *FoodDTO {
+func NewFoodDTO(ftype enums.FoodType, moment []enums.Moment, name string, unitprice float64, currentquantity int, minimumquantity int, userid int) *FoodDTO {
 	return &FoodDTO {
 		Type: ftype,
-		Moment: moment,
+		Moments: moment,
 		Name: name,
 		UnitPrice: unitprice,
 		CurrentQuantity: currentquantity,
