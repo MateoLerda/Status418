@@ -11,13 +11,13 @@ type FoodDto struct {
 	MinimumQuantity int 
 }
 
-func NewFoodDTO(ftype enums.FoodType, moment []enums.Moment, name string, unitprice float64, currentquantity int, minimumquantity int, userId string) *FoodDto {
+func NewFoodDTO(ftype enums.FoodType, moment []enums.Moment, name string, unitPrice float64, currentQuantity int, minimumQuantity int, userId string) *FoodDto {
 	return &FoodDto{
 		Type: ftype,
 		Moments: moment,
 		Name: name,
-		UnitPrice: unitprice,
-		CurrentQuantity: currentquantity,
-		MinimumQuantity: minimumquantity,
+		UnitPrice: unitPrice,
+		CurrentQuantity: currentQuantity,
+		MinimumQuantity: minimumQuantity,
 	}
 }

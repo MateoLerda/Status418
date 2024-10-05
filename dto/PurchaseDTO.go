@@ -5,10 +5,10 @@ type PurchaseDto struct {
 	Foods     []PurchaseQuantity
 }
 
-func NewPurchaseDto(userId string, totalcost float64, foods []PurchaseQuantity) *PurchaseDto {
+func NewPurchaseDto(userId string, totalCost float64, foods []PurchaseQuantity) *PurchaseDto {
 	return &PurchaseDto{
 
-		TotalCost: totalcost,
+		TotalCost: totalCost,
 		Foods:     foods,
 	}
 }

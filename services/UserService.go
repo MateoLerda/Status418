@@ -4,7 +4,10 @@ import (
 	"Status418/dto"
 	"Status418/models"
 	"Status418/repositories"
+	"time"
 )
+//REVISAR TODO ESTE ARCHIVO. HAY COSAS QUE NO ESTAN CORRECTAS EN ALGUNOS MÉTODOS YA QUE NO SE ESTÁN USANDO LOS PARÁMETROS TAL CUAL
+//APARECIAN EN LA INTERFAZ
 
 type UserServiceInterface interface {
 	GetAll() ([]dto.UserDto, error)
@@ -25,20 +28,70 @@ func NewUserService(ur repositories.UserRepository) *UserService {
 }
 
 func (us *UserService) GetAll() (*[]dto.UserDto, error) {
+	var usersDTO []dto.UserDto
 	users, err := us.ur.GetAll()
 	if err != nil {
 		return nil, err
 	}
-	usersDTO := ChangeFromModelToDto(users)
-	return usersDTO, nil
-
+	for _, user := range *users {
+		userDTO := ChangeFromUserModelToDto(&user)
+		usersDTO = append(usersDTO, *userDTO)
+	}
+	return &usersDTO, nil
 }
 
-func ChangeFromModelToDto(users *[]models.User) *[]dto.UserDto {
-	var usersDto []dto.UserDto
-	for _, user := range *users {
-		userDto := dto.NewUserDTO(user.Name, user.LastName, user.Email, user.Password)
-		usersDto = append(usersDto, *userDto)
+func (us *UserService) GetById(id string) (*dto.UserDto, error) {
+	user, err := us.ur.GetById(id)
+	if err != nil {
+		return nil, err
 	}
-	return &usersDto
+	userDTO := ChangeFromUserModelToDto(user)
+	return userDTO, nil
+}
+
+func (us *UserService) Create(userDTO dto.UserDto) error {
+	user := ChangeFromUserDtoToModel(&userDTO)
+	user.CreationDate = time.Now().String()
+	_, err := us.ur.Create(user)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func (us *UserService) Update(userDTO dto.UserDto) error {
+	user := ChangeFromUserDtoToModel(&userDTO)
+	_, err := us.ur.Update(user)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func (us *UserService) Delete(id string) error {
+	_, err := us.ur.Delete(id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func ChangeFromUserModelToDto(users *models.User) *dto.UserDto {
+	var userDto dto.UserDto
+	userDto = dto.UserDto{
+		Name:     users.Name,
+		Email:    users.Email,
+		LastName: users.LastName,
+		Password: users.Password,
+	}
+	return &userDto
+
+}
+func ChangeFromUserDtoToModel(userDTO *dto.UserDto) *models.User {
+	var user models.User
+	user = models.User{
+		Name:     userDTO.Name,
+		Email:    userDTO.Email,
+		LastName: userDTO.LastName,
+		Password: userDTO.Password,
+	}
+	return &user
 }
