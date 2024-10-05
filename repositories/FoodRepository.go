@@ -2,11 +2,13 @@ package repositories
 
 import (
 	"Status418/models"
+	"Status418/utils"
 	"context"
 	"errors"
+	"os"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"os"
 )
 
 type FoodRepositoryInterface interface {
@@ -28,9 +30,11 @@ func NewFoodRepository(db DB) *FoodRepository {
 	}
 }
 
-func (fr FoodRepository) GetAll() (*[]models.Food, error) {
+func (fr FoodRepository) GetAll(userId string) (*[]models.Food, error) {
 	DBNAME := os.Getenv("DB_NAME")
-	filter := bson.M{}
+	filter := bson.M{
+		"user_id": userId,
+	}
 
 	cursor, err := fr.db.GetClient().Database(DBNAME).Collection("Foods").Find(context.TODO(), filter)
 
@@ -49,16 +53,14 @@ func (fr FoodRepository) GetAll() (*[]models.Food, error) {
 	return &foods, nil
 }
 
-func (fr FoodRepository) GetByCode(code int) (*models.Food, error) {
+func (fr FoodRepository) GetByCode(code string, userId string) (*models.Food, error) {
 	DBNAME := os.Getenv("DB_NAME")
 
-	filter := bson.M{"food_code": code}
-	data := fr.db.GetClient().Database(DBNAME).Collection("Foods").FindOne(context.TODO(), filter)
-
-	if data == nil {
-
+	filter := bson.M{
+		"food_code": code,
+		"user_id":   userId,
 	}
-
+	data := fr.db.GetClient().Database(DBNAME).Collection("Foods").FindOne(context.TODO(), filter)
 	var food models.Food
 	err := data.Decode(&food)
 	if err != nil {
@@ -66,7 +68,6 @@ func (fr FoodRepository) GetByCode(code int) (*models.Food, error) {
 		return nil, err
 	}
 	return &food, nil
-
 }
 
 func (fr FoodRepository) Create(food *models.Food) (*mongo.InsertOneResult, error) {
@@ -95,7 +96,7 @@ func (fr FoodRepository) Update(food *models.Food) (*mongo.UpdateResult, error) 
 	return res, nil
 }
 
-func (fr FoodRepository) Delete(code int) (*mongo.DeleteResult, error) {
+func (fr FoodRepository) Delete(code string) (*mongo.DeleteResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
 	filter := bson.M{"food_code": code}
 	res, err := fr.db.GetClient().Database(DBNAME).Collection("Foods").DeleteOne(context.TODO(), filter)
@@ -106,13 +107,14 @@ func (fr FoodRepository) Delete(code int) (*mongo.DeleteResult, error) {
 	return res, nil
 }
 
-func (pr PurchaseRepository) GetFoodWithQuantityLessThanMinimum() (*[]models.Food, error) {
+func (pr PurchaseRepository) GetFoodWithQuantityLessThanMinimum(userId string) (*[]models.Food, error) {
 	DBNAME := os.Getenv("DB_NAME")
 
 	filter := bson.M{
 		"$expr": bson.M{
 			"$lt": bson.A{"$current_quantity", "$minimum_quantity"},
 		},
+		"user_id": utils.GetObjectIDFromStringID(userId),
 	}
 	cursor, err := pr.db.GetClient().Database(DBNAME).Collection("Foods").Find(context.TODO(), filter)
 

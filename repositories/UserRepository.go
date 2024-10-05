@@ -4,16 +4,17 @@ import (
 	"Status418/models"
 	"context"
 	"errors"
+	"os"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"os"
 )
 
 type UserRepositoryInterface interface {
 	GetAll() (*[]models.User, error)
 	GetById(id int) (*models.User, error)
 	Create(models.User) (*mongo.InsertOneResult, error)
-	Update(models.User) (*mongo.UpdateResult, error) 
+	Update(models.User) (*mongo.UpdateResult, error)
 	Delete(id int) (*mongo.DeleteResult, error)
 }
 
@@ -45,9 +46,9 @@ func (ur UserRepository) GetAll() (*[]models.User, error) {
 
 }
 
-func (ur UserRepository) GetById(id int) (*models.User, error) {
+func (ur UserRepository) GetById(userId string) (*models.User, error) {
 	DBNAME := os.Getenv("DB_NAME")
-	filter := bson.M{"user_id": id}
+	filter := bson.M{"user_id": userId}
 	data := ur.db.GetClient().Database(DBNAME).Collection("Users").FindOne(context.TODO(), filter)
 
 	var user models.User
@@ -87,11 +88,11 @@ func (ur UserRepository) Update(user *models.User) (*mongo.UpdateResult, error) 
 	return res, nil
 }
 
-func (ur UserRepository) Delete(id int) (*mongo.DeleteResult, error) {
+func (ur UserRepository) Delete(userId string) (*mongo.DeleteResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
 
 	filter := bson.M{
-		"user_id": id,
+		"user_id": userId,
 	}
 	res, err := ur.db.GetClient().Database(DBNAME).Collection("Users").DeleteOne(context.TODO(), filter)
 	if err != nil {

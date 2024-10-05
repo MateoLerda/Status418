@@ -7,10 +7,10 @@ import (
 )
 
 type UserServiceInterface interface {
-	GetAll() ([]dto.UserDTO, error)
-	GetById(id int) (dto.UserDTO, error)
-	Create(dto.UserDTO) error
-	Update(dto.UserDTO) error
+	GetAll() ([]dto.UserDto, error)
+	GetById(id int) (dto.UserDto, error)
+	Create(dto.UserDto) error
+	Update(dto.UserDto) error
 	Delete(id int) error
 }
 
@@ -24,7 +24,7 @@ func NewUserService(ur repositories.UserRepository) *UserService {
 	}
 }
 
-func (us *UserService) GetAll() (*[]dto.UserDTO, error) {
+func (us *UserService) GetAll() (*[]dto.UserDto, error) {
 	users, err := us.ur.GetAll()
 	if err != nil {
 		return nil, err
@@ -33,11 +33,12 @@ func (us *UserService) GetAll() (*[]dto.UserDTO, error) {
 	return usersDTO, nil
 
 }
-func ChangeFromModelToDto(users *[]models.User) *[]dto.UserDTO {
-	var usersDTO []dto.UserDTO
+
+func ChangeFromModelToDto(users *[]models.User) *[]dto.UserDto {
+	var usersDto []dto.UserDto
 	for _, user := range *users {
-		userDTO := dto.NewUserDTO(user.Name, user.LastName, user.Email, user.Password)
-		usersDTO = append(usersDTO, *userDTO)
+		userDto := dto.NewUserDTO(user.Name, user.LastName, user.Email, user.Password)
+		usersDto = append(usersDto, *userDto)
 	}
-	return &usersDTO
+	return &usersDto
 }

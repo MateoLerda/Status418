@@ -6,11 +6,11 @@ import (
 )
 
 type RecipeServiceInterface interface {
-	Create(newRecipe dto.RecipeDTO) error
+	Create(newRecipe dto.RecipeDto) error
 	Delete(id int) error
-	Update(updateRecipe dto.RecipeDTO) error
-	GetByMoment(moment enums.Moment) ([]dto.RecipeDTO, error)
-	GetByType(types enums.FoodType) ([]dto.RecipeDTO, error)
-	GetAll() ([]dto.RecipeDTO, error)
+	Update(updateRecipe dto.RecipeDto) error
+	GetByMoment(moment enums.Moment) ([]dto.RecipeDto, error)
+	GetByType(types enums.FoodType) ([]dto.RecipeDto, error)
+	GetAll() ([]dto.RecipeDto, error)
 }
 

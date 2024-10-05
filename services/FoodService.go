@@ -6,10 +6,10 @@ import (
 )
 
 type FoodServiceInterface interface {
-	GetAll() (*[]dto.FoodDTO, error)
-	GetByCode(id int) (*dto.FoodDTO, error)
-	Create(newFood dto.FoodDTO) error
-	Update(updateFood dto.FoodDTO) error
+	GetAll() (*[]dto.FoodDto, error)
+	GetByCode(id int) (*dto.FoodDto, error)
+	Create(newFood dto.FoodDto) error
+	Update(updateFood dto.FoodDto) error
 	Delete(id int) error
 }
 
@@ -17,46 +17,23 @@ type FoodService struct {
 	foodRepository repositories.FoodRepositoryInterface
 }
 
-func (ps *PurchaseService) GetFoodWithQuantityLessThanMinimum() (*[]dto.FoodDTO, error) {
-	var foodsDTO []dto.FoodDTO
-	foods, err := ps.pr.GetFoodWithQuantityLessThanMinimum()
+func (ps *PurchaseService) GetFoodWithQuantityLessThanMinimum(userId string) (*[]dto.FoodDto, error) {
+	var foodsDTO []dto.FoodDto
+	foods, err := ps.pr.GetFoodWithQuantityLessThanMinimum(userId)
 	if err != nil {
 		return nil, err
 	}
 	for _, food := range *foods {
-		foodDTO := dto.FoodDTO{
+		foodDTO := dto.FoodDto{
 			Type:            food.Type,
 			Moments:         food.Moments,
 			Name:            food.Name,
 			UnitPrice:       food.UnitPrice,
 			CurrentQuantity: food.CurrentQuantity,
 			MinimumQuantity: food.MinimumQuantity,
-			UserId:          food.UserId,
 		}
 		foodsDTO = append(foodsDTO, foodDTO)
 	}
 	return &foodsDTO, nil
 }
 
-//MAPEO DE DATOS
-// var foods []models.Food
-// 	err = data.All(context.TODO(), &foods)
-
-// 	if err != nil {
-// 		err = errors.New("failed to get foods")
-// 		return nil, err
-// 	}
-
-// 	var foodDTOs []dto.FoodDTO
-// 	for _, food := range foods {
-// 		foodDTO := dto.FoodDTO{
-// 			Type:            food.Type,
-// 			Moment:          food.Moment,
-// 			Name:            food.Name,
-// 			UnitPrice:       food.UnitPrice,
-// 			CurrentQuantity: food.CurrentQuantity,
-// 			MinimumQuantity: food.MinimumQuantity,
-// 			UserId:          food.UserId,
-// 		}
-// 		foodDTOs = append(foodDTOs, foodDTO)
-// 	}

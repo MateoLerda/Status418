@@ -1,15 +1,14 @@
 package dto
 
-type PurchaseDTO struct {
-	UserId    int                   
-	TotalCost float64                
-	Foods     []PurchaseQuantity 
+type PurchaseDto struct {
+	TotalCost float64
+	Foods     []PurchaseQuantity
 }
 
-func NewPurchaseDTO(userid int, totalcost float64, foods []PurchaseQuantity) *PurchaseDTO {
-	return &PurchaseDTO{
-		UserId: userid,
+func NewPurchaseDto(userId string, totalcost float64, foods []PurchaseQuantity) *PurchaseDto {
+	return &PurchaseDto{
+
 		TotalCost: totalcost,
-		Foods: foods,
+		Foods:     foods,
 	}
 }

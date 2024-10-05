@@ -4,12 +4,13 @@ import (
 	"Status418/dto"
 	"Status418/models"
 	"Status418/repositories"
+	"Status418/utils"
 	"go.mongodb.org/mongo-driver/mongo"
 	"time"
 )
 
 type PurchaseServiceInterface interface {
-	Create(dto.PurchaseDTO) (*mongo.InsertOneResult, error)
+	Create(dto.PurchaseDto) (*mongo.InsertOneResult, error)
 }
 
 type PurchaseService struct {
@@ -23,18 +24,18 @@ func NewPurchaseService(pr repositories.PurchaseRepository) *PurchaseService {
 }
 
 
-func (ps *PurchaseService) Create(purchaseDTO *dto.PurchaseDTO) (*mongo.InsertOneResult, error) {
-	foods, err := ps.pr.GetFoodWithQuantityLessThanMinimum()
+func (ps *PurchaseService) Create(userId string) (*mongo.InsertOneResult, error) {
+	foods, err := ps.pr.GetFoodWithQuantityLessThanMinimum(userId)
 	if err != nil {
 		return nil, err
 	}
 	var purchase models.Purchase
-	purchase.UserId = purchaseDTO.UserId
+
 	purchase.PurchaseDate = time.Now()
 	for _, food := range *foods {
 		purchase.TotalCost += food.UnitPrice * (float64)(food.MinimumQuantity-food.CurrentQuantity)
 		purchase.Foods = append(purchase.Foods, dto.PurchaseQuantity{
-			FoodCode: food.Code,
+			FoodCode: utils.GetStringIDFromObjectID(food.Code),
 			Quantity: food.MinimumQuantity - food.CurrentQuantity,
 		})
 	}

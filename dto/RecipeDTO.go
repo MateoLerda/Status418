@@ -1,17 +1,17 @@
 package dto
 
-type RecipeDTO struct {
+type RecipeDto struct {
 	Name string 
-	Ingredients[] FoodDTO 
+	Ingredients []FoodDto
 	Description string 
-	UserId int 
+	UserId string 
 }
 
-func NewRecipeDTO(name string, ingredients []FoodDTO, description string, userid int) *RecipeDTO {
-	return &RecipeDTO{
+func NewRecipeDto(name string, ingredients []FoodDto, description string, userId string) *RecipeDto {
+	return &RecipeDto{
 		Name: name,
 		Ingredients: ingredients,
 		Description: description,
-		UserId: userid,
+		UserId: userId,
 	}
 }
