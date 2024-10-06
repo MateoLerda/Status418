@@ -11,10 +11,10 @@ import (
 
 type UserServiceInterface interface {
 	GetAll() ([]dto.UserDto, error)
-	GetById(id int) (dto.UserDto, error)
+	GetById(id string) (dto.UserDto, error)
 	Create(dto.UserDto) error
 	Update(dto.UserDto) error
-	Delete(id int) error
+	Delete(id string) error
 }
 
 type UserService struct {

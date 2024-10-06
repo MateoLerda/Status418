@@ -13,11 +13,11 @@ import (
 
 type RecipeRepositoryInterface interface {
 	Create(newRecipe *models.Recipe) error
-	Delete(id int) error
+	Delete(id string) error
 	Update(updateRecipe *models.Recipe) error
-	GetByMoment(moment enums.Moment) (*[]models.Recipe, error)
+	GetByMoment(moment enums.Moment, userId string) (*[]models.Recipe, error)
 	GetByType(types enums.FoodType) (*[]models.Recipe, error)
-	GetAll() (*[]models.Recipe, error)
+	GetAll(aproximation string, userId string) (*[]models.Recipe, error)
 }
 
 type RecipeRepository struct {
@@ -60,7 +60,7 @@ func (rr RecipeRepository) Update(recipe *models.Recipe) (*mongo.UpdateResult, e
 		return res, err
 	}
 	return res, nil
-}
+} //CHEQUEAR ESTE UPDATE POR SI NO FUNCIONA Y SETEA LOS VALORES VACIOS EN LA BASE DE DATOS
 
 func (rr RecipeRepository) GetByMoment(moment enums.Moment, userId string) (*[]models.Recipe, error) {
 	DBNAME := os.Getenv("DB_NAME")
