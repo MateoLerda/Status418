@@ -8,11 +8,12 @@ import (
 )
 
 type FoodServiceInterface interface {
-	GetAll() (*[]dto.FoodDto, error)
-	GetByCode(id int) (*dto.FoodDto, error)
+	GetAll(userId string) (*[]dto.FoodDto, error)
+	GetByCode(code string, userId string) (*dto.FoodDto, error)
 	Create(newFood dto.FoodDto) error
 	Update(updateFood dto.FoodDto) error
-	Delete(id int) error
+	Delete(code string) error
+	GetFoodWithQuantityLessThanMinimum(userId string) (*[]dto.FoodDto, error)
 }
 
 type FoodService struct {
@@ -32,15 +33,8 @@ func (ps *PurchaseService) GetFoodWithQuantityLessThanMinimum(userId string) (*[
 		return nil, err
 	}
 	for _, food := range *foods {
-		foodDTO := dto.FoodDto{
-			Type:            food.Type,
-			Moments:         food.Moments,
-			Name:            food.Name,
-			UnitPrice:       food.UnitPrice,
-			CurrentQuantity: food.CurrentQuantity,
-			MinimumQuantity: food.MinimumQuantity,
-		}
-		foodsDTO = append(foodsDTO, foodDTO)
+		foodDTO := ChangeFromFoodModelToDto(&food)
+		foodsDTO = append(foodsDTO, *foodDTO)
 	}
 	return &foodsDTO, nil
 }

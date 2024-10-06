@@ -12,10 +12,10 @@ import (
 
 type UserRepositoryInterface interface {
 	GetAll() (*[]models.User, error)
-	GetById(id int) (*models.User, error)
+	GetById(id string) (*models.User, error)
 	Create(models.User) (*mongo.InsertOneResult, error)
 	Update(models.User) (*mongo.UpdateResult, error)
-	Delete(id int) (*mongo.DeleteResult, error)
+	Delete(id string) (*mongo.DeleteResult, error)
 }
 
 type UserRepository struct {

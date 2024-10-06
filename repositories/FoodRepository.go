@@ -12,11 +12,11 @@ import (
 )
 
 type FoodRepositoryInterface interface {
-	GetAll() (*[]models.Food, error)
-	GetByCode(id int) (*models.Food, error)
+	GetAll(userId string) (*[]models.Food, error)
+	GetByCode(code string, userId string) (*models.Food, error)
 	Create(models.Food) (*mongo.InsertOneResult, error)
 	Update(models.Food) (*mongo.UpdateResult, error)
-	Delete(id int) (*mongo.DeleteResult, error)
+	Delete(code string) (*mongo.DeleteResult, error)
 	GetFoodWithQuantityLessThanMinimum() (*[]models.Food, error)
 }
 
