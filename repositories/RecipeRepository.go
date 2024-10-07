@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"Status418/enums"
 	"Status418/models"
 	"context"
 	"errors"
@@ -63,22 +62,25 @@ func (rr RecipeRepository) Update(recipe *models.Recipe) (*mongo.UpdateResult, e
 		return res, err
 	}
 	return res, nil
-} //CHEQUEAR ESTE UPDATE POR SI NO FUNCIONA Y SETEA LOS VALORES VACIOS EN LA BASE DE DATOS
+} 
 
 
-func (rr RecipeRepository) GetAll(userId string, aproximation string,moment enums.Moment) (*[]models.Recipe, error) {
+func (rr RecipeRepository) GetAll(userId string, filters models.Filter) (*[]models.Recipe, error) {
 	DBNAME := os.Getenv("DB_NAME")
-	filter := bson.M{}
-	if aproximation != "" {
-		filter = bson.M{
-			"name": bson.M{
-				"$regex":   aproximation,
-				"$options": "i",
+	filter := bson.M{
+		"name": bson.M{
+			"$regex": filters.Aproximation,
+			"$options": "i",
+		},
+		"ingredients": bson.M{
+			"$elemMatch": bson.M{
+				"type": filters.Type,
 			},
-			"recipe_moment": moment, 
-			"user_id": userId,
-		}
+		},
+		"recipe_moment": filters.Moment, 
+		"user_id": userId,
 	}
+	
 	data, err := rr.db.GetClient().Database(DBNAME).Collection("Recipes").Find(context.TODO(), filter)
 	if err != nil {
 		err = errors.New("failed to get all recipes")

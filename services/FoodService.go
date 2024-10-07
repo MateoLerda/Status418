@@ -4,15 +4,15 @@ import (
 	"Status418/dto"
 	"Status418/repositories"
 	"time"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type FoodServiceInterface interface {
 	GetAll(userId string) (*[]dto.FoodDto, error)
 	GetByCode(code string, userId string) (*dto.FoodDto, error)
-	Create(newFood dto.FoodDto) error
-	Update(updateFood dto.FoodDto) error
-	Delete(code string) error
-	GetFoodWithQuantityLessThanMinimum(userId string) (*[]dto.FoodDto, error)
+	Create(newFood dto.FoodDto) (*mongo.InsertOneResult , error)
+	Update(updateFood dto.FoodDto) (*mongo.UpdateResult , error)
+	Delete(code string) (*mongo.DeleteResult , error)
 }
 
 type FoodService struct {
@@ -23,19 +23,6 @@ func NewFoodService(fr repositories.FoodRepository) *FoodService {
 	return &FoodService{
 		fr: fr,
 	}
-}
-
-func (ps *PurchaseService) GetFoodWithQuantityLessThanMinimum(userId string) (*[]dto.FoodDto, error) {
-	var foodsDTO []dto.FoodDto
-	foods, err := ps.pr.GetFoodWithQuantityLessThanMinimum(userId)
-	if err != nil {
-		return nil, err
-	}
-	for _, food := range *foods {
-		foodDTO := dto.NewFoodDto(food)
-		foodsDTO = append(foodsDTO, *foodDTO)
-	}
-	return &foodsDTO, nil
 }
 
 func (fs *FoodService) GetAll(userId string) (*[]dto.FoodDto, error) {
@@ -60,32 +47,32 @@ func (fs *FoodService) GetByCode(code string, userId string) (*dto.FoodDto, erro
 	return foodDto, nil
 }
 
-func (fs *FoodService) Create(foodDto *dto.FoodDto) error{
+func (fs *FoodService) Create(foodDto *dto.FoodDto) (*mongo.InsertOneResult , error) {
 	food := foodDto.GetModel()
 	food.CreationDate = time.Now().String()
-	_, err := fs.fr.Create(&food)
+	res, err := fs.fr.Create(&food)
 	if err != nil{
-		return err
+		return nil, err
 	}
-	return nil
+	return res, nil
 }
 
-func (fs *FoodService) Update(foodDto *dto.FoodDto) error{
+func (fs *FoodService) Update(foodDto *dto.FoodDto) (*mongo.UpdateResult , error) {
 	food:= foodDto.GetModel()
 	food.UpdateDate = time.Now().String()
-	_, err := fs.fr.Update(&food)
+	res, err := fs.fr.Update(&food)
 	if err != nil{
-		return err
+		return nil, err
 	}
-	return nil
+	return res, nil
 }
 
-func (fs *FoodService) Delete(code string) error{
-	_, err := fs.fr.Delete(code)
+func (fs *FoodService) Delete(code string) (*mongo.DeleteResult , error) {
+	res, err := fs.fr.Delete(code)
 	if err != nil{
-		return err
+		return nil, err
 	}
-	return nil
+	return res, nil
 }
 
 

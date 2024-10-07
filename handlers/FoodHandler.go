@@ -35,7 +35,7 @@ func (fh *FoodHandler) GetAll(c *gin.Context) {
 	c.JSON(http.StatusOK, foods)
 }
 
-func (fh *FoodHandler) GetByCode(c *gin.Context){
+func (fh *FoodHandler) GetByCode(c *gin.Context) {
 	userId := c.Param("userId")
 	if userId == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "userId is required"})
@@ -55,7 +55,7 @@ func (fh *FoodHandler) GetByCode(c *gin.Context){
 	c.JSON(http.StatusOK, food)
 }
 
-func (fh *FoodHandler) Create(c *gin.Context){
+func (fh *FoodHandler) Create(c *gin.Context) {
 	var newFood dto.FoodDto
 	if err := c.ShouldBindJSON(&newFood); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -70,7 +70,7 @@ func (fh *FoodHandler) Create(c *gin.Context){
 	c.JSON(http.StatusCreated, gin.H{"message": "Food created successfully"})
 }
 
-func (fh *FoodHandler) Update(c *gin.Context){
+func (fh *FoodHandler) Update(c *gin.Context) {
 	var updateFood dto.FoodDto
 	if err := c.ShouldBindJSON(&updateFood); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -85,7 +85,7 @@ func (fh *FoodHandler) Update(c *gin.Context){
 	c.JSON(http.StatusOK, gin.H{"message": "Food updated successfully"})
 }
 
-func (fh *FoodHandler) Delete(c *gin.Context){
+func (fh *FoodHandler) Delete(c *gin.Context) {
 	code := c.Param("code")
 	if code == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "code is required"})
@@ -98,19 +98,4 @@ func (fh *FoodHandler) Delete(c *gin.Context){
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Food deleted successfully"})
-}
-
-func (fh *FoodHandler) GetFoodWithQuantityLessThanMinimum(c *gin.Context){
-	userId := c.Param("userId")
-	if userId == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "userId is required"})
-		return
-	}
-
-	foods, err := fh.fs.GetFoodWithQuantityLessThanMinimum(userId)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, foods)
 }

@@ -18,8 +18,8 @@ type RecipeDto struct {
 func NewRecipeDto(model models.Recipe) *RecipeDto {
 	var dtoIngredients []FoodDto
 
-	for i, food := range model.Ingredients {
-		dtoIngredients = append(dtoIngredients, NewFoodDto(model.Ingredients[i]))
+	for _, food := range model.Ingredients {
+		dtoIngredients = append(dtoIngredients, *NewFoodDto(food))
 	}
 
 	return &RecipeDto{
@@ -33,7 +33,18 @@ func NewRecipeDto(model models.Recipe) *RecipeDto {
 }
 
 func (dto RecipeDto) GetModel() models.Recipe {
+	var ingredients []models.Food
+
+	for _, food := range dto.Ingredients {
+		ingredients = append(ingredients, food.GetModel())
+	}
+
 	return models.Recipe{
-		
+		Id: utils.GetObjectIDFromStringID(dto.Id),
+		Name: dto.Name,
+		Ingredients: ingredients,
+		Moment: dto.Moment,
+		Description: dto.Description,
+		UserId: utils.GetObjectIDFromStringID(dto.UserId),
 	}
 }

@@ -1,7 +1,6 @@
 package services
 
 import (
-	"Status418/dto"
 	"Status418/models"
 	"Status418/repositories"
 	"Status418/utils"
@@ -10,7 +9,7 @@ import (
 )
 
 type PurchaseServiceInterface interface {
-	Create(dto.PurchaseDto) (*mongo.InsertOneResult, error)
+	Create(userId string) (*mongo.InsertOneResult, error)
 }
 
 type PurchaseService struct {
@@ -26,6 +25,7 @@ func NewPurchaseService(pr repositories.PurchaseRepository) *PurchaseService {
 
 func (ps *PurchaseService) Create(userId string) (*mongo.InsertOneResult, error) {
 	foods, err := ps.pr.GetFoodWithQuantityLessThanMinimum(userId)
+	
 	if err != nil {
 		return nil, err
 	}

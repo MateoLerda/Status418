@@ -15,7 +15,6 @@ type FoodRepositoryInterface interface {
 	Create(*models.Food) (*mongo.InsertOneResult, error)
 	Update(*models.Food) (*mongo.UpdateResult, error)
 	Delete(code string) (*mongo.DeleteResult, error)
-	GetFoodWithQuantityLessThanMinimum() (*[]models.Food, error)
 }
 
 type FoodRepository struct {
@@ -30,10 +29,9 @@ func NewFoodRepository(db DB) *FoodRepository {
 
 func (fr FoodRepository) GetAll(userId string) (*[]models.Food, error) {
 	DBNAME := os.Getenv("DB_NAME")
-	filter := bson.M{
+	filter:= bson.M{
 		"user_id": userId,
 	}
-
 	cursor, err := fr.db.GetClient().Database(DBNAME).Collection("Foods").Find(context.TODO(), filter)
 
 	if err != nil {
@@ -103,30 +101,4 @@ func (fr FoodRepository) Delete(code string) (*mongo.DeleteResult, error) {
 		return nil, err
 	}
 	return res, nil
-}
-
-func (pr PurchaseRepository) GetFoodWithQuantityLessThanMinimum(userId string) (*[]models.Food, error) {
-	DBNAME := os.Getenv("DB_NAME")
-
-	filter := bson.M{
-		"$expr": bson.M{
-			"$lt": bson.A{"$current_quantity", "$minimum_quantity"},
-		},
-		"user_id": userId,
-	}
-	cursor, err := pr.db.GetClient().Database(DBNAME).Collection("Foods").Find(context.TODO(), filter)
-
-	if err != nil {
-		err = errors.New("failed to get foods with quantity less than minimum")
-		return nil, err
-	}
-
-	var foods []models.Food
-	err = cursor.All(context.TODO(), &foods)
-
-	if err != nil {
-		err = errors.New("failed to parse foods with quantity less than minimum documents")
-		return nil, err
-	}
-	return &foods, nil
 }
