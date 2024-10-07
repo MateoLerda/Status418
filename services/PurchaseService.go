@@ -34,7 +34,7 @@ func (ps *PurchaseService) Create(userId string) (*mongo.InsertOneResult, error)
 	purchase.PurchaseDate = time.Now()
 	for _, food := range *foods {
 		purchase.TotalCost += food.UnitPrice * (float64)(food.MinimumQuantity-food.CurrentQuantity)
-		purchase.Foods = append(purchase.Foods, dto.PurchaseQuantity{
+		purchase.Foods = append(purchase.Foods, models.PurchaseQuantity{
 			FoodCode: utils.GetStringIDFromObjectID(food.Code),
 			Quantity: food.MinimumQuantity - food.CurrentQuantity,
 		})

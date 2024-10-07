@@ -1,9 +1,8 @@
 package models
 
 import (
-	"Status418/dto"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Purchase struct {
@@ -11,5 +10,15 @@ type Purchase struct {
 	UserId       primitive.ObjectID     `bson:"user_id"`
 	PurchaseDate time.Time              `bson:"purchase_date"`
 	TotalCost    float64                `bson:"total_cost"`
-	Foods        []dto.PurchaseQuantity `bson:"foods"`
+	Foods        []PurchaseQuantity `bson:"foods"`
+}
+
+func NewPurchase(userId primitive.ObjectID, purchaseDate time.Time, totalCost float64, foods []PurchaseQuantity) *Purchase {
+	return &Purchase{
+		Id_Purchase: primitive.NewObjectID(),
+		UserId: userId,
+		PurchaseDate: purchaseDate,
+		TotalCost: totalCost,
+		Foods: foods,
+	}
 }

@@ -40,12 +40,12 @@ func (mongoDB *MongoDB) Connect() error {
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 
 	if err != nil {
-		err = errors.New("failed mongo connection")
+		err = errors.New("mongo connection failed")
 		return err 
 	}
 	err = client.Ping(context.Background(), nil)
 	if err != nil {
-		err = errors.New("failed ping")
+		err = errors.New("ping failed")
 		return err
 	}
 
@@ -57,7 +57,7 @@ func (mongoDB *MongoDB) Connect() error {
 func (mongoDB *MongoDB) Disconnect() error {
 	err := mongoDB.MongoClient.Disconnect(context.TODO())
 	if err != nil {
-		err = errors.New("failed disconnection")
+		err = errors.New("disconnection failed")
 		return err
 	}
 	return nil

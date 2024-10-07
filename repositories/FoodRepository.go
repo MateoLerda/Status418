@@ -2,11 +2,9 @@ package repositories
 
 import (
 	"Status418/models"
-	"Status418/utils"
 	"context"
 	"errors"
 	"os"
-
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -14,8 +12,8 @@ import (
 type FoodRepositoryInterface interface {
 	GetAll(userId string) (*[]models.Food, error)
 	GetByCode(code string, userId string) (*models.Food, error)
-	Create(models.Food) (*mongo.InsertOneResult, error)
-	Update(models.Food) (*mongo.UpdateResult, error)
+	Create(*models.Food) (*mongo.InsertOneResult, error)
+	Update(*models.Food) (*mongo.UpdateResult, error)
 	Delete(code string) (*mongo.DeleteResult, error)
 	GetFoodWithQuantityLessThanMinimum() (*[]models.Food, error)
 }
@@ -114,7 +112,7 @@ func (pr PurchaseRepository) GetFoodWithQuantityLessThanMinimum(userId string) (
 		"$expr": bson.M{
 			"$lt": bson.A{"$current_quantity", "$minimum_quantity"},
 		},
-		"user_id": utils.GetObjectIDFromStringID(userId),
+		"user_id": userId,
 	}
 	cursor, err := pr.db.GetClient().Database(DBNAME).Collection("Foods").Find(context.TODO(), filter)
 

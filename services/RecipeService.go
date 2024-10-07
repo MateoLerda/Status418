@@ -7,7 +7,7 @@ import (
 
 type RecipeServiceInterface interface {
 	Create(newRecipe dto.RecipeDto) error
-	Delete(id int) error
+	Delete(id string) error
 	Update(updateRecipe dto.RecipeDto) error
 	GetByMoment(moment enums.Moment) ([]dto.RecipeDto, error)
 	GetByType(types enums.FoodType) ([]dto.RecipeDto, error)

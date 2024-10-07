@@ -46,9 +46,9 @@ func (ur UserRepository) GetAll() (*[]models.User, error) {
 
 }
 
-func (ur UserRepository) GetById(userId string) (*models.User, error) {
+func (ur UserRepository) GetById(id string) (*models.User, error) {
 	DBNAME := os.Getenv("DB_NAME")
-	filter := bson.M{"user_id": userId}
+	filter := bson.M{"user_id": id}
 	data := ur.db.GetClient().Database(DBNAME).Collection("Users").FindOne(context.TODO(), filter)
 
 	var user models.User
@@ -88,11 +88,11 @@ func (ur UserRepository) Update(user *models.User) (*mongo.UpdateResult, error) 
 	return res, nil
 }
 
-func (ur UserRepository) Delete(userId string) (*mongo.DeleteResult, error) {
+func (ur UserRepository) Delete(id string) (*mongo.DeleteResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
 
 	filter := bson.M{
-		"user_id": userId,
+		"user_id": id,
 	}
 	res, err := ur.db.GetClient().Database(DBNAME).Collection("Users").DeleteOne(context.TODO(), filter)
 	if err != nil {

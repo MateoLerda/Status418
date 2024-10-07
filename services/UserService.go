@@ -2,7 +2,7 @@ package services
 
 import (
 	"Status418/dto"
-	"Status418/models"
+	//"Status418/models"
 	"Status418/repositories"
 	"time"
 )
@@ -34,7 +34,7 @@ func (us *UserService) GetAll() (*[]dto.UserDto, error) {
 		return nil, err
 	}
 	for _, user := range *users {
-		userDTO := ChangeFromUserModelToDto(&user)
+		userDTO := dto.NewUserDto(user)
 		usersDTO = append(usersDTO, *userDTO)
 	}
 	return &usersDTO, nil
@@ -45,22 +45,22 @@ func (us *UserService) GetById(id string) (*dto.UserDto, error) {
 	if err != nil {
 		return nil, err
 	}
-	userDTO := ChangeFromUserModelToDto(user)
+	userDTO := dto.NewUserDto(*user)
 	return userDTO, nil
 }
 
 func (us *UserService) Create(userDTO dto.UserDto) error {
-	user := ChangeFromUserDtoToModel(&userDTO)
+	user := userDTO.GetModel()
 	user.CreationDate = time.Now().String()
-	_, err := us.ur.Create(user)
+	_, err := us.ur.Create(&user)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 func (us *UserService) Update(userDTO dto.UserDto) error {
-	user := ChangeFromUserDtoToModel(&userDTO)
-	_, err := us.ur.Update(user)
+	user := userDTO.GetModel()
+	_, err := us.ur.Update(&user)
 	if err != nil {
 		return err
 	}
@@ -74,24 +74,4 @@ func (us *UserService) Delete(id string) error {
 	return nil
 }
 
-func ChangeFromUserModelToDto(users *models.User) *dto.UserDto {
-	var userDto dto.UserDto
-	userDto = dto.UserDto{
-		Name:     users.Name,
-		Email:    users.Email,
-		LastName: users.LastName,
-		Password: users.Password,
-	}
-	return &userDto
 
-}
-func ChangeFromUserDtoToModel(userDTO *dto.UserDto) *models.User {
-	var user models.User
-	user = models.User{
-		Name:     userDTO.Name,
-		Email:    userDTO.Email,
-		LastName: userDTO.LastName,
-		Password: userDTO.Password,
-	}
-	return &user
-}

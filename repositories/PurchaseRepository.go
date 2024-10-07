@@ -9,7 +9,7 @@ import (
 )
 
 type PurchaseRepositoryInterface interface {
-	Create(models.Purchase) (*mongo.InsertOneResult, error)
+	Create(*models.Purchase) (*mongo.InsertOneResult, error)
 }
 
 type PurchaseRepository struct {
@@ -25,7 +25,7 @@ func NewPurchaseRepository(db DB) *PurchaseRepository {
 
 func (pr PurchaseRepository) Create(purchase *models.Purchase) (*mongo.InsertOneResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
-	// la compra ya viene completa desde el service, ahí llamamos al método de arriba y la creamos
+	// la compra ya viene completa desde el service, ahí llamamos al otro método de food y la creamos
 	res, err := pr.db.GetClient().Database(DBNAME).Collection("Purchases").InsertOne(context.TODO(), purchase)
 	if err != nil {
 		err = errors.New("failed to create purchase")

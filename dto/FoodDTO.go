@@ -1,23 +1,41 @@
 package dto
 
-import "Status418/enums"
+import (
+	"Status418/enums"
+	"Status418/models"
+	"Status418/utils"
+)
 
 type FoodDto struct {
-	Type      enums.FoodType 
-	Moments    []enums.Moment 
-	Name      string 
-	UnitPrice float64 
+	Code            string
+	Type            enums.FoodType
+	Moments         []enums.Moment
+	Name            string
+	UnitPrice       float64
 	CurrentQuantity int
-	MinimumQuantity int 
+	MinimumQuantity int
 }
 
-func NewFoodDTO(ftype enums.FoodType, moment []enums.Moment, name string, unitPrice float64, currentQuantity int, minimumQuantity int, userId string) *FoodDto {
+func NewFoodDto(model models.Food) *FoodDto {
 	return &FoodDto{
-		Type: ftype,
-		Moments: moment,
-		Name: name,
-		UnitPrice: unitPrice,
-		CurrentQuantity: currentQuantity,
-		MinimumQuantity: minimumQuantity,
+		Code:            utils.GetStringIDFromObjectID(model.Code),
+		Type:            model.Type,
+		Moments:         model.Moments,
+		Name:            model.Name,
+		UnitPrice:       model.UnitPrice,
+		CurrentQuantity: model.CurrentQuantity,
+		MinimumQuantity: model.MinimumQuantity,
+	}
+}
+
+func (dto FoodDto) GetModel() models.Food {
+	return models.Food{
+		Code:            utils.GetObjectIDFromStringID(dto.Code),
+		Type:            dto.Type,
+		Moments:         dto.Moments,
+		Name:            dto.Name,
+		UnitPrice:       dto.UnitPrice,
+		CurrentQuantity: dto.CurrentQuantity,
+		MinimumQuantity: dto.MinimumQuantity,
 	}
 }
