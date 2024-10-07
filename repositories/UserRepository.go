@@ -4,15 +4,14 @@ import (
 	"Status418/models"
 	"context"
 	"errors"
-	"os"
-
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"os"
 )
 
 type UserRepositoryInterface interface {
-	GetAll() (*[]models.User, error)
-	GetById(id string) (*models.User, error)
+	GetAll() ([]models.User, error)
+	GetById(id string) (models.User, error)
 	Create(models.User) (*mongo.InsertOneResult, error)
 	Update(models.User) (*mongo.UpdateResult, error)
 	Delete(id string) (*mongo.DeleteResult, error)
@@ -28,25 +27,25 @@ func NewUserRepository(db DB) *UserRepository {
 	}
 }
 
-func (ur UserRepository) GetAll() (*[]models.User, error) {
+func (ur UserRepository) GetAll() ([]models.User, error) {
 	DBNAME := os.Getenv("DB_NAME")
 	filter := bson.M{}
 	data, err := ur.db.GetClient().Database(DBNAME).Collection("Users").Find(context.TODO(), filter)
 	if err != nil {
-		err = errors.New("failed to get users")
+		err = errors.New("internal")
 		return nil, err
 	}
 	var users []models.User
-	err = data.All(context.TODO(), &users)
-	if err != nil {
-		err = errors.New("failed to get users")
+	data.All(context.TODO(), &users)
+	if len(users) == 0 {
+		err = errors.New("notfound")
 		return nil, err
 	}
-	return &users, nil
 
+	return users, nil
 }
 
-func (ur UserRepository) GetById(id string) (*models.User, error) {
+func (ur UserRepository) GetById(id string) (models.User, error) {
 	DBNAME := os.Getenv("DB_NAME")
 	filter := bson.M{"user_id": id}
 	data := ur.db.GetClient().Database(DBNAME).Collection("Users").FindOne(context.TODO(), filter)
@@ -54,14 +53,17 @@ func (ur UserRepository) GetById(id string) (*models.User, error) {
 	var user models.User
 	err := data.Decode(&user)
 	if err != nil {
-		err = errors.New("failed to get the user")
-		return nil, err
+		err = errors.New("internal")
 	}
-	return &user, nil
 
+	if err == mongo.ErrNoDocuments {
+		err = errors.New("notfound")
+	}
+
+	return user, err
 }
 
-func (ur UserRepository) Create(user *models.User) (*mongo.InsertOneResult, error) {
+func (ur UserRepository) Create(user models.User) (*mongo.InsertOneResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
 
 	res, err := ur.db.GetClient().Database(DBNAME).Collection("Users").InsertOne(context.TODO(), user)
@@ -72,7 +74,7 @@ func (ur UserRepository) Create(user *models.User) (*mongo.InsertOneResult, erro
 
 	return res, nil
 }
-func (ur UserRepository) Update(user *models.User) (*mongo.UpdateResult, error) {
+func (ur UserRepository) Update(user models.User) (*mongo.UpdateResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
 
 	filter := bson.M{"user_id": user.UserId}

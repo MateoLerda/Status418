@@ -5,14 +5,13 @@ import (
 	"context"
 	"errors"
 	"os"
-
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type PurchaseRepositoryInterface interface {
-	Create(*models.Purchase) (*mongo.InsertOneResult, error)
-	GetFoodWithQuantityLessThanMinimum() (*[]models.Food, error)
+	Create(models.Purchase) (*mongo.InsertOneResult, error)
+	GetFoodWithQuantityLessThanMinimum(userId string) ([]models.Food, error)
 }
 
 type PurchaseRepository struct {
@@ -26,7 +25,7 @@ func NewPurchaseRepository(db DB) *PurchaseRepository {
 }
 
 
-func (pr PurchaseRepository) Create(purchase *models.Purchase) (*mongo.InsertOneResult, error) {
+func (pr PurchaseRepository) Create(purchase models.Purchase) (*mongo.InsertOneResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
 	// la compra ya viene completa desde el service, ahí llamamos al otro método de food y la creamos
 	res, err := pr.db.GetClient().Database(DBNAME).Collection("Purchases").InsertOne(context.TODO(), purchase)
@@ -37,7 +36,7 @@ func (pr PurchaseRepository) Create(purchase *models.Purchase) (*mongo.InsertOne
 	return res, nil
 }
 
-func (pr PurchaseRepository) GetFoodWithQuantityLessThanMinimum(userId string) (*[]models.Food, error)  {
+func (pr PurchaseRepository) GetFoodWithQuantityLessThanMinimum(userId string) ([]models.Food, error)  {
 	DBNAME := os.Getenv("DB_NAME")
 	filter := bson.M{
 		"$expr": bson.M{
@@ -52,7 +51,7 @@ func (pr PurchaseRepository) GetFoodWithQuantityLessThanMinimum(userId string) (
 		err = errors.New("failed to get foods")
 		return nil, err
 	}
-
+	
 	var foods []models.Food
 	err = cursor.All(context.TODO(), &foods)
 
@@ -61,5 +60,5 @@ func (pr PurchaseRepository) GetFoodWithQuantityLessThanMinimum(userId string) (
 		return nil, err
 	}
 
-	return &foods,nil
+	return foods,nil
 }

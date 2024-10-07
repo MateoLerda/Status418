@@ -16,10 +16,10 @@ type FoodServiceInterface interface {
 }
 
 type FoodService struct {
-	fr repositories.FoodRepository
+	fr repositories.FoodRepositoryInterface
 }
 
-func NewFoodService(fr repositories.FoodRepository) *FoodService {
+func NewFoodService(fr repositories.FoodRepositoryInterface) *FoodService {
 	return &FoodService{
 		fr: fr,
 	}
@@ -27,11 +27,11 @@ func NewFoodService(fr repositories.FoodRepository) *FoodService {
 
 func (fs *FoodService) GetAll(userId string) (*[]dto.FoodDto, error) {
 	var foodsDTO []dto.FoodDto
-	foods, err := fs.fr.GetAll(userId) //CHEQUEAR, NO CREO QUE ESTÉ CORRECTO
+	foods, err := fs.fr.GetAll(userId) 
 	if err != nil {
 		return nil, err
 	}
-	for _, food := range *foods {
+	for _, food := range foods {
 		foodDTO := dto.NewFoodDto(food)
 		foodsDTO = append(foodsDTO, *foodDTO)
 	}
@@ -43,24 +43,24 @@ func (fs *FoodService) GetByCode(code string, userId string) (*dto.FoodDto, erro
 	if err!=nil {
 		return nil, err
 	}
-	foodDto:= dto.NewFoodDto(*food)
+	foodDto:= dto.NewFoodDto(food)
 	return foodDto, nil
 }
 
-func (fs *FoodService) Create(foodDto *dto.FoodDto) (*mongo.InsertOneResult , error) {
+func (fs *FoodService) Create(foodDto dto.FoodDto) (*mongo.InsertOneResult , error) {
 	food := foodDto.GetModel()
 	food.CreationDate = time.Now().String()
-	res, err := fs.fr.Create(&food)
+	res, err := fs.fr.Create(food)
 	if err != nil{
 		return nil, err
 	}
 	return res, nil
 }
 
-func (fs *FoodService) Update(foodDto *dto.FoodDto) (*mongo.UpdateResult , error) {
+func (fs *FoodService) Update(foodDto dto.FoodDto) (*mongo.UpdateResult , error) {
 	food:= foodDto.GetModel()
 	food.UpdateDate = time.Now().String()
-	res, err := fs.fr.Update(&food)
+	res, err := fs.fr.Update(food)
 	if err != nil{
 		return nil, err
 	}

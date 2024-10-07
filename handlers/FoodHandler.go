@@ -14,11 +14,9 @@ type FoodHandler struct {
 
 func NewFoodHandler(fs services.FoodServiceInterface) *FoodHandler {
 	return &FoodHandler{
-		fs: fs,
+		fs : fs,
 	}
 }
-
-//IMPLEMENTAR LOS MÉTODOS DE LA INTERFACE FoodServiceInterface
 
 func (fh *FoodHandler) GetAll(c *gin.Context) {
 	userId := c.Param("userId")
@@ -62,7 +60,7 @@ func (fh *FoodHandler) Create(c *gin.Context) {
 		return
 	}
 
-	err := fh.fs.Create(newFood)
+	_,err := fh.fs.Create(newFood)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -77,7 +75,7 @@ func (fh *FoodHandler) Update(c *gin.Context) {
 		return
 	}
 
-	err := fh.fs.Update(updateFood)
+	_,err := fh.fs.Update(updateFood)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -92,7 +90,7 @@ func (fh *FoodHandler) Delete(c *gin.Context) {
 		return
 	}
 
-	err := fh.fs.Delete(code)
+	_,err := fh.fs.Delete(code)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

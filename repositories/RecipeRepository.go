@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"Status418/models"
+	"Status418/utils"
 	"context"
 	"errors"
 	"os"
@@ -11,10 +12,10 @@ import (
 )
 
 type RecipeRepositoryInterface interface {
-	Create(recipe *models.Recipe) (*mongo.InsertOneResult, error)
+	Create(recipe models.Recipe) (*mongo.InsertOneResult, error)
 	Delete(id string) (*mongo.DeleteResult, error)
-	Update(recipe *models.Recipe) (*mongo.UpdateResult, error)
-	GetAll(aproximation string, userId string) (*[]models.Recipe, error)
+	Update(recipe models.Recipe) (*mongo.UpdateResult, error)
+	GetAll(userId string, filters models.Filter) ([]models.Recipe, error)
 }
 
 type RecipeRepository struct {
@@ -27,7 +28,7 @@ func NewRecipeRepository(db DB) *RecipeRepository {
 	}
 }
 
-func (rr RecipeRepository) Create(recipe *models.Recipe) (*mongo.InsertOneResult, error) {
+func (rr RecipeRepository) Create(recipe models.Recipe) (*mongo.InsertOneResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
 	res, err := rr.db.GetClient().Database(DBNAME).Collection("Recipes").InsertOne(context.TODO(), recipe)
 	if err != nil {
@@ -39,7 +40,8 @@ func (rr RecipeRepository) Create(recipe *models.Recipe) (*mongo.InsertOneResult
 
 func (rr RecipeRepository) Delete(id string) (*mongo.DeleteResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
-	filter := bson.M{"id_recipe": id}
+	idMongo := utils.GetObjectIDFromStringID(id)
+	filter := bson.M{"id_recipe": idMongo}
 	res, err := rr.db.GetClient().Database(DBNAME).Collection("Recipes").DeleteOne(context.TODO(), filter)
 	if err != nil {
 		err = errors.New("failed to delete recipe")
@@ -48,7 +50,7 @@ func (rr RecipeRepository) Delete(id string) (*mongo.DeleteResult, error) {
 	return res, nil
 }
 
-func (rr RecipeRepository) Update(recipe *models.Recipe) (*mongo.UpdateResult, error) {
+func (rr RecipeRepository) Update(recipe models.Recipe) (*mongo.UpdateResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
 	filter := bson.M{
 		"id_recipe": recipe.Id,
@@ -65,7 +67,7 @@ func (rr RecipeRepository) Update(recipe *models.Recipe) (*mongo.UpdateResult, e
 } 
 
 
-func (rr RecipeRepository) GetAll(userId string, filters models.Filter) (*[]models.Recipe, error) {
+func (rr RecipeRepository) GetAll(userId string, filters models.Filter) ([]models.Recipe, error) {
 	DBNAME := os.Getenv("DB_NAME")
 	filter := bson.M{
 		"name": bson.M{
@@ -93,5 +95,5 @@ func (rr RecipeRepository) GetAll(userId string, filters models.Filter) (*[]mode
 		return nil, err
 	}
 
-	return &recipes, nil
-}// A CHECKEAR COMPLETAMENTE 
+	return recipes, nil
+}
