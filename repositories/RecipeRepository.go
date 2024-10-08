@@ -32,7 +32,6 @@ func (rr RecipeRepository) Create(recipe models.Recipe) (*mongo.InsertOneResult,
 	DBNAME := os.Getenv("DB_NAME")
 	res, err := rr.db.GetClient().Database(DBNAME).Collection("Recipes").InsertOne(context.TODO(), recipe)
 	if err != nil {
-		err = errors.New("failed to create recipe")
 		return res, err
 	}
 	return res, nil
@@ -44,8 +43,12 @@ func (rr RecipeRepository) Delete(id string) (*mongo.DeleteResult, error) {
 	filter := bson.M{"id_recipe": idMongo}
 	res, err := rr.db.GetClient().Database(DBNAME).Collection("Recipes").DeleteOne(context.TODO(), filter)
 	if err != nil {
-		err = errors.New("failed to delete recipe")
-		return res, err
+		err = errors.New("internal")
+		return nil, err
+	}
+	if res.DeletedCount== 0{
+		err= errors.New("notfound")
+		return nil, err
 	}
 	return res, nil
 }
@@ -60,8 +63,13 @@ func (rr RecipeRepository) Update(recipe models.Recipe) (*mongo.UpdateResult, er
 	}
 	res, err := rr.db.GetClient().Database(DBNAME).Collection("Recipes").UpdateOne(context.TODO(), filter, update)
 	if err != nil {
-		err = errors.New("failed to update recipe")
+		err = errors.New("internal")
 		return res, err
+	}
+
+	if res.MatchedCount == 0 && res.ModifiedCount == 0 {
+		err= errors.New("notfound")
+		return nil, err 
 	}
 	return res, nil
 } 
@@ -85,13 +93,13 @@ func (rr RecipeRepository) GetAll(userId string, filters models.Filter) ([]model
 	
 	data, err := rr.db.GetClient().Database(DBNAME).Collection("Recipes").Find(context.TODO(), filter)
 	if err != nil {
-		err = errors.New("failed to get all recipes")
+		err = errors.New("internal")
 		return nil, err
 	}
 	var recipes []models.Recipe
-	err = data.All(context.TODO(), &recipes)
-	if err != nil {
-		err = errors.New("failed to parse all recipes")
+	data.All(context.TODO(), &recipes)
+	if len(recipes) == 0 {
+		err = errors.New("nocontent")
 		return nil, err
 	}
 

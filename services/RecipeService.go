@@ -2,7 +2,6 @@ package services
 
 import (
 	"Status418/dto"
-	"Status418/models"
 	"Status418/repositories"
 	"time"
 
@@ -10,7 +9,7 @@ import (
 )
 
 type RecipeServiceInterface interface {
-    GetAll(userId string, filters models.Filter) (*[]dto.RecipeDto, error)
+    GetAll(userId string, filters dto.FiltersDto) (*[]dto.RecipeDto, error)
 	Create(newRecipe dto.RecipeDto) (*mongo.InsertOneResult ,error)
 	Delete(id string) (*mongo.DeleteResult, error)
 	Update(updateRecipe dto.RecipeDto) (*mongo.UpdateResult, error)
@@ -26,9 +25,9 @@ func NewRecipeService(rr repositories.RecipeRepositoryInterface) *RecipeService{
 	}
 }
 
-func (rs *RecipeService) GetAll(userId string, filters models.Filter) (*[]dto.RecipeDto, error){
+func (rs *RecipeService) GetAll(userId string, filters dto.FiltersDto) (*[]dto.RecipeDto, error){
 	var recipesDto []dto.RecipeDto
-	recipes, err := rs.rr.GetAll(userId, filters)
+	recipes, err := rs.rr.GetAll(userId, filters.GetModel())
 	if err != nil{
 		return nil, err
 	}

@@ -26,10 +26,16 @@ func (fh *FoodHandler) GetAll(c *gin.Context) {
 	}
 
 	foods, err := fh.fs.GetAll(userId)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err.Error()=="internal" {
+		c.JSON(http.StatusInternalServerError, gin.H{"error" : "An internal server error has ocurred"})
 		return
 	}
+	
+	if err.Error()=="nocontent"{
+		c.JSON(http.StatusNotFound, gin.H{"error": "Cannot found foods"})
+		return
+	}
+	
 	c.JSON(http.StatusOK, foods)
 }
 
@@ -46,8 +52,17 @@ func (fh *FoodHandler) GetByCode(c *gin.Context) {
 	}
 
 	food, err := fh.fs.GetByCode(code, userId)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err.Error() == "internal" {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to get food with code: " + code,
+		})
+		return
+	}
+
+	if err.Error() == "notfound" {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "Not found any food with code: " + code,
+		})
 		return
 	}
 	c.JSON(http.StatusOK, food)
@@ -56,13 +71,13 @@ func (fh *FoodHandler) GetByCode(c *gin.Context) {
 func (fh *FoodHandler) Create(c *gin.Context) {
 	var newFood dto.FoodDto
 	if err := c.ShouldBindJSON(&newFood); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data", "details": err.Error()})
 		return
 	}
 
 	_,err := fh.fs.Create(newFood)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create food item", "details": err.Error()})
 		return
 	}
 	c.JSON(http.StatusCreated, gin.H{"message": "Food created successfully"})
@@ -76,10 +91,20 @@ func (fh *FoodHandler) Update(c *gin.Context) {
 	}
 
 	_,err := fh.fs.Update(updateFood)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err.Error() == "internal" {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to update food with code: " +updateFood.Code ,
+		})
 		return
 	}
+
+	if err.Error() == "notfound" {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "Not found any food with code: " + updateFood.Code + " to update",
+		})
+		return
+	}	
+
 	c.JSON(http.StatusOK, gin.H{"message": "Food updated successfully"})
 }
 
@@ -91,9 +116,18 @@ func (fh *FoodHandler) Delete(c *gin.Context) {
 	}
 
 	_,err := fh.fs.Delete(code)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err.Error() == "internal" {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to delete food with code: " + code, 
+		})
 		return
 	}
+
+	if err.Error() == "notfound" {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "Not found any food with code: " + code + " to delete",
+		})
+		return
+	}	
 	c.JSON(http.StatusOK, gin.H{"message": "Food deleted successfully"})
 }

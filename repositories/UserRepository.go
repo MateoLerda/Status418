@@ -38,7 +38,7 @@ func (ur UserRepository) GetAll() ([]models.User, error) {
 	var users []models.User
 	data.All(context.TODO(), &users)
 	if len(users) == 0 {
-		err = errors.New("notfound")
+		err = errors.New("nocontent")
 		return nil, err
 	}
 
@@ -55,7 +55,6 @@ func (ur UserRepository) GetById(id string) (models.User, error) {
 	if err != nil {
 		err = errors.New("internal")
 	}
-
 	if err == mongo.ErrNoDocuments {
 		err = errors.New("notfound")
 	}
@@ -71,7 +70,7 @@ func (ur UserRepository) Create(user models.User) (*mongo.InsertOneResult, error
 	if err != nil {
 		return nil, err
 	}
-
+	
 	return res, nil
 }
 func (ur UserRepository) Update(user models.User) (*mongo.UpdateResult, error) {
@@ -84,7 +83,12 @@ func (ur UserRepository) Update(user models.User) (*mongo.UpdateResult, error) {
 	res, err := ur.db.GetClient().Database(DBNAME).Collection("Users").UpdateOne(context.TODO(), filter, update)
 
 	if err != nil {
-		err = errors.New("failed to update the user")
+		err = errors.New("internal")
+		return nil, err
+	}
+
+	if res.MatchedCount == 0 && res.ModifiedCount == 0 {
+		err = errors.New("notfound")
 		return nil, err
 	}
 	return res, nil
@@ -98,8 +102,14 @@ func (ur UserRepository) Delete(id string) (*mongo.DeleteResult, error) {
 	}
 	res, err := ur.db.GetClient().Database(DBNAME).Collection("Users").DeleteOne(context.TODO(), filter)
 	if err != nil {
-		err = errors.New("failed to delete the user")
+		err = errors.New("internal")
 		return nil, err
 	}
+
+	if res.DeletedCount == 0 {
+		err = errors.New("notfound")
+		return nil,err
+	}
+
 	return res, nil
 }

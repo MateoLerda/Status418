@@ -36,15 +36,15 @@ func (fr FoodRepository) GetAll(userId string) ([]models.Food, error) {
 	cursor, err := fr.db.GetClient().Database(DBNAME).Collection("Foods").Find(context.TODO(), filter)
 
 	if err != nil {
-		err = errors.New("failed to get foods")
+		err = errors.New("internal")
 		return nil, err
 	}
 
 	var foods []models.Food
-	err = cursor.All(context.TODO(), &foods)
+	cursor.All(context.TODO(), &foods)
 
-	if err != nil {
-		err = errors.New("failed to parse food documents")
+	if len(foods) == 0 {
+		err = errors.New("nocontent")
 		return nil, err
 	}
 	return foods, nil
@@ -61,9 +61,12 @@ func (fr FoodRepository) GetByCode(code string, userId string) (models.Food, err
 	var food models.Food
 	err := data.Decode(&food)
 	if err != nil {
-		err = errors.New("failed to get food with code " + code)
+		err = errors.New("internal")
 	}
-	return food, nil
+	if err == mongo.ErrNoDocuments {
+		err = errors.New("notfound")
+	}
+	return food, err
 }
 
 func (fr FoodRepository) Create(food models.Food) (*mongo.InsertOneResult, error) {
@@ -86,9 +89,15 @@ func (fr FoodRepository) Update(food models.Food) (*mongo.UpdateResult, error) {
 	}
 	res, err := fr.db.GetClient().Database(DBNAME).Collection("Foods").UpdateOne(context.TODO(), filter, update)
 	if err != nil {
-		err = errors.New("failed to update food ")
+		err = errors.New("internal")
 		return nil, err
 	}
+
+	if res.MatchedCount == 0 && res.ModifiedCount == 0 {
+		err = errors.New("notfound")
+		return nil, err
+	}
+
 	return res, nil
 }
 
@@ -97,8 +106,13 @@ func (fr FoodRepository) Delete(code string) (*mongo.DeleteResult, error) {
 	filter := bson.M{"food_code": code}
 	res, err := fr.db.GetClient().Database(DBNAME).Collection("Foods").DeleteOne(context.TODO(), filter)
 	if err != nil {
-		err = errors.New("failed to delete food")
+		err = errors.New("internal")
 		return nil, err
+	}
+
+	if res.DeletedCount == 0 {
+		err = errors.New("notfound")
+		return nil,err
 	}
 	return res, nil
 }

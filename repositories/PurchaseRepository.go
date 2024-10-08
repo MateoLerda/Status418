@@ -46,17 +46,15 @@ func (pr PurchaseRepository) GetFoodWithQuantityLessThanMinimum(userId string) (
 	}
 
 	cursor, err := pr.db.GetClient().Database(DBNAME).Collection("Purchases").Find(context.TODO(), filter)
-
 	if err != nil {
-		err = errors.New("failed to get foods")
+		err = errors.New("internal")
 		return nil, err
 	}
-	
 	var foods []models.Food
-	err = cursor.All(context.TODO(), &foods)
+	cursor.All(context.TODO(), &foods)
 
-	if err != nil {
-		err = errors.New("failed to parse food documents")
+	if len(foods) == 0 {
+		err = errors.New("nocontent")
 		return nil, err
 	}
 

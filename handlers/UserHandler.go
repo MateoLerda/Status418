@@ -28,8 +28,8 @@ func (uh *UserHandler) GetAll(c *gin.Context) {
 		return
 	}
 
-	if err.Error() == "notfound" {
-		c.JSON(http.StatusNotFound, gin.H{
+	if err.Error() == "nocontent" {
+		c.JSON(http.StatusNoContent, gin.H{
 			"error": "Not found any users",
 		})
 		return
@@ -78,10 +78,50 @@ func (uh *UserHandler) Create(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-func Update() {
+func (uh *UserHandler) Update(c *gin.Context) {
+	var user dto.UserDto
+	
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
+	res, err := uh.us.Update(user)
+
+	if err.Error() == "internal" {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to update user with ID: " + user.UserId,
+		})
+		return
+	}
+
+	if err.Error() == "notfound" {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "Not found any user with ID: " + user.UserId + " to update",
+		})
+		return
+	}	
+
+	c.JSON(http.StatusOK, res)
 }
 
-func Delete() {
+func (uh *UserHandler) Delete(c *gin.Context) {
+	userId := c.Param("userId")
+	res, err := uh.us.Delete(userId)
 
+	if err.Error() == "internal" {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to delete user with ID: " + userId,
+		})
+		return
+	}
+
+	if err.Error() == "notfound" {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "Not found any user with ID: " + userId + " to delete",
+		})
+		return
+	}	
+
+	c.JSON(http.StatusOK, res)
 }
