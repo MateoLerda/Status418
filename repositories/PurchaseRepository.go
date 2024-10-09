@@ -5,13 +5,11 @@ import (
 	"context"
 	"errors"
 	"os"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type PurchaseRepositoryInterface interface {
 	Create(models.Purchase) (*mongo.InsertOneResult, error)
-	GetFoodWithQuantityLessThanMinimum(userId string) ([]models.Food, error)
 }
 
 type PurchaseRepository struct {
@@ -36,27 +34,3 @@ func (pr PurchaseRepository) Create(purchase models.Purchase) (*mongo.InsertOneR
 	return res, nil
 }
 
-func (pr PurchaseRepository) GetFoodWithQuantityLessThanMinimum(userId string) ([]models.Food, error)  {
-	DBNAME := os.Getenv("DB_NAME")
-	filter := bson.M{
-		"$expr": bson.M{
-			"$lt": bson.A{"$current_quantity", "$minimum_quantity"},
-		},
-		"user_id": userId,
-	}
-
-	cursor, err := pr.db.GetClient().Database(DBNAME).Collection("Purchases").Find(context.TODO(), filter)
-	if err != nil {
-		err = errors.New("internal")
-		return nil, err
-	}
-	var foods []models.Food
-	cursor.All(context.TODO(), &foods)
-
-	if len(foods) == 0 {
-		err = errors.New("nocontent")
-		return nil, err
-	}
-
-	return foods,nil
-}

@@ -27,7 +27,7 @@ func NewFoodService(fr repositories.FoodRepositoryInterface) *FoodService {
 
 func (fs *FoodService) GetAll(userId string) (*[]dto.FoodDto, error) {
 	var foodsDTO []dto.FoodDto
-	foods, err := fs.fr.GetAll(userId) 
+	foods, err := fs.fr.GetAll(userId, false) 
 	if err != nil {
 		return nil, err
 	}

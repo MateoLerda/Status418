@@ -7,14 +7,14 @@ import (
 
 type FiltersDto struct {
 	Aproximation string 
-	Moment enums.Moment
-	Type   enums.FoodType
+	Moment string
+	Type   string
 }
 
 func (dto FiltersDto) GetModel() models.Filter {
 	return models.Filter{
 		Aproximation: dto.Aproximation,
-		Moment: dto.Moment,
-		Type: dto.Type,
+		Moment: enums.GetMomentEnum(dto.Moment),
+		Type: enums.GetTypeEnum(dto.Type),
 	}
 }

@@ -16,4 +16,3 @@ type Recipe struct {
 	UserId       primitive.ObjectID `bson:"user_id"`
 }
 
-//AGREGAR EN LA BASE DE DATOS EL CAMPO DE MOMENTO

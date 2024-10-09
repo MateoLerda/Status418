@@ -54,7 +54,7 @@ func routes() {
 	recipesRoutes := r.Group("/recipes")
 	recipesRoutes.GET("/:userId", recipeHandler.GetAll)
 	recipesRoutes.DELETE("/:id", recipeHandler.Delete)
-	recipesRoutes.PUT("/", recipeHandler.Update)
+	recipesRoutes.PUT("/:id", recipeHandler.Update)
 	recipesRoutes.POST("/", recipeHandler.Create)
 
 }

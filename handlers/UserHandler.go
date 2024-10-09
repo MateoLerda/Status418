@@ -80,7 +80,9 @@ func (uh *UserHandler) Create(c *gin.Context) {
 
 func (uh *UserHandler) Update(c *gin.Context) {
 	var user dto.UserDto
-	
+	userId := c.Param("userId")
+	user.UserId = userId
+
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -100,7 +102,7 @@ func (uh *UserHandler) Update(c *gin.Context) {
 			"error": "Not found any user with ID: " + user.UserId + " to update",
 		})
 		return
-	}	
+	}
 
 	c.JSON(http.StatusOK, res)
 }
@@ -121,7 +123,7 @@ func (uh *UserHandler) Delete(c *gin.Context) {
 			"error": "Not found any user with ID: " + userId + " to delete",
 		})
 		return
-	}	
+	}
 
 	c.JSON(http.StatusOK, res)
 }

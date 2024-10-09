@@ -21,10 +21,10 @@ func NewRecipeHandler(rs services.RecipeServiceInterface) *RecipeHandler {
 func (rh *RecipeHandler) GetAll(c *gin.Context) {
 	userId := c.Param("userId")
 	var filters dto.FiltersDto
-	err := c.ShouldBindJSON(&filters)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get filters"})
-	}
+
+	filters.Aproximation = c.Query("Aproximation")
+	filters.Moment = c.Query("Moment")
+	filters.Type = c.Query("Type")
 
 	recipes, err := rh.rs.GetAll(userId, filters)
 
@@ -36,13 +36,14 @@ func (rh *RecipeHandler) GetAll(c *gin.Context) {
 	}
 
 	if err.Error() == "nocontent" {
-		c.JSON(http.StatusNoContent, gin.H{
-			"error": "Not found any recipe",
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Not found any recipe",
 		})
 		return
 	}
 	c.JSON(http.StatusOK, recipes)
 }
+
 func (rh *RecipeHandler) Create(c *gin.Context) {
 	var recipe dto.RecipeDto
 	err := c.ShouldBindJSON(&recipe)
@@ -70,7 +71,7 @@ func (rh *RecipeHandler) Delete(c *gin.Context) {
 	}
 
 	if err.Error() == "notfound" {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Not found any recipe with id:" + id})
+		c.JSON(http.StatusOK, gin.H{"message": "Not found any recipe with id:" + id})
 		return
 	}
 
@@ -78,21 +79,21 @@ func (rh *RecipeHandler) Delete(c *gin.Context) {
 }
 
 func (rh *RecipeHandler) Update(c *gin.Context) {
+	id := c.Param("id")
 	var recipe dto.RecipeDto
-
-	err:= c.ShouldBindJSON(&recipe)
-	if err != nil{
+	err := c.ShouldBindJSON(&recipe)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
+	recipe.Id= id
 	res, err := rh.rs.Update(recipe)
 
-	if err.Error() == "internal"{
+	if err.Error() == "internal" {
 		c.JSON(http.StatusInternalServerError, gin.H{"erro": "Failed to delete recipe"})
 	}
-	if err.Error() == "notfound"{
-		c.JSON(http.StatusNotFound,  gin.H{"error": "Not found any recipe"})
+	if err.Error() == "notfound" {
+		c.JSON(http.StatusOK, gin.H{"message": "Not found any recipe with id: "})
 	}
 
 	c.JSON(http.StatusOK, res)

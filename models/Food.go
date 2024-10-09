@@ -18,4 +18,3 @@ type Food struct {
 	UserId          primitive.ObjectID `bson:"user_id"`
 }
 
-//CAMBIAR MOMENTO COMO ENUMERADOR Y COLOCAR UN SLICE DE MOMENTOS
