@@ -24,7 +24,7 @@ func (ph *PurchaseHandler) Create(c *gin.Context){
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data", "details": err.Error()})
 		return
 	}
-	purchase, err := ph.ps.Create(userId)
+	purchase, err := ph.ps.Create(userId, newPurchase)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create purchase", "details": err.Error()})
 		return

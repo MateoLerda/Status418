@@ -1,7 +1,9 @@
 package main
 
 import (
+	"Status418/clients"
 	"Status418/handlers"
+	"Status418/middlewares"
 	"Status418/repositories"
 	"Status418/services"
 	"log"
@@ -33,7 +35,11 @@ func main() {
 }
 
 func routes() {
+	authClient := clients.NewAuthClient()
+	authMiddleware := middlewares.NewAuthMiddleware(authClient)
+
 	foodRoutes := r.Group("/foods")
+	foodRoutes.Use(authMiddleware.ValidateToken)
 	foodRoutes.GET("/:userId", foodHandler.GetAll)
 	foodRoutes.GET("/:userId/:code", foodHandler.GetByCode)
 	foodRoutes.POST("/", foodHandler.Create)
@@ -41,10 +47,12 @@ func routes() {
 	foodRoutes.PUT("/:code", foodHandler.Update)
 
 	purchaseRoutes := r.Group("/purchases")
+	purchaseRoutes.Use(authMiddleware.ValidateToken)
 	purchaseRoutes.POST("/:userId")
 	purchaseRoutes.GET("/:userId")
 
 	userRoutes := r.Group("/users")
+	userRoutes.Use(authMiddleware.ValidateToken)
 	userRoutes.GET("/")
 	userRoutes.GET("/:userId")
 	userRoutes.POST("/")
@@ -52,6 +60,7 @@ func routes() {
 	userRoutes.DELETE("/:userId")
 
 	recipesRoutes := r.Group("/recipes")
+	recipesRoutes.Use(authMiddleware.ValidateToken)
 	recipesRoutes.GET("/:userId", recipeHandler.GetAll)
 	recipesRoutes.DELETE("/:id", recipeHandler.Delete)
 	recipesRoutes.PUT("/:id", recipeHandler.Update)

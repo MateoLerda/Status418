@@ -10,7 +10,7 @@ import (
 )
 
 type PurchaseServiceInterface interface {
-	Create(userId string) (*mongo.InsertOneResult, error)
+	Create(userId string, purchaseDto dto.PurchaseDto) (*mongo.InsertOneResult, error)
 }
 
 type PurchaseService struct {
