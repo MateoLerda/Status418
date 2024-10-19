@@ -16,7 +16,6 @@ var (
 	r               *gin.Engine
 	foodHandler     *handlers.FoodHandler
 	purchaseHandler *handlers.PurchaseHandler
-	userHandler     *handlers.UserHandler
 	recipeHandler   *handlers.RecipeHandler
 )
 
@@ -51,13 +50,6 @@ func routes() {
 	purchaseRoutes.POST("/:userId")
 	purchaseRoutes.GET("/:userId")
 
-	userRoutes := r.Group("/users")
-	userRoutes.Use(authMiddleware.ValidateToken)
-	userRoutes.GET("/")
-	userRoutes.GET("/:userId")
-	userRoutes.POST("/")
-	userRoutes.PUT("/:userId") //aca manda un user id que no usa
-	userRoutes.DELETE("/:userId")
 
 	recipesRoutes := r.Group("/recipes")
 	recipesRoutes.Use(authMiddleware.ValidateToken)
@@ -87,12 +79,6 @@ func dependencies() {
 	purchaseService = services.NewPurchaseService(purchaseRepository)
 	purchaseHandler = handlers.NewPurchaseHandler(purchaseService)
 
-	var userRepository repositories.UserRepositoryInterface
-	var userService services.UserServiceInterface
-
-	userRepository = repositories.NewUserRepository(db)
-	userService = services.NewUserService(userRepository)
-	userHandler = handlers.NewUserHandler(userService)
 
 	var recipeRepository repositories.RecipeRepositoryInterface
 	var recipeService services.RecipeServiceInterface

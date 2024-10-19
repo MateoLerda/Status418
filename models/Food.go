@@ -15,6 +15,5 @@ type Food struct {
 	MinimumQuantity int                `bson:"minimum_quantity"`
 	CreationDate    string             `bson:"creation_date"`
 	UpdateDate      string             `bson:"update_"`
-	UserId          primitive.ObjectID `bson:"user_id"`
+	UserCode        string             `bson:"user_code"`
 }
-

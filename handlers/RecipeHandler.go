@@ -3,30 +3,31 @@ package handlers
 import (
 	"Status418/dto"
 	"Status418/services"
+	"Status418/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 type RecipeHandler struct {
-	rs services.RecipeServiceInterface
+	recipeService services.RecipeServiceInterface
 }
 
-func NewRecipeHandler(rs services.RecipeServiceInterface) *RecipeHandler {
+func NewRecipeHandler(recipeService services.RecipeServiceInterface) *RecipeHandler {
 	return &RecipeHandler{
-		rs: rs,
+		recipeService: recipeService,
 	}
 }
 
-func (rh *RecipeHandler) GetAll(c *gin.Context) {
-	userId := c.Param("userId")
+func (recipeHandler *RecipeHandler) GetAll(c *gin.Context) {
+	userCode := utils.GetUserInfoFromContext(c).Code
 	var filters dto.FiltersDto
 
 	filters.Aproximation = c.Query("Aproximation")
 	filters.Moment = c.Query("Moment")
 	filters.Type = c.Query("Type")
 
-	recipes, err := rh.rs.GetAll(userId, filters)
+	recipes, err := recipeHandler.recipeService.GetAll(userCode, filters)
 
 	if err.Error() == "internal" {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -44,15 +45,15 @@ func (rh *RecipeHandler) GetAll(c *gin.Context) {
 	c.JSON(http.StatusOK, recipes)
 }
 
-func (rh *RecipeHandler) Create(c *gin.Context) {
+func (recipeHandler *RecipeHandler) Create(c *gin.Context) {
 	var recipe dto.RecipeDto
 	err := c.ShouldBindJSON(&recipe)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	res, err := rh.rs.Create(recipe)
+	recipe.UserCode = (dto.NewUser(utils.GetUserInfoFromContext(c))).Code
+	res, err := recipeHandler.recipeService.Create(recipe)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create recipe" + err.Error()})
@@ -61,9 +62,9 @@ func (rh *RecipeHandler) Create(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-func (rh *RecipeHandler) Delete(c *gin.Context) {
+func (recipeHandler *RecipeHandler) Delete(c *gin.Context) {
 	id := c.Param("id")
-	res, err := rh.rs.Delete(id)
+	res, err := recipeHandler.recipeService.Delete(id)
 
 	if err.Error() == "internal" {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete recipe" + id})
@@ -78,7 +79,7 @@ func (rh *RecipeHandler) Delete(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-func (rh *RecipeHandler) Update(c *gin.Context) {
+func (recipeHandler *RecipeHandler) Update(c *gin.Context) {
 	id := c.Param("id")
 	var recipe dto.RecipeDto
 	err := c.ShouldBindJSON(&recipe)
@@ -86,8 +87,8 @@ func (rh *RecipeHandler) Update(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	recipe.Id= id
-	res, err := rh.rs.Update(recipe)
+	recipe.Id = id
+	res, err := recipeHandler.recipeService.Update(recipe)
 
 	if err.Error() == "internal" {
 		c.JSON(http.StatusInternalServerError, gin.H{"erro": "Failed to delete recipe"})

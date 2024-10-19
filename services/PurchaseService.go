@@ -10,16 +10,16 @@ import (
 )
 
 type PurchaseServiceInterface interface {
-	Create(userId string, purchaseDto dto.PurchaseDto) (*mongo.InsertOneResult, error)
+	Create(userCode string, purchaseDto dto.PurchaseDto) (*mongo.InsertOneResult, error)
 }
 
 type PurchaseService struct {
-	pr repositories.PurchaseRepositoryInterface
+	purchaseRepository repositories.PurchaseRepositoryInterface
 }
 
-func NewPurchaseService(pr repositories.PurchaseRepositoryInterface) *PurchaseService {
+func NewPurchaseService(purchaseRepository repositories.PurchaseRepositoryInterface) *PurchaseService {
 	return &PurchaseService{
-		pr: pr,
+		purchaseRepository: purchaseRepository,
 	}
 }
 
@@ -35,7 +35,7 @@ func calculatePurchaseAllFoods(foods []models.Food) models.Purchase {
 	return purchase
 }
 
-func (ps *PurchaseService) Create(userId string, purchaseDto dto.PurchaseDto) (*mongo.InsertOneResult, error) {
+func (purchaseService *PurchaseService) Create(userCode string, purchaseDto dto.PurchaseDto) (*mongo.InsertOneResult, error) {
 	DB := repositories.NewMongoDB()
 	foodRepository := repositories.NewFoodRepository(DB)
 	var foods []models.Food
@@ -43,7 +43,7 @@ func (ps *PurchaseService) Create(userId string, purchaseDto dto.PurchaseDto) (*
 	var purchase models.Purchase
 
 	if len(purchaseDto.Foods) == 0 {
-		foods, err = foodRepository.GetAll(userId, true)
+		foods, err = foodRepository.GetAll(userCode, true)
 		if err != nil {
 			return nil, err
 		}
@@ -51,7 +51,7 @@ func (ps *PurchaseService) Create(userId string, purchaseDto dto.PurchaseDto) (*
 	} else {
 		var food models.Food
 		for _, purchaseQuantity := range purchaseDto.Foods {
-			food, err = foodRepository.GetByCode(purchaseQuantity.FoodCode, userId)
+			food, err = foodRepository.GetByCode(purchaseQuantity.FoodCode, userCode)
 			if err != nil {
 				return nil, err
 			}
@@ -61,8 +61,8 @@ func (ps *PurchaseService) Create(userId string, purchaseDto dto.PurchaseDto) (*
 	}
 	
 	purchase.PurchaseDate = time.Now()
-	purchase.UserId= utils.GetObjectIDFromStringID(userId)
-	res, err := ps.pr.Create(purchase)
+	purchase.UserCode= utils.GetObjectIDFromStringID(userCode)
+	res, err := purchaseService.purchaseRepository.Create(purchase)
 	if err != nil {
 		return nil, err
 	}

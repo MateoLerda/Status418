@@ -8,26 +8,26 @@ import (
 )
 
 type FoodServiceInterface interface {
-	GetAll(userId string) (*[]dto.FoodDto, error)
-	GetByCode(code string, userId string) (*dto.FoodDto, error)
+	GetAll(userCode string) (*[]dto.FoodDto, error)
+	GetByCode(code string, userCode string) (*dto.FoodDto, error)
 	Create(newFood dto.FoodDto) (*mongo.InsertOneResult , error)
 	Update(updateFood dto.FoodDto) (*mongo.UpdateResult , error)
 	Delete(code string) (*mongo.DeleteResult , error)
 }
 
 type FoodService struct {
-	fr repositories.FoodRepositoryInterface
+	foodRepository repositories.FoodRepositoryInterface
 }
 
-func NewFoodService(fr repositories.FoodRepositoryInterface) *FoodService {
+func NewFoodService(foodRepository repositories.FoodRepositoryInterface) *FoodService {
 	return &FoodService{
-		fr: fr,
+		foodRepository: foodRepository,
 	}
 }
 
-func (fs *FoodService) GetAll(userId string) (*[]dto.FoodDto, error) {
+func (foodService *FoodService) GetAll(userCode string) (*[]dto.FoodDto, error) {
 	var foodsDTO []dto.FoodDto
-	foods, err := fs.fr.GetAll(userId, false) 
+	foods, err := foodService.foodRepository.GetAll(userCode, false) 
 	if err != nil {
 		return nil, err
 	}
@@ -38,8 +38,8 @@ func (fs *FoodService) GetAll(userId string) (*[]dto.FoodDto, error) {
 	return &foodsDTO, nil
 }
 
-func (fs *FoodService) GetByCode(code string, userId string) (*dto.FoodDto, error){
-	food, err := fs.fr.GetByCode(code, userId)
+func (foodService *FoodService) GetByCode(code string, userCode string) (*dto.FoodDto, error){
+	food, err := foodService.foodRepository.GetByCode(code, userCode)
 	if err!=nil {
 		return nil, err
 	}
@@ -47,28 +47,28 @@ func (fs *FoodService) GetByCode(code string, userId string) (*dto.FoodDto, erro
 	return foodDto, nil
 }
 
-func (fs *FoodService) Create(foodDto dto.FoodDto) (*mongo.InsertOneResult , error) {
+func (foodService *FoodService) Create(foodDto dto.FoodDto) (*mongo.InsertOneResult , error) {
 	food := foodDto.GetModel()
 	food.CreationDate = time.Now().String()
-	res, err := fs.fr.Create(food)
+	res, err := foodService.foodRepository.Create(food)
 	if err != nil{
 		return nil, err
 	}
 	return res, nil
 }
 
-func (fs *FoodService) Update(foodDto dto.FoodDto) (*mongo.UpdateResult , error) {
+func (foodService *FoodService) Update(foodDto dto.FoodDto) (*mongo.UpdateResult , error) {
 	food:= foodDto.GetModel()
 	food.UpdateDate = time.Now().String()
-	res, err := fs.fr.Update(food)
+	res, err := foodService.foodRepository.Update(food)
 	if err != nil{
 		return nil, err
 	}
 	return res, nil
 }
 
-func (fs *FoodService) Delete(code string) (*mongo.DeleteResult , error) {
-	res, err := fs.fr.Delete(code)
+func (foodService *FoodService) Delete(code string) (*mongo.DeleteResult , error) {
+	res, err := foodService.foodRepository.Delete(code)
 	if err != nil{
 		return nil, err
 	}

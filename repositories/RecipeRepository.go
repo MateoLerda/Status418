@@ -6,16 +6,15 @@ import (
 	"context"
 	"errors"
 	"os"
-
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type RecipeRepositoryInterface interface {
 	Create(recipe models.Recipe) (*mongo.InsertOneResult, error)
-	Delete(id string) (*mongo.DeleteResult, error)
+	Delete(recipeId string) (*mongo.DeleteResult, error)
 	Update(recipe models.Recipe) (*mongo.UpdateResult, error)
-	GetAll(userId string, filters models.Filter) ([]models.Recipe, error)
+	GetAll(userCode string, filters models.Filter) ([]models.Recipe, error)
 }
 
 type RecipeRepository struct {
@@ -28,58 +27,57 @@ func NewRecipeRepository(db DB) *RecipeRepository {
 	}
 }
 
-func (rr RecipeRepository) Create(recipe models.Recipe) (*mongo.InsertOneResult, error) {
+func (recipeRepository RecipeRepository) Create(recipe models.Recipe) (*mongo.InsertOneResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
-	res, err := rr.db.GetClient().Database(DBNAME).Collection("Recipes").InsertOne(context.TODO(), recipe)
+	res, err := recipeRepository.db.GetClient().Database(DBNAME).Collection("Recipes").InsertOne(context.TODO(), recipe)
 	if err != nil {
 		return res, err
 	}
 	return res, nil
 }
 
-func (rr RecipeRepository) Delete(id string) (*mongo.DeleteResult, error) {
+func (recipeRepository RecipeRepository) Delete(recipeId string) (*mongo.DeleteResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
-	idMongo := utils.GetObjectIDFromStringID(id)
-	filter := bson.M{"id_recipe": idMongo}
-	res, err := rr.db.GetClient().Database(DBNAME).Collection("Recipes").DeleteOne(context.TODO(), filter)
+	mongoRecipeId := utils.GetObjectIDFromStringID(recipeId)
+	filter := bson.M{"id_recipe": mongoRecipeId}
+	res, err := recipeRepository.db.GetClient().Database(DBNAME).Collection("Recipes").DeleteOne(context.TODO(), filter)
 	if err != nil {
 		err = errors.New("internal")
 		return nil, err
 	}
-	if res.DeletedCount== 0{
-		err= errors.New("notfound")
+	if res.DeletedCount == 0 {
+		err = errors.New("notfound")
 		return nil, err
 	}
 	return res, nil
 }
 
-func (rr RecipeRepository) Update(recipe models.Recipe) (*mongo.UpdateResult, error) {
+func (recipeRepository RecipeRepository) Update(recipe models.Recipe) (*mongo.UpdateResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
 	filter := bson.M{
 		"id_recipe": recipe.Id,
 	}
-	update := bson.M {
+	update := bson.M{
 		"$set": recipe,
 	}
-	res, err := rr.db.GetClient().Database(DBNAME).Collection("Recipes").UpdateOne(context.TODO(), filter, update)
+	res, err := recipeRepository.db.GetClient().Database(DBNAME).Collection("Recipes").UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		err = errors.New("internal")
 		return res, err
 	}
 
 	if res.MatchedCount == 0 && res.ModifiedCount == 0 {
-		err= errors.New("notfound")
-		return nil, err 
+		err = errors.New("notfound")
+		return nil, err
 	}
 	return res, nil
-} 
+}
 
-
-func (rr RecipeRepository) GetAll(userId string, filters models.Filter) ([]models.Recipe, error) {
+func (recipeRepository RecipeRepository) GetAll(userCode string, filters models.Filter) ([]models.Recipe, error) {
 	DBNAME := os.Getenv("DB_NAME")
 	filter := bson.M{
 		"name": bson.M{
-			"$regex": filters.Aproximation,
+			"$regex":   filters.Aproximation,
 			"$options": "i",
 		},
 		"ingredients": bson.M{
@@ -87,11 +85,11 @@ func (rr RecipeRepository) GetAll(userId string, filters models.Filter) ([]model
 				"type": filters.Type,
 			},
 		},
-		"recipe_moment": filters.Moment, 
-		"user_id": userId,
+		"recipe_moment": filters.Moment,
+		"user_code":       userCode,
 	}
-	
-	data, err := rr.db.GetClient().Database(DBNAME).Collection("Recipes").Find(context.TODO(), filter)
+
+	data, err := recipeRepository.db.GetClient().Database(DBNAME).Collection("Recipes").Find(context.TODO(), filter)
 	if err != nil {
 		err = errors.New("internal")
 		return nil, err

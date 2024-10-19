@@ -3,25 +3,25 @@ package handlers
 import (
 	"Status418/dto"
 	"Status418/services"
+	"Status418/utils"
 	"net/http"
-
 	"github.com/gin-gonic/gin"
 )
 
 type FoodHandler struct {
-	fs services.FoodServiceInterface
+	foodService services.FoodServiceInterface
 }
 
-func NewFoodHandler(fs services.FoodServiceInterface) *FoodHandler {
+func NewFoodHandler(foodService services.FoodServiceInterface) *FoodHandler {
 	return &FoodHandler{
-		fs: fs,
+		foodService: foodService,
 	}
 }
 
-func (fh *FoodHandler) GetAll(c *gin.Context) {
-	userId := c.Param("userId")
-	if userId == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "userId is required"})
+func (foodHandler *FoodHandler) GetAll(c *gin.Context) {
+	userCode := (dto.NewUser(utils.GetUserInfoFromContext(c))).Code
+	if userCode == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
 		return
 	}
 	var minimumList bool
@@ -31,7 +31,7 @@ func (fh *FoodHandler) GetAll(c *gin.Context) {
 		return
 	}
 
-	foods, err := fh.fs.GetAll(userId)
+	foods, err := foodHandler.foodService.GetAll(userCode)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to get foods"})
 		return
@@ -40,34 +40,25 @@ func (fh *FoodHandler) GetAll(c *gin.Context) {
 	c.JSON(http.StatusOK, foods)
 }
 
-func (fh *FoodHandler) GetByCode(c *gin.Context) {
-	userId := c.Param("userId")
-	// if userId == "" {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "userId is required"})
-	// 	return
-	// }
-	code := c.Param("code")
-	// if code == "" {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "code is required"})
-	// 	return
-	// }
-
-	food, err := fh.fs.GetByCode(code, userId)
+func (foodHandler *FoodHandler) GetByCode(c *gin.Context) {
+	userCode := (dto.NewUser(utils.GetUserInfoFromContext(c))).Code
+	foodCode:= c.Param("foodCode")
+	food, err := foodHandler.foodService.GetByCode(foodCode, userCode)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get food with code: " + code})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get food with code: " + foodCode})
 		return
 	}
 	c.JSON(http.StatusOK, food)
 }
 
-func (fh *FoodHandler) Create(c *gin.Context) {
+func (foodHandler *FoodHandler) Create(c *gin.Context) {
 	var newFood dto.FoodDto
 	if err := c.ShouldBindJSON(&newFood); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data", "details": err.Error()})
 		return
 	}
 
-	_, err := fh.fs.Create(newFood)
+	_, err := foodHandler.foodService.Create(newFood)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create food item", "details": err.Error()})
 		return
@@ -75,16 +66,16 @@ func (fh *FoodHandler) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"message": "Food created successfully"})
 }
 
-func (fh *FoodHandler) Update(c *gin.Context) {
+func (foodHandler *FoodHandler) Update(c *gin.Context) {
 	var updateFood dto.FoodDto
-	updateCode := c.Param("id")
-	updateFood.Code = updateCode
+	updateCode := c.Param("foodCode")
 	if err := c.ShouldBindJSON(&updateFood); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	updateFood.Code = updateCode
 
-	_, err := fh.fs.Update(updateFood)
+	_, err := foodHandler.foodService.Update(updateFood)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update food item", "details": err.Error()})
 		return
@@ -93,14 +84,14 @@ func (fh *FoodHandler) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Food updated successfully"})
 }
 
-func (fh *FoodHandler) Delete(c *gin.Context) {
-	code := c.Param("code")
+func (foodHandler *FoodHandler) Delete(c *gin.Context) {
+	code := c.Param("foodCode")
 	if code == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "code is required"})
 		return
 	}
 
-	_, err := fh.fs.Delete(code)
+	_, err := foodHandler.foodService.Delete(code)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete food item", "details": err.Error()})
 		return

@@ -9,25 +9,25 @@ import (
 )
 
 type RecipeServiceInterface interface {
-    GetAll(userId string, filters dto.FiltersDto) (*[]dto.RecipeDto, error)
+    GetAll(userCode string, filters dto.FiltersDto) (*[]dto.RecipeDto, error)
 	Create(newRecipe dto.RecipeDto) (*mongo.InsertOneResult ,error)
-	Delete(id string) (*mongo.DeleteResult, error)
+	Delete(recipeId string) (*mongo.DeleteResult, error)
 	Update(updateRecipe dto.RecipeDto) (*mongo.UpdateResult, error)
 }
 
 type RecipeService struct{
-	rr repositories.RecipeRepositoryInterface
+	recipeRepository repositories.RecipeRepositoryInterface
 }
 
-func NewRecipeService(rr repositories.RecipeRepositoryInterface) *RecipeService{
+func NewRecipeService(recipeRepository repositories.RecipeRepositoryInterface) *RecipeService{
 	return &RecipeService{
-		rr: rr,
+		recipeRepository: recipeRepository,
 	}
 }
 
-func (rs *RecipeService) GetAll(userId string, filters dto.FiltersDto) (*[]dto.RecipeDto, error){
+func (recipeService *RecipeService) GetAll(userCode string, filters dto.FiltersDto) (*[]dto.RecipeDto, error){
 	var recipesDto []dto.RecipeDto
-	recipes, err := rs.rr.GetAll(userId, filters.GetModel())
+	recipes, err := recipeService.recipeRepository.GetAll(userCode, filters.GetModel())
 	if err != nil{
 		return nil, err
 	}
@@ -38,28 +38,28 @@ func (rs *RecipeService) GetAll(userId string, filters dto.FiltersDto) (*[]dto.R
 	return &recipesDto, nil
 }
 
-func (rs *RecipeService) Create(newRecipe dto.RecipeDto) (*mongo.InsertOneResult ,error){
+func (recipeService *RecipeService) Create(newRecipe dto.RecipeDto) (*mongo.InsertOneResult ,error){
 	recipe := newRecipe.GetModel()
 	recipe.CreationDate = time.Now().String()
-	res, err := rs.rr.Create(recipe)
+	res, err := recipeService.recipeRepository.Create(recipe)
 	if err != nil{
 		return nil, err
 	}
 	return res, nil
 }
 
-func (rs *RecipeService) Delete(id string) (*mongo.DeleteResult ,error){
-	res, err := rs.rr.Delete(id)
+func (recipeService *RecipeService) Delete(recipeId string) (*mongo.DeleteResult ,error){
+	res, err := recipeService.recipeRepository.Delete(recipeId)
 	if err!= nil{
 		return nil, err
 	}
 	 return res, nil
 }
 
-func (rs *RecipeService) Update(updateRecipe dto.RecipeDto) (*mongo.UpdateResult, error){
+func (recipeService *RecipeService) Update(updateRecipe dto.RecipeDto) (*mongo.UpdateResult, error){
 	recipe := updateRecipe.GetModel()
 	recipe.UpdateDate = time.Now().String()
-	res, err := rs.rr.Update(recipe)
+	res, err := recipeService.recipeRepository.Update(recipe)
 	if err != nil{
 		return nil, err
 	}

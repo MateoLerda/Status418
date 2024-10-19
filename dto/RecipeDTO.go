@@ -12,7 +12,7 @@ type RecipeDto struct {
 	Ingredients []FoodDto
 	Moment      enums.Moment
 	Description string
-	UserId      string
+	UserCode      string
 }
 
 func NewRecipeDto(model models.Recipe) *RecipeDto {
@@ -28,7 +28,7 @@ func NewRecipeDto(model models.Recipe) *RecipeDto {
 		Ingredients: dtoIngredients,
 		Moment: model.Moment,
 		Description: model.Description,
-		UserId:      utils.GetStringIDFromObjectID(model.UserId),
+		UserCode:      model.UserCode,
 	}
 }
 
@@ -45,6 +45,6 @@ func (dto RecipeDto) GetModel() models.Recipe {
 		Ingredients: ingredients,
 		Moment: dto.Moment,
 		Description: dto.Description,
-		UserId: utils.GetObjectIDFromStringID(dto.UserId),
+		UserCode: dto.UserCode,
 	}
 }

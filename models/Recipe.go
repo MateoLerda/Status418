@@ -13,6 +13,6 @@ type Recipe struct {
 	Description  string             `bson:"description"`
 	CreationDate string             `bson:"creation_date"`
 	UpdateDate   string             `bson:"update_date"`
-	UserId       primitive.ObjectID `bson:"user_id"`
+	UserCode     string			    `bson:"user_code"`
 }
 

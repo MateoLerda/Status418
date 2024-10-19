@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"Status418/clients"
 	"github.com/gin-gonic/gin"
+	"Status418/utils"
 )
 
 type AuthMiddleware struct {
@@ -30,6 +31,6 @@ func (auth *AuthMiddleware) ValidateToken(c *gin.Context) {
 		return
 	}
 
-	c.Set("UserInfo", user)
+	utils.SetUserInContext(c, user)
 	c.Next()
 }

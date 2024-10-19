@@ -11,11 +11,11 @@ import (
 )
 
 type FoodRepositoryInterface interface {
-	GetAll(userId string, minimumList bool) ([]models.Food, error)
-	GetByCode(code string, userId string) (models.Food, error)
+	GetAll(userCode string, minimumList bool) ([]models.Food, error)
+	GetByCode(foodCode string, userCode string) (models.Food, error)
 	Create(models.Food) (*mongo.InsertOneResult, error)
 	Update(models.Food) (*mongo.UpdateResult, error)
-	Delete(code string) (*mongo.DeleteResult, error)
+	Delete(foodCode string) (*mongo.DeleteResult, error)
 }
 
 type FoodRepository struct {
@@ -28,20 +28,20 @@ func NewFoodRepository(db DB) *FoodRepository {
 	}
 }
 
-func (fr FoodRepository) GetAll(userId string, minimumList bool) ([]models.Food, error) {
+func (foodRepository FoodRepository) GetAll(userCode string, minimumList bool) ([]models.Food, error) {
 	DBNAME := os.Getenv("DB_NAME")
-	filter := bson.M{"user_id": userId}
+	filter := bson.M{"user_code": userCode}
 	
 	if minimumList {
 		filter = bson.M{
 			"$expr": bson.M{
 				"$lt": bson.A{"$current_quantity", "$minimum_quantity"},
 			},
-			"user_id": userId,
+			"user_code": userCode,
 		}
 	}
 	
-	cursor, err := fr.db.GetClient().Database(DBNAME).Collection("Foods").Find(context.TODO(), filter)
+	cursor, err := foodRepository.db.GetClient().Database(DBNAME).Collection("Foods").Find(context.TODO(), filter)
 
 	if err != nil {
 		err = errors.New("An error has ocurred")
@@ -58,28 +58,28 @@ func (fr FoodRepository) GetAll(userId string, minimumList bool) ([]models.Food,
 	return foods, nil
 }
 
-func (fr FoodRepository) GetByCode(code string, userId string) (models.Food, error) {
+func (foodRepository FoodRepository) GetByCode(foodCode string, userCode string) (models.Food, error) {
 	DBNAME := os.Getenv("DB_NAME")
 
 	filter := bson.M{
-		"food_code": code,
-		"user_id":   userId,
+		"food_code": foodCode,
+		"user_id":   userCode,
 	}
-	data := fr.db.GetClient().Database(DBNAME).Collection("Foods").FindOne(context.TODO(), filter)
+	data := foodRepository.db.GetClient().Database(DBNAME).Collection("Foods").FindOne(context.TODO(), filter)
 	var food models.Food
 	err := data.Decode(&food)
 	if err != nil {
 		err = errors.New("An error has ocurred")
 	}
 	if err == mongo.ErrNoDocuments {
-		err = errors.New("Could not found the food with the given code " + code)
+		err = errors.New("Could not found the food with the given code " + foodCode)
 	}
 	return food, err
 }
 
-func (fr FoodRepository) Create(food models.Food) (*mongo.InsertOneResult, error) {
+func (foodRepository FoodRepository) Create(food models.Food) (*mongo.InsertOneResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
-	res, err := fr.db.GetClient().Database(DBNAME).Collection("Foods").InsertOne(context.TODO(), food)
+	res, err := foodRepository.db.GetClient().Database(DBNAME).Collection("Foods").InsertOne(context.TODO(), food)
 
 	if err != nil {
 		err = errors.New("failed to create food")
@@ -89,13 +89,13 @@ func (fr FoodRepository) Create(food models.Food) (*mongo.InsertOneResult, error
 	return res, nil
 }
 
-func (fr FoodRepository) Update(food models.Food) (*mongo.UpdateResult, error) {
+func (foodRepository FoodRepository) Update(food models.Food) (*mongo.UpdateResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
 	filter := bson.M{"food_code": food.Code}
 	update := bson.M{
 		"$set": food, //actualiza sólo los campos que estén en la variable food
 	}
-	res, err := fr.db.GetClient().Database(DBNAME).Collection("Foods").UpdateOne(context.TODO(), filter, update)
+	res, err := foodRepository.db.GetClient().Database(DBNAME).Collection("Foods").UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		err = errors.New("An error has occurred")
 		return nil, err
@@ -103,10 +103,10 @@ func (fr FoodRepository) Update(food models.Food) (*mongo.UpdateResult, error) {
 	return res, nil
 }
 
-func (fr FoodRepository) Delete(code string) (*mongo.DeleteResult, error) {
+func (foodRepository FoodRepository) Delete(foodCode string) (*mongo.DeleteResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
-	filter := bson.M{"food_code": code}
-	res, err := fr.db.GetClient().Database(DBNAME).Collection("Foods").DeleteOne(context.TODO(), filter)
+	filter := bson.M{"food_code": foodCode,}
+	res, err := foodRepository.db.GetClient().Database(DBNAME).Collection("Foods").DeleteOne(context.TODO(), filter)
 	if err != nil {
 		err = errors.New("An error has occurred")
 		return nil, err
