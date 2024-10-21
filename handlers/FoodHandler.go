@@ -5,6 +5,8 @@ import (
 	"Status418/services"
 	"Status418/utils"
 	"net/http"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,18 +21,13 @@ func NewFoodHandler(foodService services.FoodServiceInterface) *FoodHandler {
 }
 
 func (foodHandler *FoodHandler) GetAll(c *gin.Context) {
-	userCode := (dto.NewUser(utils.GetUserInfoFromContext(c))).Code
+	userCode := utils.GetUserInfoFromContext(c).Code
 	if userCode == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
 		return
 	}
-	var minimumList bool
-
-	if err := c.ShouldBindJSON(&minimumList); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
+	minimumList, _ := strconv.ParseBool(c.Query("minimumList"))
+	
 	foods, err := foodHandler.foodService.GetAll(userCode, minimumList)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
@@ -41,7 +38,11 @@ func (foodHandler *FoodHandler) GetAll(c *gin.Context) {
 }
 
 func (foodHandler *FoodHandler) GetByCode(c *gin.Context) {
-	userCode := (dto.NewUser(utils.GetUserInfoFromContext(c))).Code
+	userCode := utils.GetUserInfoFromContext(c).Code
+	if userCode == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
+		return
+	}
 	foodCode:= c.Param("foodCode")
 	food, err := foodHandler.foodService.GetByCode(foodCode, userCode)
 	if err != nil {
@@ -85,13 +86,9 @@ func (foodHandler *FoodHandler) Update(c *gin.Context) {
 }
 
 func (foodHandler *FoodHandler) Delete(c *gin.Context) {
-	code := c.Param("foodCode")
-	if code == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "code is required"})
-		return
-	}
+	deleteCode := c.Param("foodCode")
 
-	_, err := foodHandler.foodService.Delete(code)
+	_, err := foodHandler.foodService.Delete(deleteCode)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete food item", "details": err.Error()})
 		return

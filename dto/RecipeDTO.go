@@ -9,42 +9,46 @@ import (
 type RecipeDto struct {
 	Id          string
 	Name        string
-	Ingredients []FoodDto
+	Ingredients []FoodQuantityDTO
 	Moment      enums.Moment
 	Description string
-	UserCode      string
+	UserCode    string
 }
 
 func NewRecipeDto(model models.Recipe) *RecipeDto {
-	var dtoIngredients []FoodDto
+	var dtoIngredients []FoodQuantityDTO
 
 	for _, food := range model.Ingredients {
-		dtoIngredients = append(dtoIngredients, *NewFoodDto(food))
+		dtoIngredients = append(dtoIngredients, FoodQuantityDTO{FoodCode: food.FoodCode, Quantity: food.Quantity})
 	}
 
 	return &RecipeDto{
-		Id: utils.GetStringIDFromObjectID(model.Id),
+		Id:          utils.GetStringIDFromObjectID(model.Id),
 		Name:        model.Name,
 		Ingredients: dtoIngredients,
-		Moment: model.Moment,
+		Moment:      model.Moment,
 		Description: model.Description,
-		UserCode:      model.UserCode,
+		UserCode:    model.UserCode,
 	}
 }
 
+
 func (dto RecipeDto) GetModel() models.Recipe {
-	var ingredients []models.Food
+	var ingredients []models.FoodQuantity
 
 	for _, food := range dto.Ingredients {
-		ingredients = append(ingredients, food.GetModel())
+		ingredients = append(ingredients, models.FoodQuantity {
+			FoodCode: food.FoodCode,		
+			Quantity: food.Quantity,
+		})
 	}
 
 	return models.Recipe{
-		Id: utils.GetObjectIDFromStringID(dto.Id),
-		Name: dto.Name,
+		Id:          utils.GetObjectIDFromStringID(dto.Id),
+		Name:        dto.Name,
 		Ingredients: ingredients,
-		Moment: dto.Moment,
+		Moment:      dto.Moment,
 		Description: dto.Description,
-		UserCode: dto.UserCode,
+		UserCode:    dto.UserCode,
 	}
 }

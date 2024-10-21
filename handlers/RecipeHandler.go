@@ -21,8 +21,11 @@ func NewRecipeHandler(recipeService services.RecipeServiceInterface) *RecipeHand
 
 func (recipeHandler *RecipeHandler) GetAll(c *gin.Context) {
 	userCode := utils.GetUserInfoFromContext(c).Code
+	if userCode == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
+		return
+	}
 	var filters dto.FiltersDto
-
 	filters.Aproximation = c.Query("Aproximation")
 	filters.Moment = c.Query("Moment")
 	filters.Type = c.Query("Type")
@@ -52,7 +55,11 @@ func (recipeHandler *RecipeHandler) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	recipe.UserCode = (dto.NewUser(utils.GetUserInfoFromContext(c))).Code
+	recipe.UserCode = (utils.GetUserInfoFromContext(c)).Code
+	if recipe.UserCode == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
+		return
+	}
 	res, err := recipeHandler.recipeService.Create(recipe)
 
 	if err != nil {
@@ -63,7 +70,7 @@ func (recipeHandler *RecipeHandler) Create(c *gin.Context) {
 }
 
 func (recipeHandler *RecipeHandler) Delete(c *gin.Context) {
-	id := c.Param("id")
+	id := c.Param("recipeid")
 	res, err := recipeHandler.recipeService.Delete(id)
 
 	if err.Error() == "internal" {
@@ -80,7 +87,7 @@ func (recipeHandler *RecipeHandler) Delete(c *gin.Context) {
 }
 
 func (recipeHandler *RecipeHandler) Update(c *gin.Context) {
-	id := c.Param("id")
+	id := c.Param("recipeid")
 	var recipe dto.RecipeDto
 	err := c.ShouldBindJSON(&recipe)
 	if err != nil {
@@ -94,7 +101,7 @@ func (recipeHandler *RecipeHandler) Update(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"erro": "Failed to delete recipe"})
 	}
 	if err.Error() == "notfound" {
-		c.JSON(http.StatusOK, gin.H{"message": "Not found any recipe with id: "})
+		c.JSON(http.StatusOK, gin.H{"message": "Not found any recipe with id: "+ id})
 	}
 
 	c.JSON(http.StatusOK, res)

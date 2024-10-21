@@ -20,7 +20,7 @@ func NewPurchaseHandler(purchaseService services.PurchaseServiceInterface) *Purc
 }
 
 func (purchaseHandler *PurchaseHandler) Create(c *gin.Context){
-	userCode := (dto.NewUser(utils.GetUserInfoFromContext(c))).Code
+	userCode := (utils.GetUserInfoFromContext(c)).Code
 		
 	var newPurchase dto.PurchaseDto
 	if err := c.ShouldBindJSON(&newPurchase); err != nil {

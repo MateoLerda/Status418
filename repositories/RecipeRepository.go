@@ -15,6 +15,7 @@ type RecipeRepositoryInterface interface {
 	Delete(recipeId string) (*mongo.DeleteResult, error)
 	Update(recipe models.Recipe) (*mongo.UpdateResult, error)
 	GetAll(userCode string, filters models.Filter) ([]models.Recipe, error)
+	GetByCode(userCode string, recipeId string) (models.Recipe, error)
 }
 
 type RecipeRepository struct {
@@ -102,4 +103,21 @@ func (recipeRepository RecipeRepository) GetAll(userCode string, filters models.
 	}
 
 	return recipes, nil
+}
+
+func (recipeRepository RecipeRepository) GetByCode(userCode string, recipeId string) (models.Recipe, error) {
+	DBNAME := os.Getenv("DB_NAME")
+
+	filter := bson.M{
+		"id_recipe": recipeId,
+		"user_code": userCode,
+	}
+	data := recipeRepository.db.GetClient().Database(DBNAME).Collection("Recipes").FindOne(context.TODO(), filter)
+	var recipe models.Recipe
+	err := data.Decode(&recipe)
+	if err == mongo.ErrNoDocuments{
+		err= errors.New("Couldn´t find teh recipe with the id: "+recipeId)
+	}
+
+	return recipe, err
 }
