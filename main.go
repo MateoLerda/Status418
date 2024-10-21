@@ -50,13 +50,14 @@ func routes() {
 	purchaseRoutes.POST("/", purchaseHandler.Create)
 	purchaseRoutes.GET("/", foodHandler.GetAll)
 
-
 	recipesRoutes := r.Group("/recipes")
 	recipesRoutes.Use(authMiddleware.ValidateToken)
 	recipesRoutes.GET("/", recipeHandler.GetAll)
-	recipesRoutes.DELETE("/:id", recipeHandler.Delete)
-	recipesRoutes.PUT("/:id", recipeHandler.Update)
+	recipesRoutes.DELETE("/:recipeid", recipeHandler.Delete)
+	recipesRoutes.PUT("/:recipeid", recipeHandler.Update)
 	recipesRoutes.POST("/", recipeHandler.Create)
+
+	// ver como son las rutas del cook y del cancelationCook para mi son puts porque actualizan o en su defecto un post y un delete
 
 }
 
@@ -78,7 +79,6 @@ func dependencies() {
 	purchaseRepository = repositories.NewPurchaseRepository(db)
 	purchaseService = services.NewPurchaseService(purchaseRepository)
 	purchaseHandler = handlers.NewPurchaseHandler(purchaseService)
-
 
 	var recipeRepository repositories.RecipeRepositoryInterface
 	var recipeService services.RecipeServiceInterface

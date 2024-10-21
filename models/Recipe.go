@@ -8,7 +8,7 @@ import (
 type Recipe struct {
 	Id           primitive.ObjectID `bson:"id_recipe"`
 	Name         string             `bson:"name"`
-	Ingredients  []Food             `bson:"ingredients"`
+	Ingredients  []FoodQuantity    	`bson:"ingredients"`
 	Moment       enums.Moment       `bson:"recipe_moment"`
 	Description  string             `bson:"description"`
 	CreationDate string             `bson:"creation_date"`

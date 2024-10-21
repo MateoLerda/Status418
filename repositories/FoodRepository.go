@@ -4,10 +4,9 @@ import (
 	"Status418/models"
 	"context"
 	"errors"
-	"os"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-
+	"os"
 )
 
 type FoodRepositoryInterface interface {
@@ -31,7 +30,7 @@ func NewFoodRepository(db DB) *FoodRepository {
 func (foodRepository FoodRepository) GetAll(userCode string, minimumList bool) ([]models.Food, error) {
 	DBNAME := os.Getenv("DB_NAME")
 	filter := bson.M{"user_code": userCode}
-	
+
 	if minimumList {
 		filter = bson.M{
 			"$expr": bson.M{
@@ -40,7 +39,7 @@ func (foodRepository FoodRepository) GetAll(userCode string, minimumList bool) (
 			"user_code": userCode,
 		}
 	}
-	
+
 	cursor, err := foodRepository.db.GetClient().Database(DBNAME).Collection("Foods").Find(context.TODO(), filter)
 
 	if err != nil {
@@ -100,7 +99,7 @@ func (foodRepository FoodRepository) Update(food models.Food) (*mongo.UpdateResu
 
 func (foodRepository FoodRepository) Delete(foodCode string) (*mongo.DeleteResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
-	filter := bson.M{"food_code": foodCode,}
+	filter := bson.M{"food_code": foodCode}
 	res, err := foodRepository.db.GetClient().Database(DBNAME).Collection("Foods").DeleteOne(context.TODO(), filter)
 	if err != nil {
 		return nil, err
