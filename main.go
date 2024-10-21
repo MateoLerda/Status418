@@ -39,21 +39,21 @@ func routes() {
 
 	foodRoutes := r.Group("/foods")
 	foodRoutes.Use(authMiddleware.ValidateToken)
-	foodRoutes.GET("/:userId", foodHandler.GetAll)
-	foodRoutes.GET("/:userId/:code", foodHandler.GetByCode)
+	foodRoutes.GET("/", foodHandler.GetAll)
+	foodRoutes.GET("/:foodcode", foodHandler.GetByCode)
 	foodRoutes.POST("/", foodHandler.Create)
-	foodRoutes.DELETE("/:code", foodHandler.Delete)
-	foodRoutes.PUT("/:code", foodHandler.Update)
+	foodRoutes.DELETE("/:foodcode", foodHandler.Delete)
+	foodRoutes.PUT("/:foodcode", foodHandler.Update)
 
 	purchaseRoutes := r.Group("/purchases")
 	purchaseRoutes.Use(authMiddleware.ValidateToken)
-	purchaseRoutes.POST("/:userId")
-	purchaseRoutes.GET("/:userId")
+	purchaseRoutes.POST("/", purchaseHandler.Create)
+	purchaseRoutes.GET("/", foodHandler.GetAll)
 
 
 	recipesRoutes := r.Group("/recipes")
 	recipesRoutes.Use(authMiddleware.ValidateToken)
-	recipesRoutes.GET("/:userId", recipeHandler.GetAll)
+	recipesRoutes.GET("/", recipeHandler.GetAll)
 	recipesRoutes.DELETE("/:id", recipeHandler.Delete)
 	recipesRoutes.PUT("/:id", recipeHandler.Update)
 	recipesRoutes.POST("/", recipeHandler.Create)

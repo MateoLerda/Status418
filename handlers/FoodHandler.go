@@ -31,9 +31,9 @@ func (foodHandler *FoodHandler) GetAll(c *gin.Context) {
 		return
 	}
 
-	foods, err := foodHandler.foodService.GetAll(userCode)
+	foods, err := foodHandler.foodService.GetAll(userCode, minimumList)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to get foods"})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
@@ -45,7 +45,7 @@ func (foodHandler *FoodHandler) GetByCode(c *gin.Context) {
 	foodCode:= c.Param("foodCode")
 	food, err := foodHandler.foodService.GetByCode(foodCode, userCode)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get food with code: " + foodCode})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, food)
@@ -58,12 +58,12 @@ func (foodHandler *FoodHandler) Create(c *gin.Context) {
 		return
 	}
 
-	_, err := foodHandler.foodService.Create(newFood)
+	insertedId, err := foodHandler.foodService.Create(newFood)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create food item", "details": err.Error()})
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{"message": "Food created successfully"})
+	c.JSON(http.StatusCreated, gin.H{"message": "Food created successfully", "details": insertedId})
 }
 
 func (foodHandler *FoodHandler) Update(c *gin.Context) {

@@ -61,7 +61,7 @@ func (purchaseService *PurchaseService) Create(userCode string, purchaseDto dto.
 	}
 	
 	purchase.PurchaseDate = time.Now()
-	purchase.UserCode= utils.GetObjectIDFromStringID(userCode)
+	purchase.UserCode= userCode
 	res, err := purchaseService.purchaseRepository.Create(purchase)
 	if err != nil {
 		return nil, err

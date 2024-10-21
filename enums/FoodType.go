@@ -1,7 +1,5 @@
 package enums
 
-
-
 type FoodType int
 
 const (

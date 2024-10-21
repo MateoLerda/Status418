@@ -2,7 +2,10 @@ package services
 
 import (
 	"Status418/dto"
+	"Status418/enums"
+	"Status418/models"
 	"Status418/repositories"
+	"errors"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -41,11 +44,31 @@ func (recipeService *RecipeService) GetAll(userCode string, filters dto.FiltersD
 func (recipeService *RecipeService) Create(newRecipe dto.RecipeDto) (*mongo.InsertOneResult ,error){
 	recipe := newRecipe.GetModel()
 	recipe.CreationDate = time.Now().String()
+	validation := find(recipe.Ingredients, recipe.Moment)
+	if(!validation){
+		return nil, errors.New("The food moment doesn´t match with the recipe moment")
+	}
 	res, err := recipeService.recipeRepository.Create(recipe)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	return res, nil
+}
+
+func find(ingredients []models.Food, recipeMoment enums.Moment) bool {
+	for _,food := range ingredients{
+		momentValidation := false
+		for _, moment := range food.Moments{
+			if(moment == recipeMoment){
+				momentValidation= true
+				break;
+			}
+		}
+		if(!momentValidation) {
+			return false
+		}
+	}
+	return true
 }
 
 func (recipeService *RecipeService) Delete(recipeId string) (*mongo.DeleteResult ,error){
