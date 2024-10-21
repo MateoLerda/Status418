@@ -1,7 +1,0 @@
-package models
-
-type PurchaseQuantity struct {
-	FoodCode string `bson:"food_code"`
-	Quantity int `bson:"quantity_bought"`	
-}
-

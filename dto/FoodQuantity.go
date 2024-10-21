@@ -1,6 +1,6 @@
 package dto
 
-type PurchaseQuantity struct {
+type FoodQuantity struct {
 	FoodCode string 
 	Quantity int 
 }

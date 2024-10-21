@@ -44,7 +44,6 @@ func (foodRepository FoodRepository) GetAll(userCode string, minimumList bool) (
 	cursor, err := foodRepository.db.GetClient().Database(DBNAME).Collection("Foods").Find(context.TODO(), filter)
 
 	if err != nil {
-		err = errors.New("An error has ocurred")
 		return nil, err
 	}
 
@@ -52,7 +51,7 @@ func (foodRepository FoodRepository) GetAll(userCode string, minimumList bool) (
 	cursor.All(context.TODO(), &foods)
 
 	if len(foods) == 0 {
-		err = errors.New("Empty list")
+		err = errors.New("Not found any foods")
 		return nil, err
 	}
 	return foods, nil
@@ -68,11 +67,9 @@ func (foodRepository FoodRepository) GetByCode(foodCode string, userCode string)
 	data := foodRepository.db.GetClient().Database(DBNAME).Collection("Foods").FindOne(context.TODO(), filter)
 	var food models.Food
 	err := data.Decode(&food)
-	if err != nil {
-		err = errors.New("An error has ocurred")
-	}
+
 	if err == mongo.ErrNoDocuments {
-		err = errors.New("Could not found the food with the given code " + foodCode)
+		err = errors.New("Could not find the food with the given code " + foodCode)
 	}
 	return food, err
 }
@@ -82,7 +79,6 @@ func (foodRepository FoodRepository) Create(food models.Food) (*mongo.InsertOneR
 	res, err := foodRepository.db.GetClient().Database(DBNAME).Collection("Foods").InsertOne(context.TODO(), food)
 
 	if err != nil {
-		err = errors.New("failed to create food")
 		return nil, err
 	}
 
@@ -97,7 +93,6 @@ func (foodRepository FoodRepository) Update(food models.Food) (*mongo.UpdateResu
 	}
 	res, err := foodRepository.db.GetClient().Database(DBNAME).Collection("Foods").UpdateOne(context.TODO(), filter, update)
 	if err != nil {
-		err = errors.New("An error has occurred")
 		return nil, err
 	}
 	return res, nil
@@ -108,7 +103,6 @@ func (foodRepository FoodRepository) Delete(foodCode string) (*mongo.DeleteResul
 	filter := bson.M{"food_code": foodCode,}
 	res, err := foodRepository.db.GetClient().Database(DBNAME).Collection("Foods").DeleteOne(context.TODO(), filter)
 	if err != nil {
-		err = errors.New("An error has occurred")
 		return nil, err
 	}
 	return res, nil
