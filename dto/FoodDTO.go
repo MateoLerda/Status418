@@ -7,20 +7,21 @@ import (
 )
 
 type FoodDto struct {
-	Code            string
-	Type            enums.FoodType
-	Moments         []enums.Moment
-	Name            string
-	UnitPrice       float64
-	CurrentQuantity int
-	MinimumQuantity int
+	Code            string         `json:"food_code"`
+	Type            string `json:"type" validate:"required" required:"food type cannot be empty"`
+	Moments         []string `json:"moments" validate:"required" required:"food moments cannot be empty"`
+	Name            string         `json:"name" validate:"required,min=3,max=50" required:"food name cannot be empty"`
+	UnitPrice       float64        `json:"unit_price" validate:"required,gte=0.0" required:"food unitprice cannot be empty"`
+	CurrentQuantity int            `json:"current_quantity" validate:"required,gte=0,numeric" required:"food currentquantity cannot be empty"`
+	MinimumQuantity int            `json:"minimum_quantity" validate:"required,gte=0,numeric" required:"food minimumquantity cannot be empty"`
 }
 
 func NewFoodDto(model models.Food) *FoodDto {
+
 	return &FoodDto{
 		Code:            utils.GetStringIDFromObjectID(model.Code),
-		Type:            model.Type,
-		Moments:         model.Moments,
+		Type:            model.Type.String(),
+		Moments:         enums.ArrayString(model.Moments),
 		Name:            model.Name,
 		UnitPrice:       model.UnitPrice,
 		CurrentQuantity: model.CurrentQuantity,
@@ -31,8 +32,8 @@ func NewFoodDto(model models.Food) *FoodDto {
 func (dto FoodDto) GetModel() models.Food {
 	return models.Food{
 		Code:            utils.GetObjectIDFromStringID(dto.Code),
-		Type:            dto.Type,
-		Moments:         dto.Moments,
+		Type:            enums.GetTypeEnum(dto.Type),
+		Moments:         enums.GetArrayMoments(dto.Moments),
 		Name:            dto.Name,
 		UnitPrice:       dto.UnitPrice,
 		CurrentQuantity: dto.CurrentQuantity,

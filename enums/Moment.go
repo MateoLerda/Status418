@@ -14,7 +14,14 @@ const (
 func (m Moment) String() string{
 	return[]string {"Breakfast","Lunch", "Snack", "Dinner"}[m]
 }
-
+ 
+func ArrayString(moments []Moment) []string{
+	var parsedResult []string
+	for _, moment := range moments{
+		parsedResult= append(parsedResult, []string {"Breakfast","Lunch", "Snack", "Dinner"}[moment])
+	} 
+	return parsedResult
+}
 
 func GetMomentEnum(c string) Moment{
 	switch c {
@@ -27,4 +34,21 @@ func GetMomentEnum(c string) Moment{
 	default:
 		return InvalidMoment
 	}
+}
+
+func GetArrayMoments(listString[]string) []Moment{
+	var parsedResult []Moment
+	for _, moment := range listString {
+		switch moment {
+		case "Lunch":
+			parsedResult= append(parsedResult,Lunch) 
+		case "Snack":
+			parsedResult= append(parsedResult,Snack ) 
+		case "Dinner":
+			parsedResult= append(parsedResult,Dinner ) 
+		default:
+			parsedResult= append(parsedResult, InvalidMoment) 
+		}
+	} 
+	return parsedResult
 }

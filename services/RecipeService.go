@@ -6,60 +6,94 @@ import (
 	"Status418/models"
 	"Status418/repositories"
 	"errors"
-	"time"
 	"go.mongodb.org/mongo-driver/mongo"
+	"time"
 )
-	
-
 
 type RecipeServiceInterface interface {
-    GetAll(userCode string, filters dto.FiltersDto) (*[]dto.RecipeDto, error)
-	Create(newRecipe dto.RecipeDto) (*mongo.InsertOneResult ,error)
+	GetAll(userCode string, filters dto.FiltersDto) (*[]dto.RecipeDto, error)
+	Create(newRecipe dto.RecipeDto) (*mongo.InsertOneResult, error)
 	Delete(recipeId string) (*mongo.DeleteResult, error)
 	Update(updateRecipe dto.RecipeDto) (*mongo.UpdateResult, error)
-	Cook(userCode string, recipeId string) (bool,error)
-	CancelationCook(userCode string, recipeId string) (bool, error)
+	Cook(userCode string, recipeId string, cancel bool) (bool, error)
 }
 
-type RecipeService struct{
+type RecipeService struct {
 	recipeRepository repositories.RecipeRepositoryInterface
 }
 
-func NewRecipeService(recipeRepository repositories.RecipeRepositoryInterface) *RecipeService{
+func NewRecipeService(recipeRepository repositories.RecipeRepositoryInterface) *RecipeService {
 	return &RecipeService{
 		recipeRepository: recipeRepository,
 	}
 }
 
-func (recipeService *RecipeService) GetAll(userCode string, filters dto.FiltersDto) (*[]dto.RecipeDto, error){
+func filterByType(recipes []models.Recipe, userCode string, fType enums.FoodType) ([]models.Recipe, error) {
+	var filteredRecipes []models.Recipe
+	for _, recipe := range recipes {
+		for _, foodQuantity := range recipe.Ingredients {
+			food, err := getFoodByCode(foodQuantity.FoodCode, userCode)
+			if err != nil {
+				return nil, err
+			}
+			if food.Type == fType {
+				filteredRecipes = append(filteredRecipes, recipe)
+				break
+			}
+		}
+	}
+	return filteredRecipes, nil
+}
+
+func filterByQuantity(recipes []models.Recipe, userCode string) ([]models.Recipe, error) {
+	var filteredRecipes []models.Recipe
+	for _, recipe := range recipes {
+		for _, foodQuantity := range recipe.Ingredients {
+			food, err := getFoodByCode(foodQuantity.FoodCode, userCode)
+			if err != nil {
+				return nil, err
+			}
+			if food.CurrentQuantity >= foodQuantity.Quantity {
+				filteredRecipes = append(filteredRecipes, recipe)
+			}
+		}
+	}
+	return filteredRecipes, nil
+}
+
+func (recipeService *RecipeService) GetAll(userCode string, filters dto.FiltersDto) (*[]dto.RecipeDto, error) {
 	var recipesDto []dto.RecipeDto
 	recipes, err := recipeService.recipeRepository.GetAll(userCode, filters.GetModel())
 	if err != nil {
 		return nil, err
 	}
-	for _ , recipe := range recipes {
-		for _, FoodQuantity := range recipe.Ingredients {
-			food, err := getFoodByCode(FoodQuantity.FoodCode, userCode)
-			if(err != nil){
-				return nil, err 
-			}
-			if (food.CurrentQuantity >= FoodQuantity.Quantity) {		
-				recipeDto := dto.NewRecipeDto(recipe)
-				recipesDto = append(recipesDto, *recipeDto)
-			}
+	if !filters.All {
+		recipes, err = filterByQuantity(recipes, userCode)
+		if err!= nil{
+			return nil, errors.New("Internal")
 		}
+	}
+	if filters.Type != "" {
+		recipes, err = filterByType(recipes, userCode, (filters.GetModel()).Type)
+		if err!= nil{
+			return nil, errors.New("Internal")
+		}
+	}
+	for _, recipe := range recipes {
+		recipeDto := dto.NewRecipeDto(recipe)
+		recipesDto = append(recipesDto, *recipeDto)
 	}
 	return &recipesDto, nil
 }
 
-func (recipeService *RecipeService) Create(newRecipe dto.RecipeDto) (*mongo.InsertOneResult ,error){
+func (recipeService *RecipeService) Create(newRecipe dto.RecipeDto) (*mongo.InsertOneResult, error) {
 	recipe := newRecipe.GetModel()
 	recipe.CreationDate = time.Now().String()
-	validation, err:= find(recipe.Ingredients, recipe.Moment, recipe.UserCode)
-	if(err != nil){
+	validation, err := find(recipe.Ingredients, recipe.Moment, recipe.UserCode)
+	if err != nil {
 		return nil, err
 	}
-	if(!validation){
+	if !validation {
 		return nil, errors.New("The food moment doesn´t match with the recipe moment")
 	}
 	res, err := recipeService.recipeRepository.Create(recipe)
@@ -70,89 +104,75 @@ func (recipeService *RecipeService) Create(newRecipe dto.RecipeDto) (*mongo.Inse
 }
 
 func find(ingredients []models.FoodQuantity, recipeMoment enums.Moment, userCode string) (bool, error) {
-	for _,ingredient := range ingredients{
+	for _, ingredient := range ingredients {
 		momentValidation := false
-		food, err:= getFoodByCode(ingredient.FoodCode,userCode)
-		if(err!= nil){
+		food, err := getFoodByCode(ingredient.FoodCode, userCode)
+		if err != nil {
 			return false, err
 		}
 		for _, moment := range food.Moments {
-			if(moment == recipeMoment){
-				momentValidation= true
-				break;
+			if moment == recipeMoment {
+				momentValidation = true
+				break
 			}
 		}
-		if(!momentValidation) {
-			return false,nil
+		if !momentValidation {
+			return false, nil
 		}
 	}
 	return true, nil
 }
 
-func getFoodByCode(FoodCode string, userCode string) (*models.Food, error){
+func getFoodByCode(FoodCode string, userCode string) (*models.Food, error) {
 	DB := repositories.NewMongoDB()
 	foodRepository := repositories.NewFoodRepository(DB)
-	food, err := foodRepository.GetByCode(FoodCode , userCode)
-	if(err != nil){
-		return nil, err 
+	food, err := foodRepository.GetByCode(FoodCode, userCode)
+	if err != nil {
+		return nil, err
 	}
 	return &food, nil
 }
 
-func (recipeService *RecipeService) Delete(recipeId string) (*mongo.DeleteResult ,error){
+func (recipeService *RecipeService) Delete(recipeId string) (*mongo.DeleteResult, error) {
 	res, err := recipeService.recipeRepository.Delete(recipeId)
-	if err!= nil{
-		return nil, err
-	}
-	 return res, nil
-}
-
-func (recipeService *RecipeService) Update(updateRecipe dto.RecipeDto) (*mongo.UpdateResult, error){
-	recipe := updateRecipe.GetModel()
-	recipe.UpdateDate = time.Now().String()
-	res, err := recipeService.recipeRepository.Update(recipe)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	return res, nil
 }
 
-func (recipeService *RecipeService) Cook(userCode string, recipeId string) (bool,error){
-	recipe, err:= recipeService.recipeRepository.GetByCode(userCode, recipeId) 
-	if(err!= nil){
-		return false, err
-	} 
-	DB := repositories.NewMongoDB()
-	foodRepository := repositories.NewFoodRepository(DB)
-	for _,foodQuantity := range recipe.Ingredients { 
-		food, err := getFoodByCode(foodQuantity.FoodCode, userCode)
-		if(err!= nil){
-			return false, err
-		}
-		food.CurrentQuantity -= foodQuantity.Quantity
-		_, err = foodRepository.Update(*food);
-		if(err != nil){
-			return false, err
-		}
+func (recipeService *RecipeService) Update(updateRecipe dto.RecipeDto) (*mongo.UpdateResult, error) {
+	recipe := updateRecipe.GetModel()
+	recipe.UpdateDate = time.Now().String()
+	res, err := recipeService.recipeRepository.Update(recipe)
+	if err != nil {
+		return nil, err
 	}
-	return true, nil
+	return res, nil
 }
 
-func (recipeService *RecipeService) CancelationCook(userCode string, recipeId string) (bool, error){
-	recipe, err:= recipeService.recipeRepository.GetByCode(userCode, recipeId) 
-	if(err!= nil){
+func (recipeService *RecipeService) Cook(userCode string, recipeId string, cancel bool) (bool, error) {
+	recipe, err := recipeService.recipeRepository.GetByCode(userCode, recipeId)
+	if err != nil {
 		return false, err
-	} 
+	}
 	DB := repositories.NewMongoDB()
 	foodRepository := repositories.NewFoodRepository(DB)
-	for _,foodQuantity := range recipe.Ingredients { 
+	for _, foodQuantity := range recipe.Ingredients {
 		food, err := getFoodByCode(foodQuantity.FoodCode, userCode)
-		if(err!= nil){
-			return false, err
+		if err != nil {
+			return false, errors.New("Internal")
 		}
-		food.CurrentQuantity += foodQuantity.Quantity
-		_, err = foodRepository.Update(*food);
-		if(err != nil){
+		if !cancel {
+			food.CurrentQuantity -= foodQuantity.Quantity
+			//SI LA RECETA SE HACE, LA CANTIDAD SE RESTA DE LA ACTUAL
+		} else {
+			food.CurrentQuantity += foodQuantity.Quantity
+			//SI LA RECETA SE HIZO PERO SE CANCELA LA CANTIDAD SE SUMA A LA ACTUAL
+		}
+		_, err = foodRepository.Update(*food)
+		//SEGUN LO QUE HAYA SUCEDIDO, UPDATEAMOS EN LA BD EL ALIMENTO
+		if err != nil {
 			return false, err
 		}
 	}

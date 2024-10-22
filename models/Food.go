@@ -10,7 +10,7 @@ type Food struct {
 	Type            enums.FoodType     `bson:"type"`
 	Moments         []enums.Moment     `bson:"moments"`
 	Name            string             `bson:"name"`
-	UnitPrice       float64            `bson:"price"`
+	UnitPrice       float64            `bson:"unit_price"`
 	CurrentQuantity int                `bson:"current_quantity"`
 	MinimumQuantity int                `bson:"minimum_quantity"`
 	CreationDate    string             `bson:"creation_date"`

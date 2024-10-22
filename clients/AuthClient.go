@@ -10,8 +10,6 @@ import (
 	"os"
 )
 
-
-
 type AuthClientInterface interface {
 	GetUserInfo(token string) (*responses.UserInfo, error)
 }
@@ -41,7 +39,7 @@ func (auth *AuthClient) GetUserInfo(token string) (*responses.UserInfo, error) {
 		fmt.Println("Error al realizar la solicitud GET:", err)
 		return nil, err
 	}
-	
+
 	if response.StatusCode != 200 {
 		fmt.Println("Error al realizar la solicitud GET")
 		return nil, errors.New("La peticion respondio con error")
@@ -55,7 +53,7 @@ func (auth *AuthClient) GetUserInfo(token string) (*responses.UserInfo, error) {
 		return nil, err
 	}
 
-    var userInfo responses.UserInfo
+	var userInfo responses.UserInfo
 
 	if err := json.Unmarshal(responseBody, &userInfo); err != nil {
 		fmt.Println("Error al deserializar el JSON:", err)

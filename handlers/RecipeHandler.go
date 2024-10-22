@@ -5,7 +5,7 @@ import (
 	"Status418/services"
 	"Status418/utils"
 	"net/http"
-
+	"strconv"
 	"github.com/gin-gonic/gin"
 )
 
@@ -29,6 +29,8 @@ func (recipeHandler *RecipeHandler) GetAll(c *gin.Context) {
 	filters.Aproximation = c.Query("Aproximation")
 	filters.Moment = c.Query("Moment")
 	filters.Type = c.Query("Type")
+	filters.All, _ = strconv.ParseBool(c.Query("All"))
+
 
 	recipes, err := recipeHandler.recipeService.GetAll(userCode, filters)
 
@@ -102,6 +104,26 @@ func (recipeHandler *RecipeHandler) Update(c *gin.Context) {
 	}
 	if err.Error() == "notfound" {
 		c.JSON(http.StatusOK, gin.H{"message": "Not found any recipe with id: "+ id})
+	}
+
+	c.JSON(http.StatusOK, res)
+}
+
+func (recipeHandler *RecipeHandler) Cook(c *gin.Context) {
+	recipeId := c.Param("recipeid")
+	userCode := utils.GetUserInfoFromContext(c).Code
+	if userCode == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
+		return
+	}
+	cancel , _:= strconv.ParseBool(c.Query("cancel"))
+	res, err := recipeHandler.recipeService.Cook(userCode, recipeId, cancel)
+
+	if err.Error() == "internal" {
+		c.JSON(http.StatusInternalServerError, gin.H{"erro": "Failed to delete recipe"})
+	}
+	if err.Error() == "notfound" {
+		c.JSON(http.StatusOK, gin.H{"message": "Not found any recipe with id: "+ recipeId})
 	}
 
 	c.JSON(http.StatusOK, res)

@@ -27,8 +27,13 @@ func (foodHandler *FoodHandler) GetAll(c *gin.Context) {
 		return
 	}
 	minimumList, _ := strconv.ParseBool(c.Query("minimumList"))
-	
+
 	foods, err := foodHandler.foodService.GetAll(userCode, minimumList)
+	if err.Error() == "nocontent" {
+		c.JSON(http.StatusOK, gin.H{"message": "Not found any foods"})
+		return
+	}
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
@@ -43,7 +48,7 @@ func (foodHandler *FoodHandler) GetByCode(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
 		return
 	}
-	foodCode:= c.Param("foodCode")
+	foodCode := c.Param("foodCode")
 	food, err := foodHandler.foodService.GetByCode(foodCode, userCode)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -58,8 +63,8 @@ func (foodHandler *FoodHandler) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data", "details": err.Error()})
 		return
 	}
-
-	insertedId, err := foodHandler.foodService.Create(newFood)
+	userCode := utils.GetUserInfoFromContext(c).Code
+	insertedId, err := foodHandler.foodService.Create(newFood, userCode)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create food item", "details": err.Error()})
 		return
@@ -86,9 +91,16 @@ func (foodHandler *FoodHandler) Update(c *gin.Context) {
 }
 
 func (foodHandler *FoodHandler) Delete(c *gin.Context) {
-	deleteCode := c.Param("foodCode")
-
-	_, err := foodHandler.foodService.Delete(deleteCode)
+	foodCode := c.Param("foodcode")
+	userCode := utils.GetUserInfoFromContext(c).Code
+	if userCode == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
+		return
+	}
+	_, err := foodHandler.foodService.Delete(userCode, foodCode)
+	if err != nil && err.Error() == "notfound" {
+		c.JSON(http.StatusOK, gin.H{"message": "Not found the requested food to delete"})
+	}
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete food item", "details": err.Error()})
 		return

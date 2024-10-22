@@ -2,11 +2,13 @@ package repositories
 
 import (
 	"Status418/models"
+	"Status418/utils"
 	"context"
 	"errors"
+	"os"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"os"
 )
 
 type FoodRepositoryInterface interface {
@@ -50,7 +52,7 @@ func (foodRepository FoodRepository) GetAll(userCode string, minimumList bool) (
 	cursor.All(context.TODO(), &foods)
 
 	if len(foods) == 0 {
-		err = errors.New("Not found any foods")
+		err = errors.New("nocontent")
 		return nil, err
 	}
 	return foods, nil
@@ -99,10 +101,16 @@ func (foodRepository FoodRepository) Update(food models.Food) (*mongo.UpdateResu
 
 func (foodRepository FoodRepository) Delete(foodCode string) (*mongo.DeleteResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
-	filter := bson.M{"food_code": foodCode}
+	foodCodeDb := utils.GetObjectIDFromStringID(foodCode)
+	filter := bson.M{"_id": foodCodeDb}
 	res, err := foodRepository.db.GetClient().Database(DBNAME).Collection("Foods").DeleteOne(context.TODO(), filter)
+	if res.DeletedCount == 0 {
+		err = errors.New("notfound")
+		return nil, err
+	}
 	if err != nil {
 		return nil, err
 	}
 	return res, nil
 }
+

@@ -5,9 +5,9 @@ import (
 	"Status418/utils"
 	"context"
 	"errors"
-	"os"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"os"
 )
 
 type RecipeRepositoryInterface interface {
@@ -77,17 +77,12 @@ func (recipeRepository RecipeRepository) Update(recipe models.Recipe) (*mongo.Up
 func (recipeRepository RecipeRepository) GetAll(userCode string, filters models.Filter) ([]models.Recipe, error) {
 	DBNAME := os.Getenv("DB_NAME")
 	filter := bson.M{
-		"name": bson.M{
+		"recipe_name": bson.M{
 			"$regex":   filters.Aproximation,
 			"$options": "i",
 		},
-		"ingredients": bson.M{
-			"$elemMatch": bson.M{
-				"type": filters.Type,
-			},
-		},
 		"recipe_moment": filters.Moment,
-		"user_code":       userCode,
+		"user_code":     userCode,
 	}
 
 	data, err := recipeRepository.db.GetClient().Database(DBNAME).Collection("Recipes").Find(context.TODO(), filter)
@@ -115,8 +110,8 @@ func (recipeRepository RecipeRepository) GetByCode(userCode string, recipeId str
 	data := recipeRepository.db.GetClient().Database(DBNAME).Collection("Recipes").FindOne(context.TODO(), filter)
 	var recipe models.Recipe
 	err := data.Decode(&recipe)
-	if err == mongo.ErrNoDocuments{
-		err= errors.New("Couldn´t find teh recipe with the id: "+recipeId)
+	if err == mongo.ErrNoDocuments {
+		err = errors.New("Couldn´t find the recipe with the id: " + recipeId)
 	}
 
 	return recipe, err

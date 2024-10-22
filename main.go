@@ -27,8 +27,8 @@ func main() {
 
 	r = gin.Default()
 
-	routes()
 	dependencies()
+	routes()
 
 	r.Run(":8080")
 }
@@ -56,9 +56,7 @@ func routes() {
 	recipesRoutes.DELETE("/:recipeid", recipeHandler.Delete)
 	recipesRoutes.PUT("/:recipeid", recipeHandler.Update)
 	recipesRoutes.POST("/", recipeHandler.Create)
-
-	// ver como son las rutas del cook y del cancelationCook para mi son puts porque actualizan o en su defecto un post y un delete
-
+//	recipesRoutes.PUT("/:recipeid",recipeHandler.Cook) VER COMO HACER ESTO
 }
 
 func dependencies() {
