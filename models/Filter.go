@@ -5,8 +5,8 @@ import (
 )
 
 type Filter struct {
-	Aproximation string 
-	Moment enums.Moment
-	Type   enums.FoodType
-	All 	bool
+	Aproximation string         `bson:"filter_aproximation"`
+	Moment       enums.Moment   `bson:"filter_moment"`
+	Type         enums.FoodType `bson:"filter_type"`
+	All          bool           `bson:"filter_all"`
 }

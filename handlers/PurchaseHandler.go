@@ -20,14 +20,14 @@ func NewPurchaseHandler(purchaseService services.PurchaseServiceInterface) *Purc
 }
 
 func (purchaseHandler *PurchaseHandler) Create(c *gin.Context){
-	userCode := (utils.GetUserInfoFromContext(c)).Code
+	user := (utils.GetUserInfoFromContext(c))
 		
 	var newPurchase dto.PurchaseDto
 	if err := c.ShouldBindJSON(&newPurchase); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data", "details": err.Error()})
 		return
 	}
-	purchase, err := purchaseHandler.purchaseService.Create(userCode, newPurchase)
+	purchase, err := purchaseHandler.purchaseService.Create(user.Code, newPurchase)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create purchase", "details": err.Error()})
 		return

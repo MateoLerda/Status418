@@ -12,7 +12,7 @@ const (
 )
 
 func (f FoodType) String() string {
-	return []string{"Vegetable", "Fruit", "Cheese", "Dairy", "Meat"}[f]
+	return []string{"InvalidFoodType","Vegetable", "Fruit", "Cheese", "Dairy", "Meat"}[f]
 }
 
 func GetTypeEnum(c string) FoodType {

@@ -56,7 +56,7 @@ func routes() {
 	recipesRoutes.DELETE("/:recipeid", recipeHandler.Delete)
 	recipesRoutes.PUT("/:recipeid", recipeHandler.Update)
 	recipesRoutes.POST("/", recipeHandler.Create)
-//	recipesRoutes.PUT("/:recipeid",recipeHandler.Cook) VER COMO HACER ESTO
+	recipesRoutes.PUT("/cook/:recipeid",recipeHandler.Cook) //VER COMO HACER ESTO /STO ME PARECE QUE RECONTRA OUT AMIGO MATEITO PERDONAME
 }
 
 func dependencies() {

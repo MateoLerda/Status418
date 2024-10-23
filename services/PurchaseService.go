@@ -10,7 +10,7 @@ import (
 )
 
 type PurchaseServiceInterface interface {
-	Create(userCode string, purchaseDto dto.PurchaseDto) (*mongo.InsertOneResult, error)
+	Create(userCode string, newPurchase dto.PurchaseDto) (*mongo.InsertOneResult, error)
 }
 
 type PurchaseService struct {
@@ -28,29 +28,30 @@ func calculatePurchaseAllFoods(foods []models.Food) models.Purchase {
 	for _, food := range foods {
 		purchase.TotalCost += food.UnitPrice * (float64)(food.MinimumQuantity-food.CurrentQuantity)
 		purchase.Foods = append(purchase.Foods, models.FoodQuantity{
-			FoodCode: utils.GetStringIDFromObjectID(food.Code),
+			FoodCode: food.Code,
 			Quantity: food.MinimumQuantity - food.CurrentQuantity,
 		})
 	}
 	return purchase
 }
 
-func (purchaseService *PurchaseService) Create(userCode string, purchaseDto dto.PurchaseDto) (*mongo.InsertOneResult, error) {
+func (purchaseService *PurchaseService) Create(userCode string, newPurchase dto.PurchaseDto) (*mongo.InsertOneResult, error) {
 	DB := repositories.NewMongoDB()
 	foodRepository := repositories.NewFoodRepository(DB)
 	var foods []models.Food
 	var err error
 	var purchase models.Purchase
 
-	if len(purchaseDto.Foods) != 0 {
+	if len(newPurchase.Foods) != 0 {
 		var food models.Food
-		for _, foodQuantity := range purchaseDto.Foods {
-			food, err = foodRepository.GetByCode(foodQuantity.FoodCode, userCode)
+		for _, foodQuantity := range newPurchase.Foods {
+			foodObjectId := utils.GetObjectIDFromStringID(foodQuantity.FoodCode)
+			food, err = foodRepository.GetByCode(foodObjectId, userCode)
 			if err != nil {
 				return nil, err
 			}
 			purchase.TotalCost += food.UnitPrice * float64(foodQuantity.Quantity)
-			purchase.Foods = append(purchase.Foods, models.FoodQuantity{FoodCode: foodQuantity.FoodCode, Quantity: foodQuantity.Quantity})
+			purchase.Foods = append(purchase.Foods, models.FoodQuantity{FoodCode: foodObjectId, Quantity: foodQuantity.Quantity})
 		}
 	} else {
 		foods, err = foodRepository.GetAll(userCode, true)
@@ -59,7 +60,7 @@ func (purchaseService *PurchaseService) Create(userCode string, purchaseDto dto.
 		}
 		purchase = calculatePurchaseAllFoods(foods)
 	}
-
+	
 	purchase.PurchaseDate = time.Now()
 	purchase.UserCode = userCode
 	res, err := purchaseService.purchaseRepository.Create(purchase)

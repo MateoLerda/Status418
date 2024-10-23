@@ -8,7 +8,7 @@ import (
 )
 
 type PurchaseRepositoryInterface interface {
-	Create(models.Purchase) (*mongo.InsertOneResult, error)
+	Create(newPurchase models.Purchase) (*mongo.InsertOneResult, error)
 }
 
 type PurchaseRepository struct {
@@ -24,7 +24,7 @@ func NewPurchaseRepository(db DB) *PurchaseRepository {
 
 func (purchaseRepository PurchaseRepository) Create(purchase models.Purchase) (*mongo.InsertOneResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
-
+	
 	res, err := purchaseRepository.db.GetClient().Database(DBNAME).Collection("Purchases").InsertOne(context.TODO(), purchase)
 	if err != nil {
 		return nil, err

@@ -21,19 +21,19 @@ func NewFoodHandler(foodService services.FoodServiceInterface) *FoodHandler {
 }
 
 func (foodHandler *FoodHandler) GetAll(c *gin.Context) {
-	userCode := utils.GetUserInfoFromContext(c).Code
-	if userCode == "" {
+	user := utils.GetUserInfoFromContext(c)
+	if user.Code == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
 		return
 	}
 	minimumList, _ := strconv.ParseBool(c.Query("minimumList"))
 
-	foods, err := foodHandler.foodService.GetAll(userCode, minimumList)
-	if err.Error() == "nocontent" {
+	foods, err := foodHandler.foodService.GetAll(user.Code, minimumList)
+	if (err != nil && err.Error() == "nocontent") {
 		c.JSON(http.StatusOK, gin.H{"message": "Not found any foods"})
 		return
 	}
-
+	
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
@@ -43,13 +43,13 @@ func (foodHandler *FoodHandler) GetAll(c *gin.Context) {
 }
 
 func (foodHandler *FoodHandler) GetByCode(c *gin.Context) {
-	userCode := utils.GetUserInfoFromContext(c).Code
-	if userCode == "" {
+	user := utils.GetUserInfoFromContext(c)
+	if user.Code == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
 		return
 	}
-	foodCode := c.Param("foodCode")
-	food, err := foodHandler.foodService.GetByCode(foodCode, userCode)
+	foodCode := c.Param("foodcode")
+	food, err := foodHandler.foodService.GetByCode(foodCode, user.Code)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -63,8 +63,8 @@ func (foodHandler *FoodHandler) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data", "details": err.Error()})
 		return
 	}
-	userCode := utils.GetUserInfoFromContext(c).Code
-	insertedId, err := foodHandler.foodService.Create(newFood, userCode)
+	user := utils.GetUserInfoFromContext(c)
+	insertedId, err := foodHandler.foodService.Create(newFood, user.Code)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create food item", "details": err.Error()})
 		return
@@ -92,12 +92,12 @@ func (foodHandler *FoodHandler) Update(c *gin.Context) {
 
 func (foodHandler *FoodHandler) Delete(c *gin.Context) {
 	foodCode := c.Param("foodcode")
-	userCode := utils.GetUserInfoFromContext(c).Code
-	if userCode == "" {
+	user := utils.GetUserInfoFromContext(c)
+	if user.Code == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
 		return
 	}
-	_, err := foodHandler.foodService.Delete(userCode, foodCode)
+	_, err := foodHandler.foodService.Delete(user.Code, foodCode)
 	if err != nil && err.Error() == "notfound" {
 		c.JSON(http.StatusOK, gin.H{"message": "Not found the requested food to delete"})
 	}

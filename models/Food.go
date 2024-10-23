@@ -6,7 +6,7 @@ import (
 )
 
 type Food struct {
-	Code            primitive.ObjectID `bson:"food_code,omitempty"`
+	Code            primitive.ObjectID `bson:"_id,omitempty"`
 	Type            enums.FoodType     `bson:"type"`
 	Moments         []enums.Moment     `bson:"moments"`
 	Name            string             `bson:"name"`

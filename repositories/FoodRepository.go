@@ -2,21 +2,21 @@ package repositories
 
 import (
 	"Status418/models"
-	"Status418/utils"
 	"context"
 	"errors"
 	"os"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type FoodRepositoryInterface interface {
 	GetAll(userCode string, minimumList bool) ([]models.Food, error)
-	GetByCode(foodCode string, userCode string) (models.Food, error)
-	Create(models.Food) (*mongo.InsertOneResult, error)
-	Update(models.Food) (*mongo.UpdateResult, error)
-	Delete(foodCode string) (*mongo.DeleteResult, error)
+	GetByCode(foodCode primitive.ObjectID, userCode string) (models.Food, error)
+	Create(newFood models.Food) (*mongo.InsertOneResult, error)
+	Update(updateFood models.Food) (*mongo.UpdateResult, error)
+	Delete(foodcode primitive.ObjectID) (*mongo.DeleteResult, error)
 }
 
 type FoodRepository struct {
@@ -58,19 +58,19 @@ func (foodRepository FoodRepository) GetAll(userCode string, minimumList bool) (
 	return foods, nil
 }
 
-func (foodRepository FoodRepository) GetByCode(foodCode string, userCode string) (models.Food, error) {
+func (foodRepository FoodRepository) GetByCode(foodCode primitive.ObjectID, userCode string) (models.Food, error) {
 	DBNAME := os.Getenv("DB_NAME")
-
+	
 	filter := bson.M{
-		"food_code": foodCode,
-		"user_id":   userCode,
+		"_id": foodCode,
+		"user_code":   userCode,
 	}
 	data := foodRepository.db.GetClient().Database(DBNAME).Collection("Foods").FindOne(context.TODO(), filter)
 	var food models.Food
 	err := data.Decode(&food)
 
 	if err == mongo.ErrNoDocuments {
-		err = errors.New("Could not find the food with the given code " + foodCode)
+		err = errors.New("could not find the food with the given code ")
 	}
 	return food, err
 }
@@ -90,7 +90,7 @@ func (foodRepository FoodRepository) Update(food models.Food) (*mongo.UpdateResu
 	DBNAME := os.Getenv("DB_NAME")
 	filter := bson.M{"food_code": food.Code}
 	update := bson.M{
-		"$set": food, //actualiza sólo los campos que estén en la variable food
+		"$set": food, //actualiza solo los campos que esten en la variable food
 	}
 	res, err := foodRepository.db.GetClient().Database(DBNAME).Collection("Foods").UpdateOne(context.TODO(), filter, update)
 	if err != nil {
@@ -99,10 +99,9 @@ func (foodRepository FoodRepository) Update(food models.Food) (*mongo.UpdateResu
 	return res, nil
 }
 
-func (foodRepository FoodRepository) Delete(foodCode string) (*mongo.DeleteResult, error) {
+func (foodRepository FoodRepository) Delete(foodCode primitive.ObjectID) (*mongo.DeleteResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
-	foodCodeDb := utils.GetObjectIDFromStringID(foodCode)
-	filter := bson.M{"_id": foodCodeDb}
+	filter := bson.M{"_id": foodCode}
 	res, err := foodRepository.db.GetClient().Database(DBNAME).Collection("Foods").DeleteOne(context.TODO(), filter)
 	if res.DeletedCount == 0 {
 		err = errors.New("notfound")

@@ -11,7 +11,7 @@ import (
 
 type FoodServiceInterface interface {
 	GetAll(userCode string, minimumList bool) (*[]dto.FoodDto, error)
-	GetByCode(code string, userCode string) (*dto.FoodDto, error)
+	GetByCode(foodCode string, userCode string) (*dto.FoodDto, error)
 	Create(newFood dto.FoodDto, userCode string) (*mongo.InsertOneResult, error)
 	Update(updateFood dto.FoodDto) (*mongo.UpdateResult, error)
 	Delete(userCode string, foodcode string) (*mongo.DeleteResult, error)
@@ -33,15 +33,16 @@ func (foodService *FoodService) GetAll(userCode string, minimumList bool) (*[]dt
 	if err != nil {
 		return nil, err
 	}
+
 	for _, food := range foods {
-		foodDTO := dto.NewFoodDto(food)
+		foodDTO := dto.NewFoodDto(food) // probar asi a ver si funciona 
 		foodsDTO = append(foodsDTO, *foodDTO)
 	}
 	return &foodsDTO, nil
 }
 
-func (foodService *FoodService) GetByCode(code string, userCode string) (*dto.FoodDto, error) {
-	food, err := foodService.foodRepository.GetByCode(code, userCode)
+func (foodService *FoodService) GetByCode(foodCode string, userCode string) (*dto.FoodDto, error) {
+	food, err := foodService.foodRepository.GetByCode(utils.GetObjectIDFromStringID(foodCode), userCode)
 	if err != nil {
 		return nil, err
 	}
@@ -74,16 +75,17 @@ func (foodService *FoodService) Delete(userCode string, foodCode string) (*mongo
 	DB := repositories.NewMongoDB()
 	recipeRepository := repositories.NewRecipeRepository(DB)
 	recipes , _ := recipeRepository.GetAll(userCode, models.Filter{})
+	foodObjectId := utils.GetObjectIDFromStringID(foodCode)
 	for _,recipe := range recipes {
 		for _, food := range recipe.Ingredients {
-			if food.FoodCode == foodCode {
-				recipeRepository.Delete(utils.GetStringIDFromObjectID(recipe.Id))
+			if food.FoodCode == foodObjectId {
+				recipeRepository.Delete(recipe.Id)
 				break
 			}
 		}
 	}
 	
-	res, err := foodService.foodRepository.Delete(foodCode)
+	res, err := foodService.foodRepository.Delete(foodObjectId)
 	if err != nil {
 		return nil, err
 	}

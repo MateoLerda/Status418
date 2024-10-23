@@ -7,9 +7,9 @@ import (
 )
 
 type Purchase struct {
-	Id_Purchase  primitive.ObjectID `bson:"id_purchase"`
-	UserCode       string 			`bson:"user_code"`
+	Id           primitive.ObjectID `bson:"_id"`
+	UserCode     string             `bson:"user_code"`
 	PurchaseDate time.Time          `bson:"purchase_date"`
 	TotalCost    float64            `bson:"total_cost"`
-	Foods        []FoodQuantity 	`bson:"foods"`
+	Foods        []FoodQuantity     `bson:"foods"`
 }

@@ -7,13 +7,13 @@ import (
 )
 
 type FoodDto struct {
-	Code            string         `json:"food_code"`
-	Type            string `json:"type" validate:"required" required:"food type cannot be empty"`
+	Code            string   `json:"_id"`
+	Type            string   `json:"type" validate:"required" required:"food type cannot be empty"`
 	Moments         []string `json:"moments" validate:"required" required:"food moments cannot be empty"`
-	Name            string         `json:"name" validate:"required,min=3,max=50" required:"food name cannot be empty"`
-	UnitPrice       float64        `json:"unit_price" validate:"required,gte=0.0" required:"food unitprice cannot be empty"`
-	CurrentQuantity int            `json:"current_quantity" validate:"required,gte=0,numeric" required:"food currentquantity cannot be empty"`
-	MinimumQuantity int            `json:"minimum_quantity" validate:"required,gte=0,numeric" required:"food minimumquantity cannot be empty"`
+	Name            string   `json:"name" validate:"required,min=3,max=50" required:"food name cannot be empty"`
+	UnitPrice       float64  `json:"unit_price" validate:"required,gte=0.0" required:"food unitprice cannot be empty"`
+	CurrentQuantity int      `json:"current_quantity" validate:"required,gte=0,numeric" required:"food currentquantity cannot be empty"`
+	MinimumQuantity int      `json:"minimum_quantity" validate:"required,gte=0,numeric" required:"food minimumquantity cannot be empty"`
 }
 
 func NewFoodDto(model models.Food) *FoodDto {

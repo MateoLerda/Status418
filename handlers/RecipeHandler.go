@@ -20,8 +20,8 @@ func NewRecipeHandler(recipeService services.RecipeServiceInterface) *RecipeHand
 }
 
 func (recipeHandler *RecipeHandler) GetAll(c *gin.Context) {
-	userCode := utils.GetUserInfoFromContext(c).Code
-	if userCode == "" {
+	user := utils.GetUserInfoFromContext(c)
+	if user.Code == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
 		return
 	}
@@ -32,7 +32,7 @@ func (recipeHandler *RecipeHandler) GetAll(c *gin.Context) {
 	filters.All, _ = strconv.ParseBool(c.Query("All"))
 
 
-	recipes, err := recipeHandler.recipeService.GetAll(userCode, filters)
+	recipes, err := recipeHandler.recipeService.GetAll(user.Code, filters)
 
 	if err.Error() == "internal" {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -57,7 +57,8 @@ func (recipeHandler *RecipeHandler) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	recipe.UserCode = (utils.GetUserInfoFromContext(c)).Code
+	user := utils.GetUserInfoFromContext(c)
+	recipe.UserCode = user.Code
 	if recipe.UserCode == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
 		return
@@ -110,17 +111,19 @@ func (recipeHandler *RecipeHandler) Update(c *gin.Context) {
 }
 
 func (recipeHandler *RecipeHandler) Cook(c *gin.Context) {
-	recipeId := c.Param("recipeid")
-	userCode := utils.GetUserInfoFromContext(c).Code
-	if userCode == "" {
+	recipeId := c.Param("recipe_id")//ver que onda
+	recipeObjectId := utils.GetObjectIDFromStringID(recipeId)
+	userInfo := utils.GetUserInfoFromContext(c)
+
+	if userInfo.Code == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
 		return
 	}
 	cancel , _:= strconv.ParseBool(c.Query("cancel"))
-	res, err := recipeHandler.recipeService.Cook(userCode, recipeId, cancel)
+	res, err := recipeHandler.recipeService.Cook(userInfo.Code, recipeObjectId, cancel)
 
 	if err.Error() == "internal" {
-		c.JSON(http.StatusInternalServerError, gin.H{"erro": "Failed to delete recipe"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to cancel recipe"})
 	}
 	if err.Error() == "notfound" {
 		c.JSON(http.StatusOK, gin.H{"message": "Not found any recipe with id: "+ recipeId})
