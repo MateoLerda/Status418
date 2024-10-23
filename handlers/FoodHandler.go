@@ -74,21 +74,28 @@ func (foodHandler *FoodHandler) Create(c *gin.Context) {
 
 func (foodHandler *FoodHandler) Update(c *gin.Context) {
 	var updateFood dto.FoodDto
-	updateCode := c.Param("foodCode")
+	updateCode := c.Param("foodcode")
 	if err := c.ShouldBindJSON(&updateFood); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	updateFood.Code = updateCode
 
-	_, err := foodHandler.foodService.Update(updateFood)
+	res, err := foodHandler.foodService.Update(updateFood)
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update food item", "details": err.Error()})
 		return
 	}
 
+	if(res.ModifiedCount== 0){
+		c.JSON(http.StatusOK, gin.H{"message": "not food was update"})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{"message": "Food updated successfully"})
 }
+
 
 func (foodHandler *FoodHandler) Delete(c *gin.Context) {
 	foodCode := c.Param("foodcode")

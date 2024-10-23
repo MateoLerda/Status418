@@ -10,3 +10,4 @@ type Filter struct {
 	Type         enums.FoodType `bson:"filter_type"`
 	All          bool           `bson:"filter_all"`
 }
+

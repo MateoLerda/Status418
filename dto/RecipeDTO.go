@@ -10,7 +10,7 @@ type RecipeDto struct {
 	Id          string            `json:"_id"`
 	Name        string            `json:"recipe_name" validate:"required,min=3,max=100" required:"recipe name cannot be empty"`
 	Ingredients []FoodQuantityDTO `json:"recipe_ingredients" validate:"required" required:"recipe ingredients cannot be empty"`
-	Moment      enums.Moment      `json:"recipe_moment" validate:"required" required:"recipe moment cannot be empty"`
+	Moment      string     		  `json:"recipe_moment" validate:"required" required:"recipe moment cannot be empty"`
 	Description string            `json:"recipe_description" validate:"required,max=180" required:"recipe description cannot be empty"`
 	UserCode    string            `json:"recipe_usercode" validate:"required" required:"recipe user code cannot be empty"`
 }
@@ -26,7 +26,7 @@ func NewRecipeDto(model models.Recipe) *RecipeDto {
 		Id:          utils.GetStringIDFromObjectID(model.Id),
 		Name:        model.Name,
 		Ingredients: dtoIngredients,
-		Moment:      model.Moment,
+		Moment:      model.Moment.String(),
 		Description: model.Description,
 		UserCode:    model.UserCode,
 	}
@@ -46,7 +46,7 @@ func (dto RecipeDto) GetModel() models.Recipe {
 		Id:          utils.GetObjectIDFromStringID(dto.Id),
 		Name:        dto.Name,
 		Ingredients: ingredients,
-		Moment:      dto.Moment,
+		Moment:      enums.GetMomentEnum(dto.Moment),
 		Description: dto.Description,
 		UserCode:    dto.UserCode,
 	}

@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"Status418/models"
-	// "Status418/utils"
+	"Status418/enums"
 	"context"
 	"errors"
 	"os"
@@ -41,7 +41,7 @@ func (recipeRepository RecipeRepository) Create(newRecipe models.Recipe) (*mongo
 
 func (recipeRepository RecipeRepository) Delete(recipeId primitive.ObjectID) (*mongo.DeleteResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
-	filter := bson.M{"id_recipe": recipeId}
+	filter := bson.M{"_id": recipeId}
 	res, err := recipeRepository.db.GetClient().Database(DBNAME).Collection("Recipes").DeleteOne(context.TODO(), filter)
 	if err != nil {
 		err = errors.New("internal")
@@ -57,7 +57,7 @@ func (recipeRepository RecipeRepository) Delete(recipeId primitive.ObjectID) (*m
 func (recipeRepository RecipeRepository) Update(recipe models.Recipe) (*mongo.UpdateResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
 	filter := bson.M{
-		"id_recipe": recipe.Id,
+		"_id": recipe.Id,
 	}
 	update := bson.M{
 		"$set": recipe,
@@ -78,14 +78,17 @@ func (recipeRepository RecipeRepository) Update(recipe models.Recipe) (*mongo.Up
 func (recipeRepository RecipeRepository) GetAll(userCode string, filters models.Filter) ([]models.Recipe, error) {
 	DBNAME := os.Getenv("DB_NAME")
 	filter := bson.M{
-		"recipe_name": bson.M{
+		"recipe_usercode": userCode,
+	}
+	if filters.Aproximation != "" {
+		filter["recipe_name"] = bson.M{
 			"$regex":   filters.Aproximation,
 			"$options": "i",
-		},
-		"recipe_moment": filters.Moment,
-		"user_code":     userCode,
+		}
 	}
-
+	if filters.Moment != enums.InvalidMoment {
+		filter["recipe_moment"] = filters.Moment
+	}
 	data, err := recipeRepository.db.GetClient().Database(DBNAME).Collection("Recipes").Find(context.TODO(), filter)
 	if err != nil {
 		err = errors.New("internal")
@@ -105,8 +108,8 @@ func (recipeRepository RecipeRepository) GetByCode(userCode string, recipeId pri
 	DBNAME := os.Getenv("DB_NAME")
 
 	filter := bson.M{
-		"id_recipe": recipeId,
-		"user_code": userCode,
+		"_id": recipeId,
+		"recipe_usercode": userCode,
 	}
 	data := recipeRepository.db.GetClient().Database(DBNAME).Collection("Recipes").FindOne(context.TODO(), filter)
 	var recipe models.Recipe

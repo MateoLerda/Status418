@@ -54,9 +54,9 @@ func routes() {
 	recipesRoutes.Use(authMiddleware.ValidateToken)
 	recipesRoutes.GET("/", recipeHandler.GetAll)
 	recipesRoutes.DELETE("/:recipeid", recipeHandler.Delete)
-	recipesRoutes.PUT("/:recipeid", recipeHandler.Update)
+	recipesRoutes.PUT("/:recipeid", recipeHandler.Update) // falta modificar en el repositori
 	recipesRoutes.POST("/", recipeHandler.Create)
-	recipesRoutes.PUT("/cook/:recipeid",recipeHandler.Cook) //VER COMO HACER ESTO /STO ME PARECE QUE RECONTRA OUT AMIGO MATEITO PERDONAME
+	recipesRoutes.PUT("/cook/:recipeid", recipeHandler.Cook) //falta probar solo (el de cocinar y el de desacer)
 }
 
 func dependencies() {

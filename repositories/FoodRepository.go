@@ -88,15 +88,31 @@ func (foodRepository FoodRepository) Create(food models.Food) (*mongo.InsertOneR
 
 func (foodRepository FoodRepository) Update(food models.Food) (*mongo.UpdateResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
-	filter := bson.M{"food_code": food.Code}
-	update := bson.M{
-		"$set": food, //actualiza solo los campos que esten en la variable food
-	}
+	filter := bson.M{"_id": food.Code}
+	update := toBSONUpdate(food)
 	res, err := foodRepository.db.GetClient().Database(DBNAME).Collection("Foods").UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		return nil, err
 	}
 	return res, nil
+}
+
+func toBSONUpdate(food models.Food) bson.M {
+	update := bson.M{"$set": bson.M{}}
+	if food.Name != "" {
+		update["$set"].(bson.M)["name"] = food.Name
+	}
+	if food.UnitPrice != 0 {
+		update["$set"].(bson.M)["unit_price"] = food.UnitPrice
+	}
+	if food.CurrentQuantity != 0 {
+		update["$set"].(bson.M)["current_quantity"] = food.CurrentQuantity
+	}
+	if food.MinimumQuantity != 0 {
+		update["$set"].(bson.M)["minimum_quantity"] = food.MinimumQuantity
+	}
+	update["$set"].(bson.M)["update_"]= food.UpdateDate
+	return update
 }
 
 func (foodRepository FoodRepository) Delete(foodCode primitive.ObjectID) (*mongo.DeleteResult, error) {

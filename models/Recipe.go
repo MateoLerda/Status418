@@ -6,13 +6,12 @@ import (
 )
 
 type Recipe struct {
-	Id           primitive.ObjectID `bson:"_id"`
+	Id           primitive.ObjectID `bson:"_id,omitempty"`
 	Name         string             `bson:"recipe_name"`
-	Ingredients  []FoodQuantity    	`bson:"recipe_ingredients"`
+	Ingredients  []FoodQuantity     `bson:"recipe_ingredients"`
 	Moment       enums.Moment       `bson:"recipe_moment"`
 	Description  string             `bson:"recipe_description"`
 	CreationDate string             `bson:"creation_date"`
 	UpdateDate   string             `bson:"update_date"`
-	UserCode     string			    `bson:"recipe_usercode"`
+	UserCode     string             `bson:"recipe_usercode"`
 }
-

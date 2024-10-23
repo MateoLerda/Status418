@@ -13,9 +13,18 @@ type FiltersDto struct {
 }
 
 func (dto FiltersDto) GetModel() models.Filter {
+	// if (dto.Moment == "InvalidMoment") {
+	// 	dto.Moment = ""
+	// }
+
+	// if (dto.FoodType == "InvalidFoodType") {
+		
+	// }
+
 	return models.Filter{
 		Aproximation: dto.Aproximation,
 		Moment:       enums.GetMomentEnum(dto.Moment),
 		Type:         enums.GetTypeEnum(dto.Type),
+		All: 		  dto.All,
 	}
 }

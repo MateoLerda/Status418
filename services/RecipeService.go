@@ -48,17 +48,25 @@ func filterByType(recipes []models.Recipe, userCode string, fType enums.FoodType
 	return filteredRecipes, nil
 }
 
-func filterByQuantity(recipes []models.Recipe, userCode string) ([]models.Recipe, error) {
+func validateQuantity(recipe models.Recipe) bool {
+	for i, foodQuantity := range recipe.Ingredients {
+		food, _ := getFoodByCode(foodQuantity.FoodCode, recipe.UserCode)
+	
+		if food.CurrentQuantity < foodQuantity.Quantity {
+			break
+		}
+		if i+1 == len(recipe.Ingredients){
+			return true
+		}
+	}
+	return false
+}
+
+func filterByQuantity(recipes []models.Recipe) ([]models.Recipe, error) {
 	var filteredRecipes []models.Recipe
 	for _, recipe := range recipes {
-		for _, foodQuantity := range recipe.Ingredients {
-			food, err := getFoodByCode(foodQuantity.FoodCode, userCode)
-			if err != nil {
-				return nil, err
-			}
-			if food.CurrentQuantity >= foodQuantity.Quantity {
-				filteredRecipes = append(filteredRecipes, recipe)
-			}
+		if (validateQuantity(recipe)) {
+			filteredRecipes = append(filteredRecipes, recipe)
 		}
 	}
 	return filteredRecipes, nil
@@ -71,7 +79,7 @@ func (recipeService *RecipeService) GetAll(userCode string, filters dto.FiltersD
 		return nil, err
 	}
 	if !filters.All {
-		recipes, err = filterByQuantity(recipes, userCode)
+		recipes, err = filterByQuantity(recipes)
 		if err != nil {
 			return nil, errors.New("internal")
 		}
@@ -86,6 +94,10 @@ func (recipeService *RecipeService) GetAll(userCode string, filters dto.FiltersD
 		recipeDto := dto.NewRecipeDto(recipe)
 		recipesDto = append(recipesDto, *recipeDto)
 	}
+	if len(recipesDto) == 0 {
+		err = errors.New("nocontent")
+		return nil, err
+	}
 	return &recipesDto, nil
 }
 
@@ -98,6 +110,9 @@ func (recipeService *RecipeService) Create(newRecipe dto.RecipeDto) (*mongo.Inse
 	}
 	if !validation {
 		return nil, errors.New("the food moment doesn´t match with the recipe moment")
+	}
+	if(!validateQuantity(recipe)){
+		return nil, errors.New("the foods are not enough for the recipe")
 	}
 	res, err := recipeService.recipeRepository.Create(recipe)
 	if err != nil {
