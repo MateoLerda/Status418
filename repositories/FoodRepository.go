@@ -5,7 +5,7 @@ import (
 	"context"
 	"errors"
 	"os"
-
+	"time"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -60,10 +60,10 @@ func (foodRepository FoodRepository) GetAll(userCode string, minimumList bool) (
 
 func (foodRepository FoodRepository) GetByCode(foodCode primitive.ObjectID, userCode string) (models.Food, error) {
 	DBNAME := os.Getenv("DB_NAME")
-	
+
 	filter := bson.M{
-		"_id": foodCode,
-		"user_code":   userCode,
+		"_id":       foodCode,
+		"user_code": userCode,
 	}
 	data := foodRepository.db.GetClient().Database(DBNAME).Collection("Foods").FindOne(context.TODO(), filter)
 	var food models.Food
@@ -88,7 +88,10 @@ func (foodRepository FoodRepository) Create(food models.Food) (*mongo.InsertOneR
 
 func (foodRepository FoodRepository) Update(food models.Food) (*mongo.UpdateResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
-	filter := bson.M{"_id": food.Code}
+	food.UpdateDate = time.Now().String()
+	filter := bson.M{
+		"_id": food.Code,
+	}
 	update := toBSONUpdate(food)
 	res, err := foodRepository.db.GetClient().Database(DBNAME).Collection("Foods").UpdateOne(context.TODO(), filter, update)
 	if err != nil {
@@ -106,12 +109,12 @@ func toBSONUpdate(food models.Food) bson.M {
 		update["$set"].(bson.M)["unit_price"] = food.UnitPrice
 	}
 	if food.CurrentQuantity != 0 {
-		update["$set"].(bson.M)["current_quantity"] = food.CurrentQuantity
+		update["$inc"] = bson.M{"current_quantity": food.CurrentQuantity}
 	}
 	if food.MinimumQuantity != 0 {
 		update["$set"].(bson.M)["minimum_quantity"] = food.MinimumQuantity
 	}
-	update["$set"].(bson.M)["update_"]= food.UpdateDate
+	update["$set"].(bson.M)["update_"] = food.UpdateDate
 	return update
 }
 
@@ -128,4 +131,3 @@ func (foodRepository FoodRepository) Delete(foodCode primitive.ObjectID) (*mongo
 	}
 	return res, nil
 }
-

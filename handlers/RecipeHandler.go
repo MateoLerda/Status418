@@ -4,9 +4,10 @@ import (
 	"Status418/dto"
 	"Status418/services"
 	"Status418/utils"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 type RecipeHandler struct {
@@ -81,13 +82,12 @@ func (recipeHandler *RecipeHandler) Delete(c *gin.Context) {
 		return
 	}
 
-	if (err != nil && err.Error() == "notfound"){
+	if err != nil && err.Error() == "notfound" {
 		c.JSON(http.StatusOK, gin.H{"message": "Not found any recipe with id: " + id})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Successfully deleted recipe with id: " + id})
-	return
 
 }
 

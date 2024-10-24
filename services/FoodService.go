@@ -6,6 +6,7 @@ import (
 	"Status418/repositories"
 	"Status418/utils"
 	"time"
+
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -29,13 +30,13 @@ func NewFoodService(foodRepository repositories.FoodRepositoryInterface) *FoodSe
 
 func (foodService *FoodService) GetAll(userCode string, minimumList bool) (*[]dto.FoodDto, error) {
 	var foodsDTO []dto.FoodDto
-	foods, err := foodService.foodRepository.GetAll(userCode, false)
+	foods, err := foodService.foodRepository.GetAll(userCode, minimumList)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, food := range foods {
-		foodDTO := dto.NewFoodDto(food) // probar asi a ver si funciona 
+		foodDTO := dto.NewFoodDto(food) // probar asi a ver si funciona
 		foodsDTO = append(foodsDTO, *foodDTO)
 	}
 	return &foodsDTO, nil
@@ -63,7 +64,6 @@ func (foodService *FoodService) Create(foodDto dto.FoodDto, userCode string) (*m
 
 func (foodService *FoodService) Update(foodDto dto.FoodDto) (*mongo.UpdateResult, error) {
 	food := foodDto.GetModel()
-	food.UpdateDate = time.Now().String()
 	res, err := foodService.foodRepository.Update(food)
 	if err != nil {
 		return nil, err
@@ -74,9 +74,9 @@ func (foodService *FoodService) Update(foodDto dto.FoodDto) (*mongo.UpdateResult
 func (foodService *FoodService) Delete(userCode string, foodCode string) (*mongo.DeleteResult, error) {
 	DB := repositories.NewMongoDB()
 	recipeRepository := repositories.NewRecipeRepository(DB)
-	recipes , _ := recipeRepository.GetAll(userCode, models.Filter{})
+	recipes, _ := recipeRepository.GetAll(userCode, models.Filter{})
 	foodObjectId := utils.GetObjectIDFromStringID(foodCode)
-	for _,recipe := range recipes {
+	for _, recipe := range recipes {
 		for _, food := range recipe.Ingredients {
 			if food.FoodCode == foodObjectId {
 				recipeRepository.Delete(recipe.Id)
@@ -84,7 +84,7 @@ func (foodService *FoodService) Delete(userCode string, foodCode string) (*mongo
 			}
 		}
 	}
-	
+
 	res, err := foodService.foodRepository.Delete(foodObjectId)
 	if err != nil {
 		return nil, err

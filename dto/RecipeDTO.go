@@ -19,7 +19,7 @@ func NewRecipeDto(model models.Recipe) *RecipeDto {
 	var dtoIngredients []FoodQuantityDTO
 
 	for _, food := range model.Ingredients {
-		dtoIngredients = append(dtoIngredients, FoodQuantityDTO{FoodCode: utils.GetStringIDFromObjectID(food.FoodCode), Quantity: food.Quantity})
+		dtoIngredients = append(dtoIngredients, FoodQuantityDTO{FoodCode: utils.GetStringIDFromObjectID(food.FoodCode),Name: food.Name, Quantity: food.Quantity})
 	}
 
 	return &RecipeDto{
@@ -38,6 +38,7 @@ func (dto RecipeDto) GetModel() models.Recipe {
 	for _, food := range dto.Ingredients {
 		ingredients = append(ingredients, models.FoodQuantity{
 			FoodCode: utils.GetObjectIDFromStringID(food.FoodCode),
+			Name: food.Name,
 			Quantity: food.Quantity,
 		})
 	}

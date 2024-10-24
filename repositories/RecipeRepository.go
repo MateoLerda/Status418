@@ -59,9 +59,7 @@ func (recipeRepository RecipeRepository) Update(recipe models.Recipe) (*mongo.Up
 	filter := bson.M{
 		"_id": recipe.Id,
 	}
-	update := bson.M{
-		"$set": recipe,
-	}
+	update := toBSONUpdateRecipe(recipe)
 	res, err := recipeRepository.db.GetClient().Database(DBNAME).Collection("Recipes").UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		err = errors.New("internal")
@@ -73,6 +71,11 @@ func (recipeRepository RecipeRepository) Update(recipe models.Recipe) (*mongo.Up
 		return nil, err
 	}
 	return res, nil
+}
+func toBSONUpdateRecipe(recipe models.Recipe) bson.M {
+	update := bson.M{"$set": bson.M{}}
+	
+	return update
 }
 
 func (recipeRepository RecipeRepository) GetAll(userCode string, filters models.Filter) ([]models.Recipe, error) {
@@ -103,6 +106,7 @@ func (recipeRepository RecipeRepository) GetAll(userCode string, filters models.
 
 	return recipes, nil
 }
+
 
 func (recipeRepository RecipeRepository) GetByCode(userCode string, recipeId primitive.ObjectID) (models.Recipe, error) {
 	DBNAME := os.Getenv("DB_NAME")

@@ -1,6 +1,7 @@
 package dto
 
 type PurchaseDto struct {
-	TotalCost float64           `json:"total_cost" validate:"gte=0.0"`
-	Foods     []FoodQuantityDTO `json:"foods"`
+	TotalCost float64           `json:"total_cost,omitempty"`
+	Foods     []FoodQuantityDTO `json:"foods,omitempty"`
 }
+

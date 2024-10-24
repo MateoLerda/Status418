@@ -51,11 +51,11 @@ func filterByType(recipes []models.Recipe, userCode string, fType enums.FoodType
 func validateQuantity(recipe models.Recipe) bool {
 	for i, foodQuantity := range recipe.Ingredients {
 		food, _ := getFoodByCode(foodQuantity.FoodCode, recipe.UserCode)
-	
+
 		if food.CurrentQuantity < foodQuantity.Quantity {
 			break
 		}
-		if i+1 == len(recipe.Ingredients){
+		if i+1 == len(recipe.Ingredients) {
 			return true
 		}
 	}
@@ -65,7 +65,7 @@ func validateQuantity(recipe models.Recipe) bool {
 func filterByQuantity(recipes []models.Recipe) ([]models.Recipe, error) {
 	var filteredRecipes []models.Recipe
 	for _, recipe := range recipes {
-		if (validateQuantity(recipe)) {
+		if validateQuantity(recipe) {
 			filteredRecipes = append(filteredRecipes, recipe)
 		}
 	}
@@ -111,7 +111,7 @@ func (recipeService *RecipeService) Create(newRecipe dto.RecipeDto) (*mongo.Inse
 	if !validation {
 		return nil, errors.New("the food moment doesn´t match with the recipe moment")
 	}
-	if(!validateQuantity(recipe)){
+	if !validateQuantity(recipe) {
 		return nil, errors.New("the foods are not enough for the recipe")
 	}
 	res, err := recipeService.recipeRepository.Create(recipe)
@@ -183,15 +183,17 @@ func (recipeService *RecipeService) Cook(userCode string, recipeId primitive.Obj
 	DB := repositories.NewMongoDB()
 	foodRepository := repositories.NewFoodRepository(DB)
 	for _, foodQuantity := range recipe.Ingredients {
-		food, err := foodRepository.GetByCode(foodQuantity.FoodCode, userCode)
-		if err != nil {
-			return false, errors.New("internal")
-		}
+		//food, err := foodRepository.GetByCode(foodQuantity.FoodCode, userCode)
+		// if err != nil {
+		// 	return false, errors.New("internal")
+		// }
+		var food models.Food
+		food.Code = foodQuantity.FoodCode
 		if !cancel {
-			food.CurrentQuantity -= foodQuantity.Quantity
+			food.CurrentQuantity = -foodQuantity.Quantity
 			//SI LA RECETA SE HACE, LA CANTIDAD SE RESTA DE LA ACTUAL
 		} else {
-			food.CurrentQuantity += foodQuantity.Quantity
+			food.CurrentQuantity = foodQuantity.Quantity
 			//SI LA RECETA SE HIZO PERO SE CANCELA LA CANTIDAD SE SUMA A LA ACTUAL
 		}
 		_, err = foodRepository.Update(food)

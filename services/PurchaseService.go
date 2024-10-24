@@ -6,6 +6,7 @@ import (
 	"Status418/repositories"
 	"Status418/utils"
 	"time"
+
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -29,6 +30,7 @@ func calculatePurchaseAllFoods(foods []models.Food) models.Purchase {
 		purchase.TotalCost += food.UnitPrice * (float64)(food.MinimumQuantity-food.CurrentQuantity)
 		purchase.Foods = append(purchase.Foods, models.FoodQuantity{
 			FoodCode: food.Code,
+			Name: food.Name,
 			Quantity: food.MinimumQuantity - food.CurrentQuantity,
 		})
 	}
@@ -51,7 +53,7 @@ func (purchaseService *PurchaseService) Create(userCode string, newPurchase dto.
 				return nil, err
 			}
 			purchase.TotalCost += food.UnitPrice * float64(foodQuantity.Quantity)
-			purchase.Foods = append(purchase.Foods, models.FoodQuantity{FoodCode: foodObjectId, Quantity: foodQuantity.Quantity})
+			purchase.Foods = append(purchase.Foods, models.FoodQuantity{FoodCode: foodObjectId, Name: food.Name, Quantity: foodQuantity.Quantity})
 		}
 	} else {
 		foods, err = foodRepository.GetAll(userCode, true)
@@ -60,12 +62,22 @@ func (purchaseService *PurchaseService) Create(userCode string, newPurchase dto.
 		}
 		purchase = calculatePurchaseAllFoods(foods)
 	}
-	
-	purchase.PurchaseDate = time.Now()
+
+	purchase.PurchaseDate = time.Now().String()
 	purchase.UserCode = userCode
-	res, err := purchaseService.purchaseRepository.Create(purchase)
+	create, err := purchaseService.purchaseRepository.Create(purchase)
 	if err != nil {
 		return nil, err
 	}
-	return res, nil
+	for _, food := range purchase.Foods {
+		var updatedFood models.Food
+		updatedFood.Code = food.FoodCode
+		updatedFood.CurrentQuantity = food.Quantity
+		_,err := foodRepository.Update(updatedFood)
+		if err!= nil {
+			return nil, err
+		}
+	}
+	return create, nil
 }
+//ahora nop porque ahora si ante no ahora
