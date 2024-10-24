@@ -1,8 +1,8 @@
 package repositories
 
 import (
-	"Status418/models"
 	"Status418/enums"
+	"Status418/models"
 	"context"
 	"errors"
 	"os"
@@ -72,9 +72,15 @@ func (recipeRepository RecipeRepository) Update(recipe models.Recipe) (*mongo.Up
 	}
 	return res, nil
 }
+
 func toBSONUpdateRecipe(recipe models.Recipe) bson.M {
 	update := bson.M{"$set": bson.M{}}
-	
+	if recipe.Name != "" {
+		update["$set"].(bson.M)["recipe_name"] = recipe.Name
+	}
+	if recipe.Description != "" {
+		update["$set"].(bson.M)["recipe_description"] = recipe.Description
+	}
 	return update
 }
 
@@ -107,12 +113,11 @@ func (recipeRepository RecipeRepository) GetAll(userCode string, filters models.
 	return recipes, nil
 }
 
-
 func (recipeRepository RecipeRepository) GetByCode(userCode string, recipeId primitive.ObjectID) (models.Recipe, error) {
 	DBNAME := os.Getenv("DB_NAME")
 
 	filter := bson.M{
-		"_id": recipeId,
+		"_id":             recipeId,
 		"recipe_usercode": userCode,
 	}
 	data := recipeRepository.db.GetClient().Database(DBNAME).Collection("Recipes").FindOne(context.TODO(), filter)

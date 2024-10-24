@@ -126,9 +126,12 @@ func (recipeHandler *RecipeHandler) Cook(c *gin.Context) {
 
 	if err != nil && err.Error() == "internal" {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to cancel recipe"})
+		return
 	}
+
 	if err != nil && err.Error() == "notfound" {
 		c.JSON(http.StatusOK, gin.H{"message": "Not found any recipe with id: " + recipeId})
+		return
 	}
 
 	c.JSON(http.StatusOK, res)
