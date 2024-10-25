@@ -113,7 +113,7 @@ func (recipeHandler *RecipeHandler) Update(c *gin.Context) {
 }
 
 func (recipeHandler *RecipeHandler) Cook(c *gin.Context) {
-	recipeId := c.Param("recipe_id") //ver que onda
+	recipeId := c.Param("recipeid") 
 	recipeObjectId := utils.GetObjectIDFromStringID(recipeId)
 	userInfo := utils.GetUserInfoFromContext(c)
 
