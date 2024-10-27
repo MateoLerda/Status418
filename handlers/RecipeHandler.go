@@ -4,6 +4,7 @@ import (
 	"Status418/dto"
 	"Status418/services"
 	"Status418/utils"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -31,7 +32,7 @@ func (recipeHandler *RecipeHandler) GetAll(c *gin.Context) {
 	filters.Moment = c.Query("filter_moment")
 	filters.Type = c.Query("filter_type")
 	filters.All, _ = strconv.ParseBool(c.Query("filter_all"))
-
+	log.Printf("[handler: RecipeHandler][method: GetAll]")
 	recipes, err := recipeHandler.recipeService.GetAll(user.Code, filters)
 
 	if err != nil && err.Error() == "internal" {
@@ -47,6 +48,7 @@ func (recipeHandler *RecipeHandler) GetAll(c *gin.Context) {
 		})
 		return
 	}
+	log.Printf("[handler: RecipeHandler][method: GetAll] filters: %v", filters)
 	c.JSON(http.StatusOK, recipes)
 }
 
@@ -63,18 +65,20 @@ func (recipeHandler *RecipeHandler) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
 		return
 	}
+	log.Printf("[handler: RecipeHandler][method: Create]")
 	res, err := recipeHandler.recipeService.Create(recipe)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to create recipe " + err.Error()})
 		return
 	}
-
+	log.Printf("[handler: RecipeHandler][method: Create] recipe: %v", recipe)
 	c.JSON(http.StatusOK, res)
 }
 
 func (recipeHandler *RecipeHandler) Delete(c *gin.Context) {
 	id := c.Param("recipeid")
+	log.Printf("[handler: RecipeHandler][method: Delete]")
 	_, err := recipeHandler.recipeService.Delete(id)
 
 	if err != nil && err.Error() == "internal" {
@@ -86,7 +90,7 @@ func (recipeHandler *RecipeHandler) Delete(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "Not found any recipe with id: " + id})
 		return
 	}
-
+	log.Printf("[handler: RecipeHandler][method: Delete] recipeId: %v", id)
 	c.JSON(http.StatusOK, gin.H{"message": "Successfully deleted recipe with id: " + id})
 
 }
@@ -100,6 +104,7 @@ func (recipeHandler *RecipeHandler) Update(c *gin.Context) {
 		return
 	}
 	recipe.Id = id
+	log.Printf("[handler: RecipeHandler][method: Update]")
 	res, err := recipeHandler.recipeService.Update(recipe)
 
 	if err != nil && err.Error() == "internal" {
@@ -108,12 +113,12 @@ func (recipeHandler *RecipeHandler) Update(c *gin.Context) {
 	if err != nil && err.Error() == "notfound" {
 		c.JSON(http.StatusOK, gin.H{"message": "Not found any recipe with id: " + id})
 	}
-
+	log.Printf("[handler: RecipeHandler][method: Update] recipe: %v", recipe)
 	c.JSON(http.StatusOK, res)
 }
 
 func (recipeHandler *RecipeHandler) Cook(c *gin.Context) {
-	recipeId := c.Param("recipeid") 
+	recipeId := c.Param("recipeid")
 	recipeObjectId := utils.GetObjectIDFromStringID(recipeId)
 	userInfo := utils.GetUserInfoFromContext(c)
 
@@ -122,6 +127,7 @@ func (recipeHandler *RecipeHandler) Cook(c *gin.Context) {
 		return
 	}
 	cancel, _ := strconv.ParseBool(c.Query("cancel"))
+	log.Printf("[handler: RecipeHandler][method: Cook]")
 	res, err := recipeHandler.recipeService.Cook(userInfo.Code, recipeObjectId, cancel)
 
 	if err != nil && err.Error() == "internal" {
@@ -133,6 +139,6 @@ func (recipeHandler *RecipeHandler) Cook(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "Not found any recipe with id: " + recipeId})
 		return
 	}
-
+	log.Printf("[handler: RecipeHandler][method: Cook] recipeId: %v", recipeId)
 	c.JSON(http.StatusOK, res)
 }

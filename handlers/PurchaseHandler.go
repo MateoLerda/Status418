@@ -4,6 +4,7 @@ import (
 	"Status418/dto"
 	"Status418/services"
 	"Status418/utils"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -28,11 +29,13 @@ func (purchaseHandler *PurchaseHandler) Create(c *gin.Context) {
 			return
 		}
 	}
+	log.Printf("[handler: PurchaseHandler][method: Create]")
 	purchase, err := purchaseHandler.purchaseService.Create(user.Code, newPurchase)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create purchase", "details": err.Error()})
 		return
 	}
+	log.Printf("[handler: PurchaseHandler][method: Create] purchase: %v", purchase)
 	c.JSON(http.StatusAccepted, purchase)
 
 }
