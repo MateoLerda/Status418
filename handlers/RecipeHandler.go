@@ -48,7 +48,7 @@ func (recipeHandler *RecipeHandler) GetAll(c *gin.Context) {
 		})
 		return
 	}
-	log.Printf("[handler: RecipeHandler][method: GetAll] filters: %v", filters)
+	log.Printf("[handler: RecipeHandler][method: GetAll] lenght of List: %v", len(*recipes))
 	c.JSON(http.StatusOK, recipes)
 }
 
@@ -113,7 +113,7 @@ func (recipeHandler *RecipeHandler) Update(c *gin.Context) {
 	if err != nil && err.Error() == "notfound" {
 		c.JSON(http.StatusOK, gin.H{"message": "Not found any recipe with id: " + id})
 	}
-	log.Printf("[handler: RecipeHandler][method: Update] recipe: %v", recipe)
+	log.Printf("[handler: RecipeHandler][method: Update] recipeId: %v", id)
 	c.JSON(http.StatusOK, res)
 }
 

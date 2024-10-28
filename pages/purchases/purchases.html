@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="purchases.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap" rel="stylesheet" />
+</head>
+
+<body class="page-container">
+    <nav class="nav-container navbar navbar-expand-lg sticky-top">
+        <div class="title-icon-container">
+            <img class="teapot" src="/assets/teapot.png" alt="" />
+            <p class="group-title">Status418</p>
+        </div>
+        <ul class="nav">
+            <li class="nav-item">
+                <a class="nav-link green-color " href="/pages/home/home.html">
+                    <i class="fa-solid fa-house"></i>Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link green-color" href="#">
+                    <i class="fa-solid fa-drumstick-bite"></i> Foods</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link green-color" href="#">
+                    <i class="fa-solid fa-utensils"></i> Recipes</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link green-color bold-words" href="/pages/purchases/purchases.html">
+                    <i class="fa-solid fa-cart-shopping"></i> Purchases</a>
+            </li>
+        </ul>
+    </nav>
+    <div class="main-container">
+        <div class="food-list-container">
+            <table class="food-table">
+                <thead>
+                    <tr>
+                        <th class="food-item"id="name">Name</th>
+                        <th class="food-item"id="price">Price</th>
+                        <th class="food-item"id="quantity">Quantity</th>
+                        <th class="food-item"id="buy">Buy</th>
+                    </tr>
+                </thead>
+                <tbody id="dynamic-food-table">
+                    <!-- Aquí se llenará la tabla con JavaScript -->
+                </tbody>
+            </table>
+           
+        </div>
+        <div class="button-container">
+            <button type="button" class="btnMinimunList"> Buy food automatically </button>
+            <button type="button" class="btnManually"> Buy food manually </button>
+        </div>
+    </div>
+    <footer class="footer-container fixed-bottom">
+        <i class="information">© 2024 Status 418 Official Shop</i>  
+        <i class="information">Telephone: +54 9 3492-654321</i>
+        <i class="information">Email: Status418@gmail.com</i>
+        <i class="information">Address: Main St 170, Rafaela, Santa Fe, Argentina</i>
+        
+      </footer>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+<script src="https://kit.fontawesome.com/61c5807aca.js" crossorigin="anonymous"></script>
+
+</html>
