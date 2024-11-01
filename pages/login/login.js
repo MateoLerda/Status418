@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function (eventDOM) {
 
 function successFn(response) {
   console.log("Éxito:", response);
-  window.location = 'index.html';
+  window.location = '../home/home.html';
 }
 
 function errorFn(status, response) {

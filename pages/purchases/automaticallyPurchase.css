@@ -65,7 +65,7 @@ a {
     font-weight: 600;
 }
 
-#btnManually {
+#btnAutomatically {
     background-color: #e2dec7;
     border: 2px solid #2a6049;
     border-radius: 10px;
@@ -74,7 +74,7 @@ a {
     margin-bottom: 20px;
 }
 
-#btnManually:hover {
+#btnAutomatically:hover {
     background-color: #2a6049;
     color: white;
     transition: 0.5s;
@@ -149,6 +149,14 @@ tbody td {
     font-size: 50px;
 }
 
+body {
+    overflow-y: auto;
+}
+
+.page-container {
+    flex: 1;
+}   
+
 .dialog{
     font-size: 24px;
     color: #2a6049;
@@ -183,5 +191,3 @@ tbody td {
     color:#e2dec7 ;
     transition: 0.5s;
 }
-
-

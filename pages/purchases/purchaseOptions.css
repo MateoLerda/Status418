@@ -65,13 +65,39 @@ a {
     font-weight: 600;
 }
 
+.button-container{
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+    gap: 100px;
+}
+#btnMinimunList {
+    background-color: #e2dec7;
+    border: 2px solid #2a6049;
+    border-radius: 10px;
+    padding: 5px;
+    margin-top: 30px;
+    margin-right: 50px;
+    color: #2a6049;
+    text-decoration: none;
+}
+
+#btnMinimunList:hover {
+    background-color: #2a6049;
+    color: white;
+    transition: 0.5s;
+}
+
+
+
 #btnManually {
     background-color: #e2dec7;
     border: 2px solid #2a6049;
     border-radius: 10px;
-    padding: 15px;
-    margin-top: 15px;
-    margin-bottom: 20px;
+    padding: 5px;
+    margin-top: 30px;
+    color: #2a6049;
+    text-decoration: none;
 }
 
 #btnManually:hover {
@@ -85,7 +111,6 @@ a {
     flex-direction: column;
     align-items: center;
     margin-top: 20px;
-    margin-bottom: 50px;
 }
 
 
@@ -101,9 +126,8 @@ a {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex: 0;
     background-color: #1c4333;
-    width: 100%;
-    margin-top:auto;
 }
 
 .information {
@@ -123,65 +147,22 @@ tbody td {
     text-align: center;
 }
 
-.decrement{
-    background-color: #e2dec7;
-    border: 2px solid #2a6049;
-    border-radius: 5px;
-}
-.increment{
-    background-color: #e2dec7;
-    border: 2px solid #2a6049;
-    border-radius: 5px;
-   
-}
-#quantityToBuy{
-    width: 40px;
-    text-align: center;
-    border: 2px solid #2a6049;
-    border-radius: 5px;
-    margin-left: 5px;
-    margin-right: 5px;
-    font-weight: 600;
-}
 
 .principal-purchase-title{
     font-family: "Dancing Script", cursive;
     font-size: 50px;
 }
 
-.dialog{
-    font-size: 24px;
-    color: #2a6049;
-    text-align: center;
-    margin-top: 20px;
-    padding: 20px;
-    border: 4px solid #2a6049;
-    border-radius: 10px;
-    background-color: #e2dec7;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 20px;
-    text-align: center;
+.explanation-container{
     display: grid;
-    font-weight: 700;
-    .close-button{
-        width: 150px;
-        justify-self: center;
-        background-color: #e2dec7;
-        color: #2a6049;
-        border: 3px solid #2a6049;
-        border-radius: 5px;
-        padding: 5px;
-        margin-top: 10px;
-        font-weight: 700;
-    }
+    grid-template-columns: 1fr 1fr;
+    margin-top: 20px;
+    
 }
-.close-button:hover{
-    background-color:#2a6049 ;
-    color:#e2dec7 ;
-    transition: 0.5s;
+.explanation{
+    border: 3px solid #2a6049;
+    padding: 10px;
+    background-color: #e2dec7;
+    max-width: 300px;
+    margin: 10px;
 }
-
-

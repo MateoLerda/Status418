@@ -100,7 +100,7 @@ const Method = {
         );
   
         if (response.status === 401) {
-          window.location = "login.html?reason=token_invalid";
+          window.location = "http://localhost:5500/pages/login/login.html?reason=token_invalid";
         }
   
         errorCallback(response.status, responseBody);
