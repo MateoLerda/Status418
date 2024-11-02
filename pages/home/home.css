@@ -92,6 +92,8 @@ a {
   display: flex;
   flex-direction: row;
   width: 150px;
+ 
+  margin-right: 20px;
 }
 
 .group-title {
