@@ -196,7 +196,7 @@ func (recipeService *RecipeService) Cook(userCode string, recipeId primitive.Obj
 			food.CurrentQuantity = foodQuantity.Quantity
 			//SI LA RECETA SE HIZO PERO SE CANCELA LA CANTIDAD SE SUMA A LA ACTUAL
 		}
-		_, err = foodRepository.Update(food)
+		_, err = foodRepository.Update(food, true)
 		//SEGUN LO QUE HAYA SUCEDIDO, UPDATEAMOS EN LA BD EL ALIMENTO
 		if err != nil {
 			return false, err

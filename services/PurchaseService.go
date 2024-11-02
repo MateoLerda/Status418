@@ -73,7 +73,7 @@ func (purchaseService *PurchaseService) Create(userCode string, newPurchase dto.
 		var updatedFood models.Food
 		updatedFood.Code = food.FoodCode
 		updatedFood.CurrentQuantity = food.Quantity
-		_,err := foodRepository.Update(updatedFood)
+		_,err := foodRepository.Update(updatedFood, false)
 		if err!= nil {
 			return nil, err
 		}

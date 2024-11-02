@@ -64,7 +64,7 @@ func (foodService *FoodService) Create(foodDto dto.FoodDto, userCode string) (*m
 
 func (foodService *FoodService) Update(foodDto dto.FoodDto) (*mongo.UpdateResult, error) {
 	food := foodDto.GetModel()
-	res, err := foodService.foodRepository.Update(food)
+	res, err := foodService.foodRepository.Update(food, false)
 	if err != nil {
 		return nil, err
 	}

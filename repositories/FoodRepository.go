@@ -4,18 +4,18 @@ import (
 	"Status418/models"
 	"context"
 	"errors"
-	"os"
-	"time"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"os"
+	"time"
 )
 
 type FoodRepositoryInterface interface {
 	GetAll(userCode string, minimumList bool) ([]models.Food, error)
 	GetByCode(foodCode primitive.ObjectID, userCode string) (models.Food, error)
 	Create(newFood models.Food) (*mongo.InsertOneResult, error)
-	Update(updateFood models.Food) (*mongo.UpdateResult, error)
+	Update(updateFood models.Food, cook bool) (*mongo.UpdateResult, error)
 	Delete(foodcode primitive.ObjectID) (*mongo.DeleteResult, error)
 }
 
@@ -86,13 +86,13 @@ func (foodRepository FoodRepository) Create(food models.Food) (*mongo.InsertOneR
 	return res, nil
 }
 
-func (foodRepository FoodRepository) Update(food models.Food) (*mongo.UpdateResult, error) {
+func (foodRepository FoodRepository) Update(food models.Food, cook bool) (*mongo.UpdateResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
 	food.UpdateDate = time.Now().String()
 	filter := bson.M{
 		"_id": food.Code,
 	}
-	update := toBSONUpdate(food)
+	update := toBSONUpdate(food, cook)
 	res, err := foodRepository.db.GetClient().Database(DBNAME).Collection("Foods").UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		return nil, err
@@ -100,21 +100,26 @@ func (foodRepository FoodRepository) Update(food models.Food) (*mongo.UpdateResu
 	return res, nil
 }
 
-func toBSONUpdate(food models.Food) bson.M {
+func toBSONUpdate(food models.Food, cook bool) bson.M {
 	update := bson.M{"$set": bson.M{}}
+	if food.Type.String() != "" {
+		update["$set"].(bson.M)["type"] = food.Type
+	}
 	if food.Name != "" {
 		update["$set"].(bson.M)["name"] = food.Name
 	}
 	if food.UnitPrice != 0 {
 		update["$set"].(bson.M)["unit_price"] = food.UnitPrice
 	}
-	if food.CurrentQuantity != 0 {
+	if cook {
 		update["$inc"] = bson.M{"current_quantity": food.CurrentQuantity}
+	} else {
+		update["$set"].(bson.M)["current_quantity"] = food.CurrentQuantity
 	}
 	if food.MinimumQuantity != 0 {
 		update["$set"].(bson.M)["minimum_quantity"] = food.MinimumQuantity
 	}
-	update["$set"].(bson.M)["update_"] = food.UpdateDate
+	update["$set"].(bson.M)["update_date"] = food.UpdateDate
 	return update
 }
 

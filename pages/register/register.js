@@ -1,4 +1,3 @@
-
 const url = "http://w230847.ferozo.com/tp_prog2/api/account/register";
 
 document.addEventListener("DOMContentLoaded", function (eventDOM) {

@@ -82,7 +82,7 @@ func (foodHandler *FoodHandler) Update(c *gin.Context) {
 	var updateFood dto.FoodDto
 	updateCode := c.Param("foodcode")
 	if err := c.ShouldBindJSON(&updateFood); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse request body"})
 		return
 	}
 	updateFood.Code = updateCode

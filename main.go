@@ -26,7 +26,7 @@ func main() {
 	}
 
 	r = gin.Default()
-
+	r.Use(middlewares.CORSMiddleware())
 	dependencies()
 	routes()
 

@@ -14,6 +14,6 @@ type Food struct {
 	CurrentQuantity int                `bson:"current_quantity"`
 	MinimumQuantity int                `bson:"minimum_quantity"`
 	CreationDate    string             `bson:"creation_date"`
-	UpdateDate      string             `bson:"update_"`
+	UpdateDate      string             `bson:"update_date"`
 	UserCode        string             `bson:"user_code"`
 }
