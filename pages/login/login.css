@@ -10,6 +10,7 @@ body {
   display: flex;
   flex-direction: column;
   padding: 500px;
+  padding-bottom: 600px;
   justify-content: center;
   align-items: center;
   border: solid 2px #2a6049;
