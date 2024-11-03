@@ -135,3 +135,19 @@ a {
   padding: 30px;
   color: #e2dec7;
 }
+
+.user-info {
+  display: flex;
+  flex-direction: row;
+  width: 150px;
+  margin-top: 10px;
+  margin-right: 5px;
+}
+
+.user-mail {
+  font-size: 14px;
+}
+
+.user-mail:hover {
+  color: #367b5d;
+}

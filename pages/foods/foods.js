@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', fetchAllFoods);
 function fetchAllFoods() {
   let token = isUserLogged();
   if (token == false) {
-    window.location.href = 'http://127.0.0.1:5500/pages/login/login.html';
+    window.location.href = '/pages/login/login.html';
   }
   const userInfo = document.getElementById('user-info');
   const userMail = document.createElement('p');

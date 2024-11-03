@@ -21,6 +21,10 @@ html {
   justify-content: center;
 }
 
+.nav .nav-item .bold-words {
+  font-weight: 600;
+}
+
 .group-title {
   font-weight: 700;
   font-family: "Dancing Script", cursive;
@@ -198,6 +202,7 @@ html {
   flex-direction: row;
   width: 150px;
   margin-top: 10px;
+  margin-right: 3px;
 }
 
 .user-mail {
