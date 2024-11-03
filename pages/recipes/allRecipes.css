@@ -63,10 +63,6 @@ a {
     text-decoration: none;
 }
 
-.bi {
-    margin-right: 5px;
-}
-
 .bold-words {
     font-weight: 600;
 }
@@ -95,6 +91,12 @@ a {
     flex-direction: row;
     align-items: flex-start;
     font-size: 20px;
+    text-decoration: none;
+    color: black;
+}
+
+.title-icon-container:hover {
+    color: #367b5d
 }
 
 .nav-link:hover {
@@ -212,8 +214,6 @@ a {
     height: calc(100vh - 350px);
     overflow-y: auto;
 }
-
-
 
 /* Estilo del interruptor */
 .switch {
@@ -374,3 +374,20 @@ dialog::backdrop {
 ::-webkit-scrollbar-thumb:hover {
     background-color: #144731; /* Color al pasar el mouse */
 }
+
+.user-info {
+    display: flex;
+    flex-direction: row;
+    width: 150px;
+    margin-top: 10px;
+    margin-right: 5px;
+  }
+  
+  .user-mail {
+    font-size: 14px;
+    margin-left: 3px;
+  }
+  
+  .user-mail:hover {
+    color: #367b5d;
+  }

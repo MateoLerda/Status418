@@ -54,7 +54,6 @@ body {
   font-size: 20px;
 }
 
-
 .nav-container {
   flex: 0;
 }
@@ -74,10 +73,6 @@ a {
   text-decoration: none;
 }
 
-.bi {
-  margin-right: 5px;
-}
-
 .bold-words {
   font-weight: 600;
 }
@@ -92,7 +87,6 @@ a {
   display: flex;
   flex-direction: row;
   width: 150px;
- 
   margin-right: 20px;
 }
 
@@ -108,6 +102,12 @@ a {
   flex-direction: row;
   align-items: flex-start;
   font-size: 20px;
+  text-decoration: none;
+  color: black;
+}
+
+.title-icon-container:hover {
+  color: #367b5d
 }
 
 .nav-link:hover {
@@ -146,6 +146,7 @@ a {
 
 .user-mail {
   font-size: 14px;
+  margin-left: 3px;
 }
 
 .user-mail:hover {

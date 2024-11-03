@@ -23,14 +23,17 @@
     />
   </head>
   <body class="page-container">
-    <nav class="nav-container navbar navbar-expand-lg sticky-top">
-      <div class="title-icon-container">
+    <nav id="navbar" class="nav-container navbar navbar-expand-lg sticky-top">
+      <a class="title-icon-container" href="/pages/home/home.html">
         <img class="teapot" src="/assets/teapot.png" alt="" />
         <p class="group-title">Status418</p>
-      </div>
+      </a>
       <ul class="nav">
         <li class="nav-item">
-          <a class="nav-link green-color bold-words" href="/pages/home/home.html">
+          <a
+            class="nav-link green-color bold-words"
+            href="/pages/home/home.html"
+          >
             <i class="fa-solid fa-house"></i>Home</a
           >
         </li>
@@ -45,12 +48,15 @@
           >
         </li>
         <li class="nav-item">
-          <a class="nav-link green-color " href="/pages/purchases/purchaseOptions.html">
+          <a
+            class="nav-link green-color"
+            href="/pages/purchases/purchaseOptions.html"
+          >
             <i class="fa-solid fa-cart-shopping"></i> Purchases</a
           >
         </li>
       </ul>
-      <div class="login">
+      <div id="login" class="login">
         <a class="green-color bold-words" href="../login/login.html"
           ><i class="bi bi-person-circle green-color"></i>Iniciar Sesión</a
         >
@@ -87,7 +93,6 @@
             class="card-img-top"
             src="/assets/purchase.jpg"
             alt="Card image cap"
-            
           />
           <div class="card-body">
             <p class="card-text">Purchases</p>
@@ -96,11 +101,12 @@
       </div>
     </main>
     <footer class="footer-container fixed-bottom">
-      <i class="information">© 2024 Status 418 Official Shop</i>  
+      <i class="information">© 2024 Status 418 Official Shop</i>
       <i class="information">Telephone: +54 9 3492-654321</i>
       <i class="information">Email: Status418@gmail.com</i>
-      <i class="information">Address: Main St 170, Rafaela, Santa Fe, Argentina</i>
-      
+      <i class="information"
+        >Address: Main St 170, Rafaela, Santa Fe, Argentina</i
+      >
     </footer>
   </body>
   <script
@@ -112,9 +118,6 @@
     src="https://kit.fontawesome.com/61c5807aca.js"
     crossorigin="anonymous"
   ></script>
+  <script src="/pages/request.js"></script>
+  <script src="/pages/home/home.js"></script>
 </html>
-
-<!-- <form class="d-flex" role="search">
-    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-    <button class="btn btn-outline-success" type="submit">Search</button>
-</form> -->
