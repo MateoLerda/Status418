@@ -23,7 +23,6 @@ body {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    margin-right: 150px;
 }
 
 .teapot {
@@ -44,7 +43,7 @@ a {
 }
 
 .bold-words {
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .group-title {
@@ -166,3 +165,22 @@ tbody td {
     max-width: 300px;
     margin: 10px;
 }
+
+.user-info {
+    display: flex;
+    flex-direction: row;
+    width: 150px;
+    margin-top: 10px;
+    color: #2a6049;
+
+  }
+  
+  .user-mail {
+    font-size: 14px;
+    margin-left: 3px;
+    color: #2a6049;
+  }
+
+  .user-mail:hover {
+    color: #367b5d;
+  }

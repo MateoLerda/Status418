@@ -3,6 +3,11 @@ const baseUrlCreatePurchase = "http://localhost:8080/purchases/";
 document.addEventListener('DOMContentLoaded', getMinimumList);
 
 function getMinimumList() {
+    const userInfo = document.getElementById('user-info');
+    const userMail = document.createElement('p');
+    userMail.textContent = localStorage.getItem('user-mail');
+    userMail.classList.add('green-color', 'bold-words', 'user-mail');
+    userInfo.appendChild(userMail);
     makeRequest(
         baseUrlPurchases,
         "GET",
@@ -12,43 +17,7 @@ function getMinimumList() {
         showMinimumList,
         failedGet
     )
-    // let token = isUserLogged();
-    // if (token == false) {
-    //     window.location.href = "http://localhost:5500/pages/login/login.html";
-    // }
-    // const options = {
-    //     method: "GET",
-    //     headers: {
-    //         "Content-Type": "application/json",
-    //         Accept: "application/json",
-    //         Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-    //     },
-    // };
-
-    // fetch(baseUrlPurchases, options)
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         if (!Array.isArray(data)) {
-    //             console.error('La respuesta no es un arreglo:', data);
-    //             throw new Error("La respuesta de la API no es un arreglo");
-    //         }
-    //         const foodTable = document.getElementById('dynamic-food-table');
-    //         data.forEach(food => {
-    //             const row = document.createElement('tr');
-    //             row.innerHTML = `
-    //                 <td class="food-name">${food.name}</td>
-    //                 <td>U$D ${food.unit_price}</td>
-    //                 <td>${food.current_quantity}</td>
-    //                 <td>${food.minimum_quantity}</td>
-    //                 <td class="quantity-to-buy">${food.minimum_quantity - food.current_quantity}</td>
-    //               `;
-
-    //             foodTable.appendChild(row);
-    //         });
-    //     })
-    //     .catch(error => {
-    //         console.error('Error al obtener datos:', error);
-    //     });
+  
 }
 function showMinimumList(data) {
     const foodTable = document.getElementById('dynamic-food-table');
