@@ -5,6 +5,11 @@ const baseUrlCreatePurchase = "http://localhost:8080/purchases/";
 document.addEventListener('DOMContentLoaded', getFoodsInPurchases);
 
 function getFoodsInPurchases() {
+    const userInfo = document.getElementById('user-info');
+    const userMail = document.createElement('p');
+    userMail.textContent = localStorage.getItem('user-mail');
+    userMail.classList.add('green-color', 'bold-words', 'user-mail');
+    userInfo.appendChild(userMail);
     makeRequest(
         baseUrl,
         "GET",
@@ -14,61 +19,7 @@ function getFoodsInPurchases() {
         showFoods,
         failedGet
     );
-    // let token = isUserLogged();
-    // if (token == false) {
-    //     window.location.href = "http://127.0.0.1:5500/pages/login/login.html";
-    // }
 
-    // const options = {
-    //     method: "GET",
-    //     headers: {
-    //         "Content-Type": "application/json",
-    //         Accept: "application/json",
-    //         Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-    //     },
-    // };
-
-    // fetch(baseUrl, options)
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         const foodTable = document.getElementById('dynamic-food-table');
-    //         data.forEach(food => {
-    //             const row = document.createElement('tr');
-    //             row.setAttribute('food-code', food._id);
-    //             row.innerHTML = `
-    //                 <td>${food.name}</td>
-    //                 <td>U$D ${food.unit_price}</td>
-    //                 <td>${food.current_quantity}</td>
-    //                 <td>${food.minimum_quantity}</td>
-    //                 <td>
-    //                     <button class="decrement"><i class="fa-solid fa-minus"></i></button>
-    //                     <input type="number" value="0" size="2" readonly>
-    //                     <button class="increment"><i class="fa-solid fa-plus"></i></button>
-
-    //                 </td>
-    //             `;
-    //             const decrementButton = row.querySelector('.decrement');
-    //             const input = row.querySelector('input');
-    //             input.id = 'quantityToBuy';
-    //             const incrementButton = row.querySelector('.increment');
-
-
-    //             incrementButton.addEventListener('click', () => {
-    //                 input.value = parseInt(input.value) + 1;
-    //             });
-
-    //             decrementButton.addEventListener('click', () => {
-    //                 if (parseInt(input.value) > 0) {
-    //                     input.value = parseInt(input.value) - 1;
-    //                 }
-    //             });
-
-    //             foodTable.appendChild(row);
-    //         });
-    //     })
-    //     .catch(error => {
-    //         console.error('Error al obtener datos:', error);
-    //     });
 }
 
 function failedGet(response) {
@@ -212,7 +163,7 @@ function successPurchase(response) {
 
     dialog.appendChild(closeButton);
     document.body.appendChild(dialog);
-   
+
 }
 
 function failedPurchase(response) {
