@@ -11,7 +11,7 @@ import (
 )
 
 type FoodServiceInterface interface {
-	GetAll(userCode string, minimumList bool) (*[]dto.FoodDto, error)
+	GetAll(userCode string, filter dto.FiltersDto) (*[]dto.FoodDto, error)
 	GetByCode(foodCode string, userCode string) (*dto.FoodDto, error)
 	Create(newFood dto.FoodDto, userCode string) (*mongo.InsertOneResult, error)
 	Update(updateFood dto.FoodDto) (*mongo.UpdateResult, error)
@@ -28,9 +28,9 @@ func NewFoodService(foodRepository repositories.FoodRepositoryInterface) *FoodSe
 	}
 }
 
-func (foodService *FoodService) GetAll(userCode string, minimumList bool) (*[]dto.FoodDto, error) {
+func (foodService *FoodService) GetAll(userCode string, filter dto.FiltersDto) (*[]dto.FoodDto, error) {
 	var foodsDTO []dto.FoodDto
-	foods, err := foodService.foodRepository.GetAll(userCode, minimumList)
+	foods, err := foodService.foodRepository.GetAll(userCode, filter.GetModel())
 	if err != nil {
 		return nil, err
 	}

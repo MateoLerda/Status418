@@ -27,9 +27,12 @@ func (foodHandler *FoodHandler) GetAll(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
 		return
 	}
-	minimumList, _ := strconv.ParseBool(c.Query("minimumList"))
+	var filters dto.FiltersDto
+	filters.Aproximation = c.Query("filter_aproximation")
+	filters.Type = c.Query("filter_type")
+	filters.All, _ = strconv.ParseBool(c.Query("filter_all"))
 	log.Printf("[handler: FoodHandler][method: GetAll]")
-	foods, err := foodHandler.foodService.GetAll(user.Code, minimumList)
+	foods, err := foodHandler.foodService.GetAll(user.Code, filters)
 
 	if err != nil && err.Error() == "nocontent" {
 		c.JSON(http.StatusOK, gin.H{"message": "Not found any foods"})
@@ -40,7 +43,7 @@ func (foodHandler *FoodHandler) GetAll(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-	log.Printf("[handler: FoodHandler][method: GetAll] minimumList: %v", minimumList)
+	log.Printf("[handler: FoodHandler][method: GetAll] minimumList: %v", filters.All)
 	c.JSON(http.StatusOK, foods)
 }
 

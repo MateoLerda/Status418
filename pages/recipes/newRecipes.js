@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const navBar = document.getElementById("navbar");
   navBar.removeChild(login);
   navBar.appendChild(userInfo);
-  const baseUrl = "http://localhost:8080/foods/";
+  const baseUrl = "http://localhost:8080/foods/?filter_all=true";
   makeRequest(
     baseUrl,
     "GET",

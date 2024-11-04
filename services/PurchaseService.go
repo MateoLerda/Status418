@@ -43,7 +43,7 @@ func (purchaseService *PurchaseService) Create(userCode string, newPurchase dto.
 	var foods []models.Food
 	var err error
 	var purchase models.Purchase
-
+	
 	if len(newPurchase.Foods) != 0 {
 		var food models.Food
 		for _, foodQuantity := range newPurchase.Foods {
@@ -56,7 +56,9 @@ func (purchaseService *PurchaseService) Create(userCode string, newPurchase dto.
 			purchase.Foods = append(purchase.Foods, models.FoodQuantity{FoodCode: foodObjectId, Name: food.Name, Quantity: foodQuantity.Quantity})
 		}
 	} else {
-		foods, err = foodRepository.GetAll(userCode, true)
+		var filter models.Filter
+		filter.All= false 
+		foods, err = foodRepository.GetAll(userCode, filter)
 		if err != nil {
 			return nil, err
 		}

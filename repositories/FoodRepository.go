@@ -1,18 +1,20 @@
 package repositories
 
 import (
+	"Status418/enums"
 	"Status418/models"
 	"context"
 	"errors"
+	"os"
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"os"
-	"time"
 )
 
 type FoodRepositoryInterface interface {
-	GetAll(userCode string, minimumList bool) ([]models.Food, error)
+	GetAll(userCode string, filters models.Filter) ([]models.Food, error)
 	GetByCode(foodCode primitive.ObjectID, userCode string) (models.Food, error)
 	Create(newFood models.Food) (*mongo.InsertOneResult, error)
 	Update(updateFood models.Food, cook bool) (*mongo.UpdateResult, error)
@@ -29,16 +31,30 @@ func NewFoodRepository(db DB) *FoodRepository {
 	}
 }
 
-func (foodRepository FoodRepository) GetAll(userCode string, minimumList bool) ([]models.Food, error) {
+func (foodRepository FoodRepository) GetAll(userCode string, filters models.Filter) ([]models.Food, error) {
 	DBNAME := os.Getenv("DB_NAME")
-	filter := bson.M{"user_code": userCode}
-
-	if minimumList {
+	filter := bson.M{
+		"user_code": userCode,
+	}
+	if filters.Aproximation != "" {
+		filter["name"] = bson.M{
+			"$regex":   filters.Aproximation,
+			"$options": "i",
+		}
+	}
+	if filters.Type != enums.InvalidFoodType {
+		filter["type"] = filters.Type
+	}
+	if !filters.All {
 		filter = bson.M{
-			"$expr": bson.M{
-				"$lt": bson.A{"$current_quantity", "$minimum_quantity"},
+			"$and": bson.A{
+				filter,
+				bson.M{
+					"$expr": bson.M{
+						"$lt": bson.A{"$current_quantity", "$minimum_quantity"},
+					},
+				},
 			},
-			"user_code": userCode,
 		}
 	}
 

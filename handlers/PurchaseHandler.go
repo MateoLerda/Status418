@@ -36,7 +36,7 @@ func (purchaseHandler *PurchaseHandler) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to create purchase", "details": "You must select a food to buy"})
 		return
 	}
-
+	
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create purchase", "details": err.Error()})
 		return

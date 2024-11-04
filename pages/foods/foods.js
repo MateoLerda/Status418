@@ -19,7 +19,7 @@ function fetchAllFoods() {
   userMail.textContent = localStorage.getItem('user-mail');
   userMail.classList.add('green-color', 'bold-words', 'user-mail');
   userInfo.appendChild(userMail);
-  const query = '?minimumList=false';
+  const query = '?filter_all=true';
 
   makeRequest(
     baseUrl + query,
