@@ -48,6 +48,24 @@
         <div class="button-container">
             <button type="button" id="btnAutomatically"> Buy items  </button>
         </div>
+        <div class="filters">
+            <form class="search-bar" id="search-bar">
+                <input type="text" value="" placeholder="Search food by name" id="searchInput">
+                <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </form>
+            <div class="filter-box">
+                <label for="foodType">Food Type:</label>
+                <select id="foodType" class="filterstype">
+                    <option value="all">All</option>
+                    <option value="Vegetable">Vegetable</option>
+                    <option value="Fruit">Fruit</option>
+                    <option value="Cheese">Cheese</option>
+                    <option value="Dairy">Dairy</option>
+                    <option value="Meat">Meat</option>
+                </select>
+            </div>
+
+        </div>
         <div class="food-list-container">
             <table class="food-table">
                 <thead>

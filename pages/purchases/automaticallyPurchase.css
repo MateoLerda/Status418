@@ -128,18 +128,6 @@ tbody td {
     height: 50px;
     text-align: center;
 }
-
-.decrement{
-    background-color: #e2dec7;
-    border: 2px solid #2a6049;
-    border-radius: 5px;
-}
-.increment{
-    background-color: #e2dec7;
-    border: 2px solid #2a6049;
-    border-radius: 5px;
-   
-}
 #quantityToBuy{
     width: 40px;
     text-align: center;
@@ -182,3 +170,60 @@ body {
   .user-mail:hover {
     color: #367b5d;
   }
+
+  .search-bar {
+    display: flex;
+    gap: 10px;
+    
+}
+
+.search-bar button {
+    border: none;
+    background-color: #e2dec7;
+    color: #2a6049;
+}
+
+.search-bar input {
+    border: none;
+    background-color: #e2dec7;
+    color: #2a6049;
+    border-radius: 10px;
+    height: 30px;
+}
+
+.search-bar input:hover {
+    border: solid 0.5px #2a6049;
+    background-color: #e2dec7;
+    color: #2a6049;
+}
+
+
+.search-bar button :hover {
+    border: none;
+    background-color: #e2dec7;
+    color: #1c4333;
+}
+.filter-box {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    width: 200px;
+    margin-right: 20px;
+    padding: 10px;
+    border-radius: 20px;
+    margin-bottom: auto;
+    margin-bottom: 20px;
+}
+.filters{
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    align-items: center;
+}
+.filterstype{
+    border-radius: 10px;
+    border: solid 0.5px #2a6049;
+    text-align: center;
+    color: #2a6049;
+    background-color: #e2dec7;
+}

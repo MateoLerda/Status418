@@ -1,4 +1,4 @@
-const baseUrl = "http://localhost:8080/foods/";
+const baseUrl = "http://localhost:8080/foods/?filter_all=true";
 const baseUrlCreatePurchase = "http://localhost:8080/purchases/";
 
 

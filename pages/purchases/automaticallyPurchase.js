@@ -1,13 +1,30 @@
-const baseUrlPurchases = "http://localhost:8080/purchases/?minimumList=true";
+let baseUrlPurchases = "http://localhost:8080/purchases/?filer_all=false";
 const baseUrlCreatePurchase = "http://localhost:8080/purchases/";
-document.addEventListener('DOMContentLoaded', getMinimumList);
 
-function getMinimumList() {
+document.addEventListener('DOMContentLoaded', () => {
     const userInfo = document.getElementById('user-info');
     const userMail = document.createElement('p');
     userMail.textContent = localStorage.getItem('user-mail');
     userMail.classList.add('green-color', 'bold-words', 'user-mail');
     userInfo.appendChild(userMail);
+    getFoods()
+});
+document.getElementById("foodType").onchange = () => {
+    getFoods()
+}
+
+const searchBar = document.getElementById("search-bar");
+
+searchBar.addEventListener("submit", (e) => {
+    e.preventDefault();
+    getFoods();
+});
+
+let aproximation
+let type
+
+function getFoods() {
+    createUrl()
     makeRequest(
         baseUrlPurchases,
         "GET",
@@ -17,16 +34,31 @@ function getMinimumList() {
         showMinimumList,
         failedGet
     )
-  
+    baseUrlPurchases = "http://localhost:8080/purchases/?filer_all=false";
 }
+
+function createUrl() {
+    aproximation = document.getElementById('searchInput').value;
+    type = document.getElementById('foodType').value
+    if (aproximation != "") {
+        baseUrlPurchases = `${baseUrlPurchases}&filter_aproximation=${aproximation}`;
+    }
+    if (type != "all") {
+        baseUrlPurchases = `${baseUrlPurchases}&filter_type=${type}`;
+    }
+}
+
+
 function showMinimumList(data) {
     const foodTable = document.getElementById('dynamic-food-table');
     if (data.message) {
         showAlert('There are not any products with current quantity below the minimum quantity. We will redirect you to home')
         document.getElementById("alert-button").addEventListener(('click'), () => {
-            window.location.href= "../home/home.html"
-        })
+            window.location.href = "../home/home.html"
+        });
+        
     }
+    foodTable.innerHTML = ""
     data.forEach(food => {
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -81,53 +113,20 @@ function automaticallyPurchase() {
             return response.json();
         })
         .then(data => {
-            const dialog = document.createElement('div');
-            dialog.className = 'dialog';
-            dialog.textContent = 'Purchase completed successfully, Thank you!';
-            const closeButton = document.createElement('button');
-            closeButton.textContent = 'Close';
-            closeButton.className = 'close-button';
-            closeButton.style.pointerEvents = 'all';
-            document.body.style.pointerEvents = 'none';
-            const icon = document.createElement('i');
-            icon.className = 'fa fa-check-circle';
-            icon.style.marginRight = '10px';
-            dialog.insertBefore(icon, dialog.firstChild);
-            document.body.style.overflow = 'hidden';
-            closeButton.style.marginTop = '10px';
-            closeButton.addEventListener('click', () => {
-                document.body.removeChild(dialog);
-                window.location = "http://localhost:5500/pages/home/home.html";
-            });
-
-            dialog.appendChild(closeButton);
-            document.body.appendChild(dialog);
+            showAlert('Purchase completed successfully, Thank you!')
+            document.getElementById("alert-button").addEventListener(('click'), () => {
+                window.location.href = "../home/home.html"
+            })
             console.log('Respuesta de la API:', data);
         })
         .catch(error => {
+            showAlert('Failed to make purchase, please try again later.')
+            document.getElementById("alert-button").addEventListener(('click'), () => {
+                window.location.href = "../home/home.html"
+            })
             console.error('Error al realizar la compra automática:', error);
             console.log('Failed to make purchase:', response);
-            const dialog = document.createElement('div');
-            dialog.className = 'dialog';
-            dialog.textContent = 'Failed to make purchase, try again';
-            const closeButton = document.createElement('button');
-            closeButton.textContent = 'Close';
-            closeButton.className = 'close-button';
-            closeButton.style.pointerEvents = 'all';
-            document.body.style.pointerEvents = 'none';
-            const icon = document.createElement('i');
-            icon.className = 'fa fa-times-circle';
-            icon.style.marginRight = '10px';
-            dialog.insertBefore(icon, dialog.firstChild);
-            document.body.style.overflow = 'hidden';
-            closeButton.style.marginTop = '10px';
-            closeButton.addEventListener('click', () => {
-                document.body.removeChild(dialog);
-                window.location.reload();
-            });
-
-            dialog.appendChild(closeButton);
-            document.body.appendChild(dialog);
+           
 
         });
 }
