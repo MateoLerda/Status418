@@ -32,6 +32,21 @@ function createUrl() {
 }
 
 function getRecipes() {
+
+  createUrl();
+  makeRequest(
+    baseUrl,
+    "GET",
+    "",
+    "application/json",
+    true,
+    successCreate,
+    failed
+  );
+  baseUrl = "http://localhost:8080/recipes/?filter_all=";
+}
+
+document.addEventListener("DOMContentLoaded", () => {
   let token = isUserLogged();
   if (token == false) {
       window.location.href = '/pages/login/login.html';
@@ -51,21 +66,6 @@ function getRecipes() {
   const navBar = document.getElementById('navbar')
   navBar.removeChild(login)
   navBar.appendChild(userInfo)
-  createUrl();
-
-  makeRequest(
-    baseUrl,
-    "GET",
-    "",
-    "application/json",
-    true,
-    successCreate,
-    failed
-  );
-  baseUrl = "http://localhost:8080/recipes/?filter_all=";
-}
-
-document.addEventListener("DOMContentLoaded", () => {
   getRecipes();
 });
 
@@ -172,14 +172,14 @@ function showRecipes(data) {
     buttonsContainer.appendChild(showMoreBtn);
     buttonsContainer.appendChild(DeleteBtn);
     buttonsContainer.appendChild(UpdateBtn);
-    if (!all) {
-      let CookBtn = document.createElement("button");
-      CookBtn.classList.add("btnS");
-      let CookIcon = document.createElement("i");
-      CookIcon.classList.add("fa-solid", "fa-utensils");
-      CookBtn.appendChild(CookIcon);
-      buttonsContainer.appendChild(CookBtn);
-    }
+    // if (!all) {
+    //   let CookBtn = document.createElement("button");
+    //   CookBtn.classList.add("btnS");
+    //   let CookIcon = document.createElement("i");
+    //   CookIcon.classList.add("fa-solid", "fa-utensils");
+    //   CookBtn.appendChild(CookIcon);
+    //   buttonsContainer.appendChild(CookBtn);
+    // }
 
     // Agregar los elementos al contenedor de la receta
     recipeContainer.appendChild(recipeName);

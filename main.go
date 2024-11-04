@@ -56,7 +56,7 @@ func routes() {
 	recipesRoutes.DELETE("/:recipeid", recipeHandler.Delete)
 	recipesRoutes.PUT("/:recipeid", recipeHandler.Update) // falta modificar en el repositori
 	recipesRoutes.POST("/", recipeHandler.Create)
-	recipesRoutes.PUT("/cook/:recipeid", recipeHandler.Cook) //falta probar solo (el de cocinar y el de desacer)
+	// recipesRoutes.PUT("/cook/:recipeid", recipeHandler.Cook) //falta probar solo (el de cocinar y el de desacer)
 }
 
 func dependencies() {

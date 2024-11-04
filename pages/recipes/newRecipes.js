@@ -49,7 +49,6 @@ function showFoods(data) {
     icon.classList.add(
       iconMap[food.type][0],
       iconMap[food.type][1],
-      "foodIcon"
     );
     let foodName = document.createElement("p");
     foodName.classList.add("name", "big-font-size");
@@ -157,6 +156,7 @@ document.getElementById("btnno").onclick = () => {
 document.getElementById("btnyes").onclick = () => {
   window.location = "newRecipe.html";
 };
-function failedCreate(response) {
+function failedCreate(response, responseBody) {
+   alert(responseBody.error)
   console.log("Falla:", response);
 }

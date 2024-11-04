@@ -102,7 +102,7 @@ func (foodRepository FoodRepository) Update(food models.Food, cook bool) (*mongo
 
 func toBSONUpdate(food models.Food, cook bool) bson.M {
 	update := bson.M{"$set": bson.M{}}
-	if food.Type.String() != "" {
+	if food.Type != 0 {
 		update["$set"].(bson.M)["type"] = food.Type
 	}
 	if food.Name != "" {
