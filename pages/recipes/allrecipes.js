@@ -28,7 +28,6 @@ function createUrl() {
   if (mealTime != "all") {
     baseUrl = `${baseUrl}&filter_moment=${mealTime}`;
   }
-  console.log(baseUrl);
 }
 
 function getRecipes() {
@@ -87,6 +86,10 @@ searchBar.addEventListener("submit", (e) => {
 function showRecipes(data) {
   const main = document.getElementById("recipe-list");
   main.innerHTML = "";
+  if (data.message) {
+    showAlert(data.message)
+    return
+  }
   data.forEach((recipe) => {
     // Crear el contenedor principal para cada receta
     let recipeContainer = document.createElement("div");
@@ -266,7 +269,8 @@ function successCreate(response) {
   console.log("Éxito:", response);
 }
 
-function failed(response) {
+function failed(response, responseBody) {
+  showAlert(responseBody.error)
   console.log("Falla:", response);
 }
 

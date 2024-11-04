@@ -1,6 +1,5 @@
-const url = "http://w230847.ferozo.com/tp_prog2/api/account/login";
-
 document.addEventListener("DOMContentLoaded", function (eventDOM) {
+  const url = "http://w230847.ferozo.com/tp_prog2/api/account/login";
   document
     .getElementById("btnIngresar")
     .addEventListener("click", async function (eventClick) {
@@ -33,5 +32,6 @@ function successFn(response) {
 }
 
 function errorFn(status, response) {
+  showAlert(response.error_description)
   console.log("Falla:", response);
 }

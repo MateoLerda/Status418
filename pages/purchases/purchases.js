@@ -27,9 +27,12 @@ function failedGet(response) {
 }
 
 function showFoods(data) {
-    if (!data || data.length === 0) {
-        alert('There are not any products with current quantity below the minimum quantity.');
-        return;
+    if (data.message) {
+        showAlert('Not found any products to buy.');
+        document.getElementById("alert-button").addEventListener(('click'), () => {
+            window.location.href= "../foods/foods.html"
+        })        
+        return
     }
     const foodTable = document.getElementById('dynamic-food-table');
     data.forEach(food => {
@@ -83,33 +86,6 @@ function manuallyPurchase() {
         }
     }
 
-    if (selectedFoods.length === 0) {
-        const dialog = document.createElement('div');
-        dialog.className = 'dialog';
-        dialog.textContent = 'You have to select a food';
-        const closeButton = document.createElement('button');
-        closeButton.textContent = 'Close';
-        closeButton.className = 'close-button';
-        closeButton.style.pointerEvents = 'all';
-        document.body.style.pointerEvents = 'none';
-        document.body.scrollTop = 0;
-        const icon = document.createElement('i');
-        icon.className = 'fa fa-exclamation-triangle';
-        icon.style.marginRight = '10px';
-        dialog.insertBefore(icon, dialog.firstChild);
-        document.body.style.overflow = 'hidden';
-        closeButton.style.marginTop = '10px';
-        closeButton.addEventListener('click', () => {
-            document.body.removeChild(dialog);
-            window.location.reload();
-        });
-
-        dialog.appendChild(closeButton);
-        document.body.appendChild(dialog);
-
-        return;
-    }
-
 
     let TotalCost = 0;
     const purchaseDto = {
@@ -125,7 +101,6 @@ function manuallyPurchase() {
         total_cost: TotalCost
     };
 
-    // Llama a makeRequest con el objeto JSON transformado
     makeRequest(
         baseUrlCreatePurchase,
         "POST",
@@ -138,56 +113,13 @@ function manuallyPurchase() {
 
 }
 
-
-
-function successPurchase(response) {
-    console.log('Purchase successful:', response);
-    const dialog = document.createElement('div');
-    dialog.className = 'dialog';
-    dialog.textContent = 'Purchase completed successfully, Thank you!';
-    const closeButton = document.createElement('button');
-    closeButton.textContent = 'Close';
-    closeButton.className = 'close-button';
-    closeButton.style.pointerEvents = 'all';
-    document.body.style.pointerEvents = 'none';
-    const icon = document.createElement('i');
-    icon.className = 'fa fa-check-circle';
-    icon.style.marginRight = '10px';
-    dialog.insertBefore(icon, dialog.firstChild);
-    document.body.style.overflow = 'hidden';
-    closeButton.style.marginTop = '10px';
-    closeButton.addEventListener('click', () => {
-        document.body.removeChild(dialog);
-        window.location = "http://localhost:5500/pages/home/home.html";
-    });
-
-    dialog.appendChild(closeButton);
-    document.body.appendChild(dialog);
-
+function successPurchase() {
+    showAlert('Purchase completed successfully, Thank you!')
+    document.getElementById("alert-button").addEventListener(('click'), () => {
+        window.location.href= "../home/home.html"
+    })
 }
 
-function failedPurchase(response) {
-    console.log('Failed to make purchase:', response);
-    const dialog = document.createElement('div');
-    dialog.className = 'dialog';
-    dialog.textContent = 'Failed to make purchase, try again';
-    const closeButton = document.createElement('button');
-    closeButton.textContent = 'Close';
-    closeButton.className = 'close-button';
-    closeButton.style.pointerEvents = 'all';
-    document.body.style.pointerEvents = 'none';
-    const icon = document.createElement('i');
-    icon.className = 'fa fa-times-circle';
-    icon.style.marginRight = '10px';
-    dialog.insertBefore(icon, dialog.firstChild);
-    document.body.style.overflow = 'hidden';
-    closeButton.style.marginTop = '10px';
-    closeButton.addEventListener('click', () => {
-        document.body.removeChild(dialog);
-        window.location.reload();
-    });
-
-    dialog.appendChild(closeButton);
-    document.body.appendChild(dialog);
-
+function failedPurchase(response, responseBody) {
+    showAlert(responseBody.details)
 }

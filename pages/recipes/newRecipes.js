@@ -34,13 +34,19 @@ document.addEventListener("DOMContentLoaded", () => {
     "application/json",
     true,
     successGetFoods,
-    failed
+    failedGetFoods
   );
 });
 
 function showFoods(data) {
   const main = document.getElementById("list-food");
   main.innerHTML = "";
+  if (data.message) {
+    showAlert(data.message + ' to create a recipe')
+    document.getElementById('alert-button').addEventListener(('click'), () => {
+      window.location.href = "../foods/foods.html"
+    })
+  }
   data.forEach((food) => {
     let foodContainer = document.createElement("div");
     foodContainer.classList.add("food-container");
@@ -114,11 +120,12 @@ document.getElementById("createBtn").onclick = () => {
   const description = document.getElementById("recipeDescription").value;
   const bool = false;
   if (recipeName == "" || recipeMoment == "" || description == "") {
-    alert("Data is required");
+    showAlert("Data is required");
     bool = true;
   }
   if (foodQuantity.length == 0 && !bool) {
-    alert("Any food was add");
+    showAlert("You must select foods to create a recipe");
+    return
   }
   const data = {
     recipe_name: recipeName,
@@ -141,7 +148,7 @@ function successGetFoods(response) {
   console.log("Éxito:", response);
 }
 
-function failed(response) {
+function failedGetFoods(response, responseBody) {
   console.log("Falla:", response);
 }
 
@@ -157,6 +164,6 @@ document.getElementById("btnyes").onclick = () => {
   window.location = "newRecipe.html";
 };
 function failedCreate(response, responseBody) {
-   alert(responseBody.error)
+   showAlert(responseBody.error)
   console.log("Falla:", response);
 }

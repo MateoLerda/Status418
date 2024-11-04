@@ -81,7 +81,7 @@ func (recipeService *RecipeService) GetAll(userCode string, filters dto.FiltersD
 	if !filters.All {
 		recipes, err = filterByQuantity(recipes)
 		if err != nil {
-			return nil, errors.New("internal")
+			return nil, errors.New("nocontent")
 		}
 	}
 	if filters.Type != "" {

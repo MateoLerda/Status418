@@ -37,6 +37,10 @@ function failedGet(response) {
 }
 
 function showFoods(data) {
+  if (data.message) {
+    showAlert(data.message)
+    return
+  }
   const main = document.getElementById('main-container');
   data.forEach((food) => {
     let foodContainer = document.createElement('div');

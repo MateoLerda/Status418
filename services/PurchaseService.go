@@ -69,15 +69,15 @@ func (purchaseService *PurchaseService) Create(userCode string, newPurchase dto.
 	if err != nil {
 		return nil, err
 	}
+
 	for _, food := range purchase.Foods {
 		var updatedFood models.Food
 		updatedFood.Code = food.FoodCode
 		updatedFood.CurrentQuantity = food.Quantity
-		_,err := foodRepository.Update(updatedFood, false)
-		if err!= nil {
+		_,err := foodRepository.Update(updatedFood, true)
+		if err != nil {
 			return nil, err
 		}
 	}
 	return create, nil
 }
-//ahora nop porque ahora si ante no ahora

@@ -1,16 +1,15 @@
-const url = "http://w230847.ferozo.com/tp_prog2/api/account/register";
-
 document.addEventListener("DOMContentLoaded", function (eventDOM) {
+  const url = "http://w230847.ferozo.com/tp_prog2/api/account/register";
   document.getElementById("btnRegistrarse").addEventListener("click", async function (eventClick) {
     eventClick.preventDefault();
 
-    const emailInput = document.getElementById('email').value;
+    const emailInput = document.getElementById('email');
 
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!emailRegex.test(emailInput)) {
+    if (!emailRegex.test(emailInput.value)) {
       emailInput.classList.add('is-invalid');
       return false;
-    } else {
+    } else if (emailInput.classList != undefined){
       emailInput.classList.remove('is-invalid');
     }
 
@@ -19,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function (eventDOM) {
       document.getElementById("ConfirmPassword").value;
 
     if (inputPassword === "" || inputConfirmPassword === "" || inputPassword !== inputConfirmPassword) {
-      alert("Password and Confirm Password must be the same and can not be empty");
+      showAlert("Password and Confirm Password must be the same and can not be empty");
       return false;
     }
 

@@ -21,6 +21,12 @@ function getMinimumList() {
 }
 function showMinimumList(data) {
     const foodTable = document.getElementById('dynamic-food-table');
+    if (data.message) {
+        showAlert('There are not any products with current quantity below the minimum quantity. We will redirect you to home')
+        document.getElementById("alert-button").addEventListener(('click'), () => {
+            window.location.href= "../home/home.html"
+        })
+    }
     data.forEach(food => {
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -56,32 +62,6 @@ function automaticallyPurchase() {
             });
         }
     });
-
-    if (purchases.length === 0) {
-        const dialog = document.createElement('div');
-        dialog.className = 'dialog';
-        dialog.textContent = 'There are not any products with current quantity below the minimum quantity. We will redirect you to home';
-        const closeButton = document.createElement('button');
-        closeButton.textContent = 'Close';
-        closeButton.className = 'close-button';
-        closeButton.style.pointerEvents = 'all';
-        document.body.style.pointerEvents = 'none';
-        document.body.scrollTop = 0;
-        const icon = document.createElement('i');
-        icon.className = 'fa fa-exclamation-triangle';
-        icon.style.marginRight = '10px';
-        dialog.insertBefore(icon, dialog.firstChild);
-        document.body.style.overflow = 'hidden';
-        closeButton.style.marginTop = '10px';
-        closeButton.addEventListener('click', () => {
-            document.body.removeChild(dialog);
-            window.location = "http://localhost:5500/pages/home/home.html";
-        });
-
-        dialog.appendChild(closeButton);
-        document.body.appendChild(dialog);
-        return;
-    }
 
     const options = {
         method: "POST",
