@@ -16,8 +16,6 @@
 # Go workspace file
 go.work
 go.work.sum
-# env file
-.env
 vendor/*
 !vendor/vendor.json
 coverage.out
