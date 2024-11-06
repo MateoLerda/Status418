@@ -30,6 +30,13 @@ func main() {
 	dependencies()
 	routes()
 
+	r.Static("/pages", "./pages")
+	r.Static("/assets", "./assets")
+
+	r.GET("/", func(c *gin.Context) {
+		c.File("./pages/home/home.html")
+	})
+
 	r.Run(":8080")
 }
 
