@@ -23,7 +23,7 @@ body {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    
+
 }
 
 .teapot {
@@ -109,7 +109,7 @@ a {
     align-items: center;
     background-color: #1c4333;
     width: 100%;
-    margin-top:auto;
+    margin-top: auto;
 }
 
 .information {
@@ -117,18 +117,20 @@ a {
     color: #e2dec7;
 }
 
-.dynamic-table-class{
+.dynamic-table-class {
     width: 100%;
-    border:2px solid #1c4333;
+    border: 2px solid #1c4333;
     border-collapse: collapse;
     margin-top: 20px;
 }
+
 tbody td {
     border: 1px solid #1c4333;
     height: 50px;
     text-align: center;
 }
-#quantityToBuy{
+
+#quantityToBuy {
     width: 40px;
     text-align: center;
     border: 2px solid #2a6049;
@@ -138,7 +140,7 @@ tbody td {
     font-weight: 600;
 }
 
-.principal-purchase-title{
+.principal-purchase-title {
     font-family: "Dancing Script", cursive;
     font-size: 50px;
 }
@@ -149,7 +151,7 @@ body {
 
 .page-container {
     flex: 1;
-}   
+}
 
 
 .user-info {
@@ -159,22 +161,22 @@ body {
     margin-top: 10px;
     color: #2a6049;
 
-  }
-  
-  .user-mail {
+}
+
+.user-mail {
     font-size: 14px;
     margin-left: 3px;
     color: #2a6049;
-  }
+}
 
-  .user-mail:hover {
+.user-mail:hover {
     color: #367b5d;
-  }
+}
 
-  .search-bar {
+.search-bar {
     display: flex;
     gap: 10px;
-    
+
 }
 
 .search-bar button {
@@ -203,6 +205,7 @@ body {
     background-color: #e2dec7;
     color: #1c4333;
 }
+
 .filter-box {
     display: flex;
     flex-direction: column;
@@ -214,16 +217,30 @@ body {
     margin-bottom: auto;
     margin-bottom: 20px;
 }
-.filters{
+
+.filters {
     display: flex;
     flex-direction: row;
     gap: 30px;
     align-items: center;
 }
-.filterstype{
+
+.filterstype {
     border-radius: 10px;
     border: solid 0.5px #2a6049;
     text-align: center;
     color: #2a6049;
     background-color: #e2dec7;
+}
+
+.return {
+    display: flex;
+    gap: 10px;
+    color: #2a6049;
+    margin-left: 20px;
+    text-decoration: none !important;
+}
+
+.return i {
+    margin-top: 4px;
 }

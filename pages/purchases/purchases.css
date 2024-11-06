@@ -22,7 +22,7 @@ body {
     width: 100%;
     display: flex;
     flex-direction: row;
-    justify-content: center;    
+    justify-content: center;
 }
 
 .nav .nav-item .bold-words {
@@ -113,7 +113,7 @@ a {
     align-items: center;
     background-color: #1c4333;
     width: 100%;
-    margin-top:auto;
+    margin-top: auto;
 }
 
 .information {
@@ -121,30 +121,33 @@ a {
     color: #e2dec7;
 }
 
-.dynamic-table-class{
+.dynamic-table-class {
     width: 100%;
-    border:2px solid #1c4333;
+    border: 2px solid #1c4333;
     border-collapse: collapse;
     margin-top: 20px;
 }
+
 tbody td {
     border: 1px solid #1c4333;
     height: 50px;
     text-align: center;
 }
 
-.decrement{
+.decrement {
     background-color: #e2dec7;
     border: 2px solid #2a6049;
     border-radius: 5px;
 }
-.increment{
+
+.increment {
     background-color: #e2dec7;
     border: 2px solid #2a6049;
     border-radius: 5px;
-   
+
 }
-#quantityToBuy{
+
+#quantityToBuy {
     width: 40px;
     text-align: center;
     border: 2px solid #2a6049;
@@ -154,12 +157,12 @@ tbody td {
     font-weight: 600;
 }
 
-.principal-purchase-title{
+.principal-purchase-title {
     font-family: "Dancing Script", cursive;
     font-size: 50px;
 }
 
-.dialog{
+.dialog {
     font-size: 24px;
     color: #2a6049;
     text-align: center;
@@ -176,7 +179,8 @@ tbody td {
     text-align: center;
     display: grid;
     font-weight: 700;
-    .close-button{
+
+    .close-button {
         width: 150px;
         justify-self: center;
         background-color: #e2dec7;
@@ -188,26 +192,39 @@ tbody td {
         font-weight: 700;
     }
 }
-.close-button:hover{
-    background-color:#2a6049 ;
-    color:#e2dec7 ;
+
+.close-button:hover {
+    background-color: #2a6049;
+    color: #e2dec7;
     transition: 0.5s;
 }
+
 .user-info {
     display: flex;
     flex-direction: row;
     width: 150px;
     margin-top: 10px;
     color: #2a6049;
-  }
-  
-  .user-mail {
+}
+
+.user-mail {
     font-size: 14px;
     margin-left: 3px;
     color: #2a6049;
-  }
+}
 
-  .user-mail:hover {
+.user-mail:hover {
     color: #367b5d;
-  }
+}
 
+.return {
+    display: flex;
+    gap: 10px;
+    color: #2a6049;
+    margin-left: 20px;
+    text-decoration: none !important;
+}
+.return i {
+    margin-top: 4px;
+    
+}
