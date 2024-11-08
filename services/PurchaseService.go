@@ -16,11 +16,13 @@ type PurchaseServiceInterface interface {
 
 type PurchaseService struct {
 	purchaseRepository repositories.PurchaseRepositoryInterface
+	foodRepository repositories.FoodRepositoryInterface
 }
 
-func NewPurchaseService(purchaseRepository repositories.PurchaseRepositoryInterface) *PurchaseService {
+func NewPurchaseService(purchaseRepository repositories.PurchaseRepositoryInterface, foodRepository repositories.FoodRepositoryInterface) *PurchaseService {
 	return &PurchaseService{
 		purchaseRepository: purchaseRepository,
+		foodRepository: foodRepository,
 	}
 }
 
@@ -38,8 +40,6 @@ func calculatePurchaseAllFoods(foods []models.Food) models.Purchase {
 }
 
 func (purchaseService *PurchaseService) Create(userCode string, newPurchase dto.PurchaseDto) (*mongo.InsertOneResult, error) {
-	DB := repositories.NewMongoDB()
-	foodRepository := repositories.NewFoodRepository(DB)
 	var foods []models.Food
 	var err error
 	var purchase models.Purchase
@@ -48,7 +48,7 @@ func (purchaseService *PurchaseService) Create(userCode string, newPurchase dto.
 		var food models.Food
 		for _, foodQuantity := range newPurchase.Foods {
 			foodObjectId := utils.GetObjectIDFromStringID(foodQuantity.FoodCode)
-			food, err = foodRepository.GetByCode(foodObjectId, userCode)
+			food, err = purchaseService.foodRepository.GetByCode(foodObjectId, userCode)
 			if err != nil {
 				return nil, err
 			}
@@ -58,7 +58,7 @@ func (purchaseService *PurchaseService) Create(userCode string, newPurchase dto.
 	} else {
 		var filter models.Filter
 		filter.All= false 
-		foods, err = foodRepository.GetAll(userCode, filter)
+		foods, err = purchaseService.foodRepository.GetAll(userCode, filter)
 		if err != nil {
 			return nil, err
 		}
@@ -76,7 +76,7 @@ func (purchaseService *PurchaseService) Create(userCode string, newPurchase dto.
 		var updatedFood models.Food
 		updatedFood.Code = food.FoodCode
 		updatedFood.CurrentQuantity = food.Quantity
-		_,err := foodRepository.Update(updatedFood, true)
+		_,err := purchaseService.foodRepository.Update(updatedFood, true)
 		if err != nil {
 			return nil, err
 		}

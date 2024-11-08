@@ -23,10 +23,10 @@ func NewRecipeHandler(recipeService services.RecipeServiceInterface) *RecipeHand
 
 func (recipeHandler *RecipeHandler) GetAll(c *gin.Context) {
 	user := utils.GetUserInfoFromContext(c)
-	if user.Code == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
-		return
-	}
+	// if user.Code == "" {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
+	// 	return
+	// }
 	var filters dto.FiltersDto
 	filters.Aproximation = c.Query("filter_aproximation")
 	filters.Moment = c.Query("filter_moment")
@@ -42,12 +42,6 @@ func (recipeHandler *RecipeHandler) GetAll(c *gin.Context) {
 		return
 	}
 
-	if err != nil && err.Error() == "nocontent" {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Not found any recipe",
-		})
-		return
-	}
 	log.Printf("[handler: RecipeHandler][method: GetAll] lenght of List: %v", len(*recipes))
 	c.JSON(http.StatusOK, recipes)
 }
@@ -61,10 +55,10 @@ func (recipeHandler *RecipeHandler) Create(c *gin.Context) {
 	}
 	user := utils.GetUserInfoFromContext(c)
 	recipe.UserCode = user.Code
-	if recipe.UserCode == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
-		return
-	}
+	// if recipe.UserCode == "" {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
+	// 	return
+	// }
 	log.Printf("[handler: RecipeHandler][method: Create]")
 	res, err := recipeHandler.recipeService.Create(recipe)
 

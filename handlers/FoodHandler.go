@@ -23,10 +23,10 @@ func NewFoodHandler(foodService services.FoodServiceInterface) *FoodHandler {
 
 func (foodHandler *FoodHandler) GetAll(c *gin.Context) {
 	user := utils.GetUserInfoFromContext(c)
-	if user.Code == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
-		return
-	}
+	// if user.Code == "" {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
+	// 	return
+	// }
 	var filters dto.FiltersDto
 	filters.Aproximation = c.Query("filter_aproximation")
 	filters.Type = c.Query("filter_type")
@@ -49,10 +49,10 @@ func (foodHandler *FoodHandler) GetAll(c *gin.Context) {
 
 func (foodHandler *FoodHandler) GetByCode(c *gin.Context) {
 	user := utils.GetUserInfoFromContext(c)
-	if user.Code == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
-		return
-	}
+	// if user.Code == "" {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
+	// 	return
+	// }
 	foodCode := c.Param("foodcode")
 	log.Printf("[handler: FoodHandler][method: GetByCode]")
 	food, err := foodHandler.foodService.GetByCode(foodCode, user.Code)
@@ -108,10 +108,10 @@ func (foodHandler *FoodHandler) Update(c *gin.Context) {
 func (foodHandler *FoodHandler) Delete(c *gin.Context) {
 	foodCode := c.Param("foodcode")
 	user := utils.GetUserInfoFromContext(c)
-	if user.Code == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
-		return
-	}
+	// if user.Code == "" {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
+	// 	return
+	// }
 	log.Printf("[handler: FoodHandler][method: Delete]")
 	_, err := foodHandler.foodService.Delete(user.Code, foodCode)
 	if err != nil && err.Error() == "notfound" {

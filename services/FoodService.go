@@ -20,11 +20,13 @@ type FoodServiceInterface interface {
 
 type FoodService struct {
 	foodRepository repositories.FoodRepositoryInterface
+	recipeRepository repositories.RecipeRepositoryInterface
 }
 
-func NewFoodService(foodRepository repositories.FoodRepositoryInterface) *FoodService {
+func NewFoodService(foodRepository repositories.FoodRepositoryInterface, recipeRepository repositories.RecipeRepositoryInterface) *FoodService {
 	return &FoodService{
 		foodRepository: foodRepository,
+		recipeRepository: recipeRepository,
 	}
 }
 
@@ -72,14 +74,13 @@ func (foodService *FoodService) Update(foodDto dto.FoodDto) (*mongo.UpdateResult
 }
 
 func (foodService *FoodService) Delete(userCode string, foodCode string) (*mongo.DeleteResult, error) {
-	DB := repositories.NewMongoDB()
-	recipeRepository := repositories.NewRecipeRepository(DB)
-	recipes, _ := recipeRepository.GetAll(userCode, models.Filter{})
+
+	recipes, _ := foodService.recipeRepository.GetAll(userCode, models.Filter{})
 	foodObjectId := utils.GetObjectIDFromStringID(foodCode)
 	for _, recipe := range recipes {
 		for _, food := range recipe.Ingredients {
 			if food.FoodCode == foodObjectId {
-				recipeRepository.Delete(recipe.Id)
+				foodService.recipeRepository.Delete(recipe.Id)
 				break
 			}
 		}

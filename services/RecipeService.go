@@ -16,26 +16,28 @@ import (
 type RecipeServiceInterface interface {
 	GetAll(userCode string, filters dto.FiltersDto) (*[]dto.RecipeDto, error)
 	Create(newRecipe dto.RecipeDto) (*mongo.InsertOneResult, error)
-	Delete(recipeId string , userCode string) (*mongo.DeleteResult, error)
+	Delete(recipeId string, userCode string) (*mongo.DeleteResult, error)
 	Update(updateRecipe dto.RecipeDto) (*mongo.UpdateResult, error)
 	cook(userCode string, recipeId primitive.ObjectID, cancel bool) (bool, error)
 }
 
 type RecipeService struct {
 	recipeRepository repositories.RecipeRepositoryInterface
+	foodRepository   repositories.FoodRepositoryInterface
 }
 
-func NewRecipeService(recipeRepository repositories.RecipeRepositoryInterface) *RecipeService {
+func NewRecipeService(recipeRepository repositories.RecipeRepositoryInterface, foodRepository repositories.FoodRepositoryInterface) *RecipeService {
 	return &RecipeService{
 		recipeRepository: recipeRepository,
+		foodRepository:   foodRepository,
 	}
 }
 
-func filterByType(recipes []models.Recipe, userCode string, fType enums.FoodType) ([]models.Recipe, error) {
+func (recipeService *RecipeService) filterByType(recipes []models.Recipe, userCode string, fType enums.FoodType) ([]models.Recipe, error) {
 	var filteredRecipes []models.Recipe
 	for _, recipe := range recipes {
 		for _, foodQuantity := range recipe.Ingredients {
-			food, err := getFoodByCode(foodQuantity.FoodCode, userCode)
+			food, err := recipeService.foodRepository.GetByCode(foodQuantity.FoodCode, userCode)
 			if err != nil {
 				return nil, err
 			}
@@ -48,10 +50,12 @@ func filterByType(recipes []models.Recipe, userCode string, fType enums.FoodType
 	return filteredRecipes, nil
 }
 
-func validateQuantity(recipe models.Recipe) bool {
+func (recipeService *RecipeService) validateQuantity(recipe models.Recipe) bool {
 	for i, foodQuantity := range recipe.Ingredients {
-		food, _ := getFoodByCode(foodQuantity.FoodCode, recipe.UserCode)
-
+		food, err := recipeService.foodRepository.GetByCode(foodQuantity.FoodCode, recipe.UserCode)
+		if err != nil {
+			return false
+		}
 		if food.CurrentQuantity < foodQuantity.Quantity {
 			break
 		}
@@ -62,10 +66,10 @@ func validateQuantity(recipe models.Recipe) bool {
 	return false
 }
 
-func filterByQuantity(recipes []models.Recipe) ([]models.Recipe, error) {
+func (recipeService *RecipeService) filterByQuantity(recipes []models.Recipe) ([]models.Recipe, error) {
 	var filteredRecipes []models.Recipe
 	for _, recipe := range recipes {
-		if validateQuantity(recipe) {
+		if recipeService.validateQuantity(recipe) {
 			filteredRecipes = append(filteredRecipes, recipe)
 		}
 	}
@@ -79,13 +83,13 @@ func (recipeService *RecipeService) GetAll(userCode string, filters dto.FiltersD
 		return nil, err
 	}
 	if !filters.All {
-		recipes, err = filterByQuantity(recipes)
+		recipes, err = recipeService.filterByQuantity(recipes)
 		if err != nil {
 			return nil, errors.New("nocontent")
 		}
 	}
 	if filters.Type != "" {
-		recipes, err = filterByType(recipes, userCode, (filters.GetModel()).Type)
+		recipes, err = recipeService.filterByType(recipes, userCode, (filters.GetModel()).Type)
 		if err != nil {
 			return nil, errors.New("internal")
 		}
@@ -94,24 +98,21 @@ func (recipeService *RecipeService) GetAll(userCode string, filters dto.FiltersD
 		recipeDto := dto.NewRecipeDto(recipe)
 		recipesDto = append(recipesDto, *recipeDto)
 	}
-	if len(recipesDto) == 0 {
-		err = errors.New("nocontent")
-		return nil, err
-	}
+
 	return &recipesDto, nil
 }
 
 func (recipeService *RecipeService) Create(newRecipe dto.RecipeDto) (*mongo.InsertOneResult, error) {
 	recipe := newRecipe.GetModel()
 	recipe.CreationDate = time.Now().String()
-	validation, err := validateMoment(recipe.Ingredients, recipe.Moment, recipe.UserCode)
+	validation, err := recipeService.validateMoment(recipe.Ingredients, recipe.Moment, recipe.UserCode)
 	if err != nil {
 		return nil, err
 	}
 	if !validation {
 		return nil, errors.New("the food moment doesn´t match with the recipe moment")
 	}
-	if !validateQuantity(recipe) {
+	if !recipeService.validateQuantity(recipe) {
 		return nil, errors.New("the foods are not enough for the recipe")
 	}
 	res, err := recipeService.recipeRepository.Create(recipe)
@@ -126,10 +127,10 @@ func (recipeService *RecipeService) Create(newRecipe dto.RecipeDto) (*mongo.Inse
 	return res, nil
 }
 
-func validateMoment(ingredients []models.FoodQuantity, recipeMoment enums.Moment, userCode string) (bool, error) {
+func (recipeService RecipeService) validateMoment(ingredients []models.FoodQuantity, recipeMoment enums.Moment, userCode string) (bool, error) {
 	for _, ingredient := range ingredients {
 		momentValidation := false
-		food, err := getFoodByCode(ingredient.FoodCode, userCode)
+		food, err := recipeService.foodRepository.GetByCode(ingredient.FoodCode, userCode)
 		if err != nil {
 			return false, err
 		}
@@ -146,17 +147,7 @@ func validateMoment(ingredients []models.FoodQuantity, recipeMoment enums.Moment
 	return true, nil
 }
 
-func getFoodByCode(foodObjectId primitive.ObjectID, userCode string) (*models.Food, error) {
-	DB := repositories.NewMongoDB()
-	foodRepository := repositories.NewFoodRepository(DB)
-	food, err := foodRepository.GetByCode(foodObjectId, userCode)
-	if err != nil {
-		return nil, err
-	}
-	return &food, nil
-}
-
-func (recipeService *RecipeService) Delete(recipeId string , userCode string) (*mongo.DeleteResult, error) {
+func (recipeService *RecipeService) Delete(recipeId string, userCode string) (*mongo.DeleteResult, error) {
 	recipeObjectId := utils.GetObjectIDFromStringID(recipeId)
 	resultado, err := recipeService.cook(userCode, recipeObjectId, true)
 	if !resultado {
@@ -184,13 +175,7 @@ func (recipeService *RecipeService) cook(userCode string, recipeId primitive.Obj
 	if err != nil {
 		return false, err
 	}
-	DB := repositories.NewMongoDB()
-	foodRepository := repositories.NewFoodRepository(DB)
 	for _, foodQuantity := range recipe.Ingredients {
-		//food, err := foodRepository.GetByCode(foodQuantity.FoodCode, userCode)
-		// if err != nil {
-		// 	return false, errors.New("internal")
-		// }
 		var food models.Food
 		food.Code = foodQuantity.FoodCode
 		if !cancel {
@@ -200,7 +185,7 @@ func (recipeService *RecipeService) cook(userCode string, recipeId primitive.Obj
 			food.CurrentQuantity = foodQuantity.Quantity
 			//SI LA RECETA SE HIZO PERO SE CANCELA LA CANTIDAD SE SUMA A LA ACTUAL
 		}
-		_, err = foodRepository.Update(food, true)
+		_, err = recipeService.foodRepository.Update(food, true)
 		//SEGUN LO QUE HAYA SUCEDIDO, UPDATEAMOS EN LA BD EL ALIMENTO
 		if err != nil {
 			return false, err

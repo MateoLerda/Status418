@@ -7,10 +7,10 @@ const iconMap = {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-  let token = isUserLogged();
-  if (token == false) {
-    window.location.href = "/pages/login/login.html";
-  }
+  // let token = isUserLogged();
+  // if (token == false) {
+  //   window.location.href = "/pages/login/login.html";
+  // }
   const userInfo = document.createElement("div");
   userInfo.id = "user-info";
   userInfo.classList.add("user-info");

@@ -71,24 +71,24 @@ func dependencies() {
 
 	var foodRepository repositories.FoodRepositoryInterface
 	var foodService services.FoodServiceInterface
+	var purchaseRepository repositories.PurchaseRepositoryInterface
+	var purchaseService services.PurchaseServiceInterface
+	var recipeRepository repositories.RecipeRepositoryInterface
+	var recipeService services.RecipeServiceInterface
 
 	db = repositories.NewMongoDB()
 
 	foodRepository = repositories.NewFoodRepository(db)
-	foodService = services.NewFoodService(foodRepository)
+	foodService = services.NewFoodService(foodRepository, recipeRepository)
 	foodHandler = handlers.NewFoodHandler(foodService)
 
-	var purchaseRepository repositories.PurchaseRepositoryInterface
-	var purchaseService services.PurchaseServiceInterface
 
 	purchaseRepository = repositories.NewPurchaseRepository(db)
-	purchaseService = services.NewPurchaseService(purchaseRepository)
+	purchaseService = services.NewPurchaseService(purchaseRepository, foodRepository)
 	purchaseHandler = handlers.NewPurchaseHandler(purchaseService)
 
-	var recipeRepository repositories.RecipeRepositoryInterface
-	var recipeService services.RecipeServiceInterface
 
 	recipeRepository = repositories.NewRecipeRepository(db)
-	recipeService = services.NewRecipeService(recipeRepository)
+	recipeService = services.NewRecipeService(recipeRepository, foodRepository)
 	recipeHandler = handlers.NewRecipeHandler(recipeService)
 }

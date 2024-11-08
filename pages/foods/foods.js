@@ -10,10 +10,10 @@ const iconMap = {
 document.addEventListener('DOMContentLoaded', fetchAllFoods);
 
 function fetchAllFoods() {
-  let token = isUserLogged();
-  if (token == false) {
-    window.location.href = '/pages/login/login.html';
-  }
+  // let token = isUserLogged();
+  // if (token == false) {
+  //   window.location.href = '/pages/login/login.html';
+  // }
   const userInfo = document.getElementById('user-info');
   const userMail = document.createElement('p');
   userMail.textContent = localStorage.getItem('user-mail');

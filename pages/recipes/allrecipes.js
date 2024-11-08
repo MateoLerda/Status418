@@ -46,10 +46,10 @@ function getRecipes() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  let token = isUserLogged();
-  if (token == false) {
-      window.location.href = '/pages/login/login.html';
-  }
+  // let token = isUserLogged();
+  // if (token == false) {
+  //     window.location.href = '/pages/login/login.html';
+  // }
   const userInfo = document.createElement('div');
   userInfo.id = 'user-info'
   userInfo.classList.add('user-info')
@@ -265,6 +265,9 @@ function modalClose() {
 }
 
 function successCreate(response) {
+  if(response.length == 0){
+    showAlert("Not found any recipes")
+  }
   showRecipes(response);
   console.log("Éxito:", response);
 }
