@@ -42,8 +42,15 @@ func (recipeHandler *RecipeHandler) GetAll(c *gin.Context) {
 		return
 	}
 
-	log.Printf("[handler: RecipeHandler][method: GetAll] lenght of List: %v", len(*recipes))
-	c.JSON(http.StatusOK, recipes)
+	if len(*recipes) == 0  {
+		c.JSON(http.StatusOK, gin.H{
+			"error": "Failed to get recipes from database",
+			"result": recipes,
+		})
+		return
+	}
+	// log.Printf("[handler: RecipeHandler][method: GetAll] lenght of List: %v", len(*recipes))
+	c.JSON(http.StatusOK,  gin.H{"result": recipes,})
 }
 
 func (recipeHandler *RecipeHandler) Create(c *gin.Context) {

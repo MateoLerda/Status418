@@ -74,8 +74,8 @@ func (foodService *FoodService) Update(foodDto dto.FoodDto) (*mongo.UpdateResult
 }
 
 func (foodService *FoodService) Delete(userCode string, foodCode string) (*mongo.DeleteResult, error) {
-
-	recipes, _ := foodService.recipeRepository.GetAll(userCode, models.Filter{})
+	filter := models.Filter{All: true};
+	recipes, _:= foodService.recipeRepository.GetAll(userCode, filter)
 	foodObjectId := utils.GetObjectIDFromStringID(foodCode)
 	for _, recipe := range recipes {
 		for _, food := range recipe.Ingredients {

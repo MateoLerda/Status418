@@ -4,6 +4,7 @@ let searchValue;
 let foodType;
 let mealTime;
 let all = true;
+const main = document.getElementById("recipe-list");
 
 document.getElementById("toggleSwitch").addEventListener("change", function () {
   if (this.checked) {
@@ -84,13 +85,12 @@ searchBar.addEventListener("submit", (e) => {
 });
 
 function showRecipes(data) {
-  const main = document.getElementById("recipe-list");
   main.innerHTML = "";
-  if (data.message) {
-    showAlert(data.message)
+  if (data.result == null) {
+    showAlert("Not found any recipes")
     return
   }
-  data.forEach((recipe) => {
+  data.result.forEach((recipe) => {
     // Crear el contenedor principal para cada receta
     let recipeContainer = document.createElement("div");
     recipeContainer.classList.add("recipe-container");
@@ -265,9 +265,6 @@ function modalClose() {
 }
 
 function successCreate(response) {
-  if(response.length == 0){
-    showAlert("Not found any recipes")
-  }
   showRecipes(response);
   console.log("Éxito:", response);
 }
@@ -278,7 +275,10 @@ function failed(response, responseBody) {
 }
 
 function successDelete(response) {
-  getRecipes();
+  showAlert(response.message)
+  document.getElementById("alert-button").addEventListener(('click'), () => {
+    getRecipes()
+});
   console.log("Éxito:", response);
 }
 

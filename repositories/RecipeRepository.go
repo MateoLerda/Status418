@@ -105,10 +105,6 @@ func (recipeRepository RecipeRepository) GetAll(userCode string, filters models.
 	}
 	var recipes []models.Recipe
 	data.All(context.TODO(), &recipes)
-	if len(recipes) == 0 {
-		err = errors.New("nocontent")
-		return nil, err
-	}
 
 	return recipes, nil
 }
