@@ -86,7 +86,10 @@ function manuallyPurchase() {
         }
     }
 
-
+    if (selectedFoods.length == 0) {
+      showAlert("You have to select a food to buy.");
+      return;
+    }
     let TotalCost = 0;
     const purchaseDto = {
 
@@ -100,7 +103,6 @@ function manuallyPurchase() {
         }),
         total_cost: TotalCost
     };
-
     makeRequest(
         baseUrlCreatePurchase,
         "POST",
@@ -120,6 +122,7 @@ function successPurchase() {
     })
 }
 
-function failedPurchase(response, responseBody) {
-    showAlert(responseBody.details)
+function failedPurchase(response,responseBody) {
+    console.log("Failed to create purchase:", response);        
+    showAlert(responseBody.error);
 }
