@@ -275,7 +275,7 @@ function failed(response, responseBody) {
 }
 
 function successDelete(response) {
-  showAlert(response.message)
+  showAlert("Successfully deleted recipe")
   document.getElementById("alert-button").addEventListener(('click'), () => {
     getRecipes()
 });

@@ -5,6 +5,7 @@ import (
 	"Status418/models"
 	"Status418/repositories"
 	"Status418/utils"
+	"errors"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -19,13 +20,13 @@ type FoodServiceInterface interface {
 }
 
 type FoodService struct {
-	foodRepository repositories.FoodRepositoryInterface
+	foodRepository   repositories.FoodRepositoryInterface
 	recipeRepository repositories.RecipeRepositoryInterface
 }
 
 func NewFoodService(foodRepository repositories.FoodRepositoryInterface, recipeRepository repositories.RecipeRepositoryInterface) *FoodService {
 	return &FoodService{
-		foodRepository: foodRepository,
+		foodRepository:   foodRepository,
 		recipeRepository: recipeRepository,
 	}
 }
@@ -38,7 +39,7 @@ func (foodService *FoodService) GetAll(userCode string, filter dto.FiltersDto) (
 	}
 
 	for _, food := range foods {
-		foodDTO := dto.NewFoodDto(food) // probar asi a ver si funciona
+		foodDTO := dto.NewFoodDto(food)
 		foodsDTO = append(foodsDTO, *foodDTO)
 	}
 	return &foodsDTO, nil
@@ -53,7 +54,40 @@ func (foodService *FoodService) GetByCode(foodCode string, userCode string) (*dt
 	return foodDto, nil
 }
 
+func validateDto(foodDto dto.FoodDto) error {
+
+	if foodDto.Type == "" {
+		return errors.New("Invalid food type")
+	}
+
+	if len(foodDto.Moments) == 0 {
+		return errors.New("Invalid food moments")
+	}
+
+	if foodDto.Name == "" {
+		return errors.New("Invalid food name")
+	}
+
+	if foodDto.UnitPrice <= 0 {
+		return errors.New("Food unit price cannot be equals or lower than 0")
+	}
+
+	if foodDto.CurrentQuantity < 0 {
+		return errors.New("Food current quantity cannot be lower than 0")
+	}
+
+	if foodDto.MinimumQuantity < 0 {
+		return errors.New("Food minimum quantity cannot be lower than 0")
+	}
+
+	return nil
+}
+
 func (foodService *FoodService) Create(foodDto dto.FoodDto, userCode string) (*mongo.InsertOneResult, error) {
+	err := validateDto(foodDto)
+	if err != nil {
+		return nil, err
+	}
 	food := foodDto.GetModel()
 	food.CreationDate = time.Now().String()
 	food.UserCode = userCode
@@ -65,6 +99,17 @@ func (foodService *FoodService) Create(foodDto dto.FoodDto, userCode string) (*m
 }
 
 func (foodService *FoodService) Update(foodDto dto.FoodDto) (*mongo.UpdateResult, error) {
+	if foodDto.UnitPrice <= 0 {
+		return nil, errors.New("Food unit price cannot be equals or lower than 0")
+	}
+
+	if foodDto.CurrentQuantity < 0 {
+		return nil, errors.New("Food current quantity cannot be lower than 0")
+	}
+
+	if foodDto.MinimumQuantity < 0 {
+		return nil, errors.New("Food minimum quantity cannot be lower than 0")
+	}
 	food := foodDto.GetModel()
 	res, err := foodService.foodRepository.Update(food, false)
 	if err != nil {
@@ -74,8 +119,8 @@ func (foodService *FoodService) Update(foodDto dto.FoodDto) (*mongo.UpdateResult
 }
 
 func (foodService *FoodService) Delete(userCode string, foodCode string) (*mongo.DeleteResult, error) {
-	filter := models.Filter{All: true};
-	recipes, _:= foodService.recipeRepository.GetAll(userCode, filter)
+	filter := models.Filter{All: true}
+	recipes, _ := foodService.recipeRepository.GetAll(userCode, filter)
 	foodObjectId := utils.GetObjectIDFromStringID(foodCode)
 	for _, recipe := range recipes {
 		for _, food := range recipe.Ingredients {
