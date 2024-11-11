@@ -5,6 +5,7 @@ import (
 	"Status418/models"
 	"Status418/repositories"
 	"Status418/utils"
+	"errors"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -39,6 +40,7 @@ func calculatePurchaseAllFoods(foods []models.Food) models.Purchase {
 	return purchase
 }
 
+
 func (purchaseService *PurchaseService) Create(userCode string, newPurchase dto.PurchaseDto) (*mongo.InsertOneResult, error) {
 	var foods []models.Food
 	var err error
@@ -47,6 +49,9 @@ func (purchaseService *PurchaseService) Create(userCode string, newPurchase dto.
 	if len(newPurchase.Foods) != 0 {
 		var food models.Food
 		for _, foodQuantity := range newPurchase.Foods {
+			if foodQuantity.Quantity < 0 {
+				return nil, errors.New("quantity cannot be negative")
+			}
 			foodObjectId := utils.GetObjectIDFromStringID(foodQuantity.FoodCode)
 			food, err = purchaseService.foodRepository.GetByCode(foodObjectId, userCode)
 			if err != nil {
