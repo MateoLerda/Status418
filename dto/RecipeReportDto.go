@@ -1,16 +1,16 @@
 package dto
 
-type ReportDto struct {
+type RecipeReportDto struct {
 	Moment string `json:"moment"`
 	Type   string `json:"type"`
 	Count  int    `json:"count"`
 }
 
-func NewMomentReport() []ReportDto {
+func NewMomentReport() []RecipeReportDto {
 	var moments = []string{"Breakfast", "Lunch", "Snack", "Dinner"}
-	var momentReport []ReportDto
+	var momentReport []RecipeReportDto
 	for _, moment := range moments {
-		momentReport = append(momentReport, ReportDto{
+		momentReport = append(momentReport, RecipeReportDto{
 			Type:   "",
 			Moment: moment,
 			Count:  0,
@@ -19,12 +19,12 @@ func NewMomentReport() []ReportDto {
 	return momentReport
 }
 
-func NewFoodReport() []ReportDto {
+func NewFoodReport() []RecipeReportDto {
 	var types = []string{"Vegetable", "Fruit", "Cheese", "Dairy", "Meat"}
-	var foodReport []ReportDto
+	var foodReport []RecipeReportDto
 
 	for _, ftype := range types {
-		foodReport = append(foodReport, ReportDto{
+		foodReport = append(foodReport, RecipeReportDto{
 			Type:   ftype,
 			Moment: "",
 			Count:  0,

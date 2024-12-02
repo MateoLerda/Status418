@@ -2,10 +2,11 @@ package handlers
 
 import (
 	"Status418/services"
-	"github.com/gin-gonic/gin"
 	"Status418/utils"
-)
+	"net/http"
 
+	"github.com/gin-gonic/gin"
+)
 
 type ReportHandler struct {
 	reportService services.ReportServiceInterface
@@ -19,7 +20,12 @@ func NewReportHandler(reportService services.ReportServiceInterface) *ReportHand
 
 func (reportHandler *ReportHandler) GetRecipeMomentReport(c *gin.Context) {
 	user := utils.GetUserInfoFromContext(c)
-	reportHandler.reportService.GetRecipesReport(user.Code, true)
+	report, err := reportHandler.reportService.GetRecipesReport(user.Code, true)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to create report"})
+		return
+	}
+	c.JSON(http.StatusOK, report)
 }
 
 func (reportHandler *ReportHandler) GetRecipeFoodTypeReport(c *gin.Context) {
