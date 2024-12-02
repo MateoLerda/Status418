@@ -17,6 +17,7 @@ var (
 	foodHandler     *handlers.FoodHandler
 	purchaseHandler *handlers.PurchaseHandler
 	recipeHandler   *handlers.RecipeHandler
+	reportHandler *handlers.ReportHandler
 )
 
 func main() {
@@ -63,7 +64,13 @@ func routes() {
 	recipesRoutes.DELETE("/:recipeid", recipeHandler.Delete)
 	recipesRoutes.PUT("/:recipeid", recipeHandler.Update) // falta modificar en el repositori
 	recipesRoutes.POST("/", recipeHandler.Create)
-	// recipesRoutes.PUT("/cook/:recipeid", recipeHandler.Cook) //falta probar solo (el de cocinar y el de desacer)
+	// recipesRoutes.PUT("/cook/:recipeid", recipeHandler.Cook) //falta probar solo (el de cocinar y el de deshacer)
+
+	reportsRoutes := r.Group("/reports")
+	reportsRoutes.Use(authMiddleware.ValidateToken)
+	reportsRoutes.GET("/moment", reportHandler.GetRecipeMomentReport)
+	reportsRoutes.GET("/foodtype", reportHandler.GetRecipeFoodTypeReport)
+	reportsRoutes.GET("/costs",)
 }
 
 func dependencies() {
@@ -75,6 +82,7 @@ func dependencies() {
 	var purchaseService services.PurchaseServiceInterface
 	var recipeRepository repositories.RecipeRepositoryInterface
 	var recipeService services.RecipeServiceInterface
+	var reportService services.ReportServiceInterface
 
 	db = repositories.NewMongoDB()
 	recipeRepository = repositories.NewRecipeRepository(db)
@@ -84,8 +92,10 @@ func dependencies() {
 	foodService = services.NewFoodService(foodRepository, recipeRepository)
 	purchaseService = services.NewPurchaseService(purchaseRepository, foodRepository)
 	recipeService = services.NewRecipeService(recipeRepository, foodRepository)
+	reportService = services.NewReportService(recipeRepository,foodRepository)
 
 	foodHandler = handlers.NewFoodHandler(foodService)
 	purchaseHandler = handlers.NewPurchaseHandler(purchaseService)
 	recipeHandler = handlers.NewRecipeHandler(recipeService)
+	reportHandler = handlers.NewReportHandler(reportService)
 }

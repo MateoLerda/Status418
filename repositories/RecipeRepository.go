@@ -125,3 +125,4 @@ func (recipeRepository RecipeRepository) GetByCode(userCode string, recipeId pri
 
 	return recipe, err
 }
+
