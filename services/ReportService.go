@@ -8,16 +8,15 @@ import (
 
 type ReportServiceInterface interface {
 	GetRecipesReport(userCode string, groupFilter bool) ([]dto.RecipeReportDto, error)
-	GetCostRepositor(userCode string) ([]dto.CostReportDto, error)
 }
 
 type ReportService struct {
 	recipeRepository   repositories.RecipeRepositoryInterface
 	foodRepository     repositories.FoodRepositoryInterface
-	purchaseRepository repositories.PurchaseRepository
+	purchaseRepository repositories.PurchaseRepositoryInterface
 }
 
-func NewReportService(recipeRepository repositories.RecipeRepositoryInterface, foodRepository repositories.FoodRepositoryInterface, purchaseRepository repositories.PurchaseRepository) *ReportService {
+func NewReportService(recipeRepository repositories.RecipeRepositoryInterface, foodRepository repositories.FoodRepositoryInterface, purchaseRepository repositories.PurchaseRepositoryInterface) *ReportService {
 	return &ReportService{
 		recipeRepository:   recipeRepository,
 		foodRepository:     foodRepository,
@@ -43,16 +42,13 @@ func (reportService *ReportService) GetRecipesReport(userCode string, groupFilte
 	return reports, nil
 }
 
-func (reportService *ReportService) GetCostRepositor(userCode string) ([]dto.CostReportDto, error) {
-	purchase, err := reportService.purchaseRepository.GetAll(userCode)
-}
-
 func (ReportService *ReportService) groupByRecipeMoment(recipes []models.Recipe) []dto.RecipeReportDto {
 	var reports = dto.NewMomentReport()
 	for _, recipe := range recipes {
-		for _, report := range reports {
-			if report.Moment == recipe.Moment.String() {
-				report.Count++
+		for i := range reports {
+			if reports[i].Moment == recipe.Moment.String() {
+				reports[i].Count++
+				break
 			}
 		}
 	}
@@ -68,9 +64,10 @@ func (ReportService *ReportService) groupRecipesByFoodType(recipes []models.Reci
 			if err != nil {
 				return nil, err
 			}
-			for _, report := range reports {
-				if report.Type == food.Type.String() {
-					report.Count++
+			for i := range reports {
+				if reports[i].Type == food.Type.String() {
+					reports[i].Count++
+					break 
 				}
 			}
 		}

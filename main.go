@@ -92,7 +92,7 @@ func dependencies() {
 	foodService = services.NewFoodService(foodRepository, recipeRepository)
 	purchaseService = services.NewPurchaseService(purchaseRepository, foodRepository)
 	recipeService = services.NewRecipeService(recipeRepository, foodRepository)
-	reportService = services.NewReportService(recipeRepository,foodRepository)
+	reportService = services.NewReportService(recipeRepository,foodRepository, purchaseRepository)
 
 	foodHandler = handlers.NewFoodHandler(foodService)
 	purchaseHandler = handlers.NewPurchaseHandler(purchaseService)
