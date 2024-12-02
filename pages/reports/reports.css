@@ -148,13 +148,7 @@ html {
   z-index: 1;
 }
 
-.carousel-item.prev {
-  left: -100%;
-}
 
-.carousel-item.next {
-  left: 100%;
-}
 
 
 
