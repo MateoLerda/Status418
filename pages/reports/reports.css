@@ -18,8 +18,8 @@ html {
   background-color: #f3f2ec;
   border-radius: 20px;
   padding: 15px;
-  width: 800px;
-  height: 450px;
+  width: 900px;
+  height: 500px;
 }
 
 .nav {
@@ -130,22 +130,17 @@ html {
 
 .carousel-control-next .carousel-control-prev {
   color: #2a6049;
-  position: relative;
   width: 300px;
   height: 200px;
   overflow: hidden;
 }
 
 .carousel-item{
-  top:0;
   opacity:0;
-  left: 50%;
-  transition: all 0.5s ease-in-out;
+  transition: all 0.3s linear;
 }
 .carousel-item.active {
-  left: 0;
   opacity: 1;
-  z-index: 1;
 }
 
 

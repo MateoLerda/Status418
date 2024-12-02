@@ -44,10 +44,23 @@ function makeMomentReport(momentData) {
     options: {
       scales: {
         y: {
-          beginAtZero: true,
+          ticks: {
+            beginAtZero: true,
+            color: "black"
+          }
+        },
+        x: {
+          ticks: {
+              color: "black",
+          },
         },
       },
       plugins: {
+        legend: {
+          labels: {
+              color: "black",
+          },
+        },
         title: {
           display: true,
           text: "Quantity of recipes by MOMENT",
@@ -82,7 +95,10 @@ function makeMomentReport(momentData) {
       responsive: true,
       plugins: {
         legend: {
-          position: 'top',
+          labels: {
+              color: "black",
+              position: 'top',
+          },
         },
         title: {
           display: true,
@@ -142,10 +158,23 @@ function makeFoodTypeReport(foodTypeData) {
     options: {
       scales: {
         y: {
-          beginAtZero: true,
+          ticks: {
+            beginAtZero: true,
+            color: "black"
+          }
+        },
+        x: {
+          ticks: {
+              color: "black",
+          },
         },
       },
       plugins: {
+        legend: {
+          labels: {
+              color: "black",
+          },
+        },
         title: {
           display: true,
           text: "Quantity of recipes by FOOD TYPE",
@@ -181,7 +210,10 @@ function makeFoodTypeReport(foodTypeData) {
       responsive: true,
       plugins: {
         legend: {
-          position: 'top',
+          labels: {
+              color: "black",
+              position: 'top',
+          },
         },
         title: {
           display: true,
@@ -237,10 +269,23 @@ function makeCostReport(dataCost) {
     options: {
       scales: {
         y: {
-          beginAtZero: true,
+          ticks: {
+            beginAtZero: true,
+            color: "black"
+          }
+        },
+        x: {
+          ticks: {
+              color: "black",
+          },
         },
       },
       plugins: {
+        legend: {
+          labels: {
+              color: "black",
+          },
+        },
         title: {
           display: true,
           text: "Total Cost of purchases by Month",
