@@ -4,20 +4,21 @@ import (
 	"Status418/dto"
 	"Status418/models"
 	"Status418/repositories"
+	"time"
 )
 
 type ReportServiceInterface interface {
 	GetRecipesReport(userCode string, groupFilter bool) ([]dto.RecipeReportDto, error)
-	GetCostRepositor(userCode string) ([]dto.CostReportDto, error)
+	GetCostReport(userCode string) ([]dto.CostReportDto, error)
 }
 
 type ReportService struct {
 	recipeRepository   repositories.RecipeRepositoryInterface
 	foodRepository     repositories.FoodRepositoryInterface
-	purchaseRepository repositories.PurchaseRepository
+	purchaseRepository repositories.PurchaseRepositoryInterface
 }
 
-func NewReportService(recipeRepository repositories.RecipeRepositoryInterface, foodRepository repositories.FoodRepositoryInterface, purchaseRepository repositories.PurchaseRepository) *ReportService {
+func NewReportService(recipeRepository repositories.RecipeRepositoryInterface, foodRepository repositories.FoodRepositoryInterface, purchaseRepository repositories.PurchaseRepositoryInterface) *ReportService {
 	return &ReportService{
 		recipeRepository:   recipeRepository,
 		foodRepository:     foodRepository,
@@ -43,8 +44,26 @@ func (reportService *ReportService) GetRecipesReport(userCode string, groupFilte
 	return reports, nil
 }
 
-func (reportService *ReportService) GetCostRepositor(userCode string) ([]dto.CostReportDto, error) {
-	purchase, err := reportService.purchaseRepository.GetAll(userCode)
+func (reportService *ReportService) GetCostReport(userCode string) ([]dto.CostReportDto, error) {
+	filters := models.Filter{Year: int(time.Now().Year())}
+	purchases, err := reportService.purchaseRepository.GetAll(userCode, filters)
+	if err != nil{
+		return nil, err
+	}
+
+	var reports= dto.NewCostReport()
+	for _,purchase := range purchases{
+		dateTemp:= string(purchase.PurchaseDate[0:10])
+		date, _:= time.Parse(time.DateOnly, dateTemp)
+		month:= int(date.Month())
+		for i, report := range reports{
+			if report.GetIntMonth() == month {
+				reports[i].Count++
+				break
+			}
+		}
+	}
+	return reports, nil
 }
 
 func (ReportService *ReportService) groupByRecipeMoment(recipes []models.Recipe) []dto.RecipeReportDto {

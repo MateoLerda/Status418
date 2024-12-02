@@ -12,6 +12,7 @@ import (
 
 type PurchaseRepositoryInterface interface {
 	Create(newPurchase models.Purchase) (*mongo.InsertOneResult, error)
+	GetAll(userCode string, filters models.Filter) ([]models.Purchase, error)
 }
 
 type PurchaseRepository struct {
@@ -36,10 +37,16 @@ func (purchaseRepository PurchaseRepository) Create(purchase models.Purchase) (*
 
 func (purchaseRepository PurchaseRepository) GetAll(userCode string, filters models.Filter) ([]models.Purchase, error){
 	DBNAME := os.Getenv("DB_NAME")
-	filter := bson.M{
-		
-	}
-	data, err := purchaseRepository.db.GetClient().Database(DBNAME).Collection("Purchase").Find(context.TODO(), filter)
+	filter := bson.M{}
+	// if filters.Year != 0{
+	// 	filter["$expr"] = bson.M{
+	// 		"$eq": []interface{}{
+	// 			bson.M{"$year": "$purchase_date"}, 
+	// 			filters.Year,                     
+	// 		},
+	// 	}
+	// }
+	data, err := purchaseRepository.db.GetClient().Database(DBNAME).Collection("Purchases").Find(context.TODO(), filter)
 	if err != nil {
 		err = errors.New("internal")
 		return nil, err

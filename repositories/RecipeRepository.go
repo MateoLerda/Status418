@@ -38,7 +38,6 @@ func (recipeRepository RecipeRepository) Create(newRecipe models.Recipe) (*mongo
 	}
 	return res, nil
 }
-
 func (recipeRepository RecipeRepository) Delete(recipeId primitive.ObjectID) (*mongo.DeleteResult, error) {
 	DBNAME := os.Getenv("DB_NAME")
 	filter := bson.M{"_id": recipeId}
