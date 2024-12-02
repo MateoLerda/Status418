@@ -6,7 +6,7 @@ import (
 
 type CostReportDto struct{
 	Month string `json:"month"`
-	Count int `json:"count"`
+	Count float64 `json:"count"`
 }
 
 func NewCostReport() []CostReportDto{

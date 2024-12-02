@@ -58,7 +58,7 @@ func (reportService *ReportService) GetCostReport(userCode string) ([]dto.CostRe
 		month:= int(date.Month())
 		for i, report := range reports{
 			if report.GetIntMonth() == month {
-				reports[i].Count++
+				reports[i].Count+= purchase.TotalCost
 				break
 			}
 		}
@@ -69,9 +69,10 @@ func (reportService *ReportService) GetCostReport(userCode string) ([]dto.CostRe
 func (ReportService *ReportService) groupByRecipeMoment(recipes []models.Recipe) []dto.RecipeReportDto {
 	var reports = dto.NewMomentReport()
 	for _, recipe := range recipes {
-		for _, report := range reports {
+		for i, report := range reports {
 			if report.Moment == recipe.Moment.String() {
-				report.Count++
+				reports[i].Count++
+				break
 			}
 		}
 	}
@@ -87,9 +88,10 @@ func (ReportService *ReportService) groupRecipesByFoodType(recipes []models.Reci
 			if err != nil {
 				return nil, err
 			}
-			for _, report := range reports {
+			for i, report := range reports {
 				if report.Type == food.Type.String() {
-					report.Count++
+					reports[i].Count++
+					break
 				}
 			}
 		}

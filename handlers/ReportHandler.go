@@ -33,8 +33,7 @@ func (reportHandler *ReportHandler) GetRecipeFoodTypeReport(c *gin.Context) {
 	reportHandler.reportService.GetRecipesReport(user.Code, false)
 }
 
-func (reportHandler *ReportHandler) GetPurchaseReport(c *gin.Context) {
-	user := utils.GetUserInfoFromContext(c)
+func (reportHandler *ReportHandler) GetPurchaseReport(c *gin.Context) {	user := utils.GetUserInfoFromContext(c)
 	report, err := reportHandler.reportService.GetCostReport(user.Code)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to create report"})

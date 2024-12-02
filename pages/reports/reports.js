@@ -23,7 +23,7 @@ function makeMomentReport(momentData) {
       labels: momentData.map((data) => data.moment),
       datasets: [
         {
-          label: "Recipes by moment",
+          label: "Recipes quantity",
           data: momentData.map((data) => data.count),
           backgroundColor: [
             "rgba(42, 96, 73, 0.7)",
@@ -66,7 +66,7 @@ function makeMomentReport(momentData) {
         labels: momentData.map((data) => data.moment),
         datasets: [
           {
-            label: 'Dataset 1',
+            label: 'Quantity',
             data: momentData.map((data) => data.count),
             backgroundColor: [
               'rgba(42, 96, 73)',
@@ -98,10 +98,65 @@ function makeMomentReport(momentData) {
 }
 
 function fetchFoodTypeReport() {}
-function fetchCostReport() {}
+function fetchCostReport() {
+  makeRequest(
+    baseUrl + "costs",
+    "GET",
+    "",
+    "application/json",
+    true,
+    makeCostReport,
+    failedGet
+  );
+}
 
 function makeFoodTypeReport() {}
-function makeCostReport() {}
+
+function makeCostReport(dataCost) {
+  const barChart = document.getElementById("costsBarChart");
+  new Chart(barChart, {
+    type: "bar",
+    data: {
+      labels: dataCost.map((data) => data.month),
+      datasets: [
+        {
+          label: "Total cost",
+          data: dataCost.map((data) => data.count),
+          backgroundColor: [
+            "rgba(42, 96, 73, 0.7)",
+            "rgba(42, 96, 73, 0.7)",
+            "rgba(42, 96, 73, 0.7)",
+            "rgba(42, 96, 73, 0.7)",
+          ],
+          borderColor: [
+            "rgba(42, 96, 73)",
+            "rgba(42, 96, 73)",
+            "rgba(42, 96, 73)",
+            "rgba(42, 96, 73)",
+          ],
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+      plugins: {
+        title: {
+          display: true,
+          text: "Total Cost of purchases by Month",
+          color: "#2a6049",
+          font: {
+            size: 18
+          }
+        },
+      },
+    },
+  });
+}
 
 function showReports() {
   const userInfo = document.getElementById("user-info");
