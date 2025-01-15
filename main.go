@@ -1,11 +1,11 @@
 package main
 
 import (
-	"Status418/clients"
-	"Status418/handlers"
-	"Status418/middlewares"
-	"Status418/repositories"
-	"Status418/services"
+	"Status418/go/clients"
+	"Status418/go/handlers"
+	"Status418/go/middlewares"
+	"Status418/go/repositories"
+	"Status418/go/services"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -17,7 +17,7 @@ var (
 	foodHandler     *handlers.FoodHandler
 	purchaseHandler *handlers.PurchaseHandler
 	recipeHandler   *handlers.RecipeHandler
-	reportHandler *handlers.ReportHandler
+	reportHandler   *handlers.ReportHandler
 )
 
 func main() {
@@ -31,11 +31,11 @@ func main() {
 	dependencies()
 	routes()
 
-	r.Static("/pages", "./pages")
+	r.Static("/web", "./web")
 	r.Static("/assets", "./assets")
 
 	r.GET("/", func(c *gin.Context) {
-		c.File("./pages/home/home.html")
+		c.File("./web/home/home.html")
 	})
 
 	r.Run(":8080")
@@ -92,7 +92,7 @@ func dependencies() {
 	foodService = services.NewFoodService(foodRepository, recipeRepository)
 	purchaseService = services.NewPurchaseService(purchaseRepository, foodRepository)
 	recipeService = services.NewRecipeService(recipeRepository, foodRepository)
-	reportService = services.NewReportService(recipeRepository,foodRepository,purchaseRepository)
+	reportService = services.NewReportService(recipeRepository, foodRepository, purchaseRepository)
 
 	foodHandler = handlers.NewFoodHandler(foodService)
 	purchaseHandler = handlers.NewPurchaseHandler(purchaseService)
