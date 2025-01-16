@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function (eventDOM) {
 
     const data = {
       grant_type: "password",
-      email: emailInput,
+      email: emailInput.value,
       password: inputPassword,
       ConfirmPassword: inputConfirmPassword,
       Role: "ADMIN" // TODO: Borrar a futuro, por ahora está OK
@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function (eventDOM) {
 
 function successFn(response) {
   console.log("Éxito:", response);
-  window.location = "index.html";
+  window.location = "../login/login.html";
 }
 
 function errorFn(status, response) {

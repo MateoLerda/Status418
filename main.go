@@ -33,12 +33,13 @@ func main() {
 
 	r.Static("/web", "./web")
 	r.Static("/assets", "./assets")
-
 	r.GET("/", func(c *gin.Context) {
-		c.File("./web/home/home.html")
+		c.Redirect(302, "./web/home/home.html")
+		//c.File("/home.html")
 	})
 
 	r.Run(":8080")
+
 }
 
 func routes() {

@@ -215,7 +215,7 @@ function modalSubmit(event, method) {
 
 function successEdit(response) {
   console.log('Success editing a food:', response);
-  window.location.href = 'web/foods/foods.html';
+  window.location.href = '../foods.html';
 }
 
 function failedEdit(response) {
@@ -224,7 +224,7 @@ function failedEdit(response) {
 
 function successCreate(response) {
   console.log('Success creating a food:', response);
-  window.location.href = 'web/foods/foods.html';
+  window.location.href = '../../foods/foods.html';
 }
 
 function failedCreate(response) {

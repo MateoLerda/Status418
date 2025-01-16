@@ -96,7 +96,7 @@ async function makeRequest(
 
       if (response.status === 401) {
         alert("La sesión expiró")
-        window.location.href = "web/login/login.html";
+        window.location.href = "../../web/login/login.html?reason=private_call_without_token";
       }
 
       errorCallback(response.status, responseBody);
