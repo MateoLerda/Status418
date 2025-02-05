@@ -34,10 +34,11 @@ function getFoods() {
         showMinimumList,
         failedGet
     )
-    baseUrlPurchases = "http://localhost:8080/purchases/?filer_all=false";
+   // baseUrlPurchases = "http://localhost:8080/purchases/?filer_all=false";
 }
 
 function createUrl() {
+    baseUrlPurchases = "http://localhost:8080/purchases/?filer_all=false";
     aproximation = document.getElementById('searchInput').value;
     type = document.getElementById('foodType').value
     if (aproximation != "") {
