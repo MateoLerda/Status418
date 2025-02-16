@@ -119,28 +119,28 @@ func (recipeHandler *RecipeHandler) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-// func (recipeHandler *RecipeHandler) Cook(c *gin.Context) {
-// 	recipeId := c.Param("recipeid")
-// 	recipeObjectId := utils.GetObjectIDFromStringID(recipeId)
-// 	userInfo := utils.GetUserInfoFromContext(c)
+func (recipeHandler *RecipeHandler) Cook(c *gin.Context) {
+	recipeId := c.Param("recipeid")
+	recipeObjectId := utils.GetObjectIDFromStringID(recipeId)
+	userInfo := utils.GetUserInfoFromContext(c)
 
-// 	if userInfo.Code == "" {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
-// 		return
-// 	}
-// 	cancel, _ := strconv.ParseBool(c.Query("cancel"))
-// 	log.Printf("[handler: RecipeHandler][method: Cook]")
-// 	res, err := recipeHandler.recipeService.Cook(userInfo.Code, recipeObjectId, cancel)
+	if userInfo.Code == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
+		return
+	}
+	cancel, _ := strconv.ParseBool(c.Query("cancel"))
+	log.Printf("[handler: RecipeHandler][method: Cook]")
+	res, err := recipeHandler.recipeService.Cook(userInfo.Code, recipeObjectId, cancel)
 
-// 	if err != nil && err.Error() == "internal" {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to cancel recipe"})
-// 		return
-// 	}
+	if err != nil && err.Error() == "internal" {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to cancel recipe"})
+		return
+	}
 
-// 	if err != nil && err.Error() == "notfound" {
-// 		c.JSON(http.StatusOK, gin.H{"message": "Not found any recipe with id: " + recipeId})
-// 		return
-// 	}
-// 	log.Printf("[handler: RecipeHandler][method: Cook] recipeId: %v", recipeId)
-// 	c.JSON(http.StatusOK, res)
-// }
+	if err != nil && err.Error() == "notfound" {
+		c.JSON(http.StatusOK, gin.H{"message": "Not found any recipe with id: " + recipeId})
+		return
+	}
+	log.Printf("[handler: RecipeHandler][method: Cook] recipeId: %v", recipeId)
+	c.JSON(http.StatusOK, res)
+}

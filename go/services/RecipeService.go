@@ -18,7 +18,7 @@ type RecipeServiceInterface interface {
 	Create(newRecipe dto.RecipeDto) (*mongo.InsertOneResult, error)
 	Delete(recipeId string, userCode string) (*mongo.DeleteResult, error)
 	Update(updateRecipe dto.RecipeDto) (*mongo.UpdateResult, error)
-	cook(userCode string, recipeId primitive.ObjectID, cancel bool) (bool, error)
+	Cook(userCode string, recipeId primitive.ObjectID, cancel bool) (bool, error)
 }
 
 type RecipeService struct {
@@ -121,7 +121,7 @@ func (recipeService *RecipeService) Create(newRecipe dto.RecipeDto) (*mongo.Inse
 		return nil, err
 	}
 	objectId := res.InsertedID.(primitive.ObjectID)
-	resultado, err := recipeService.cook(newRecipe.UserCode, objectId, false)
+	resultado, err := recipeService.Cook(newRecipe.UserCode, objectId, false)
 	if !resultado {
 		return nil, err
 	}
@@ -150,7 +150,7 @@ func (recipeService RecipeService) validateMoment(ingredients []models.FoodQuant
 
 func (recipeService *RecipeService) Delete(recipeId string, userCode string) (*mongo.DeleteResult, error) {
 	recipeObjectId := utils.GetObjectIDFromStringID(recipeId)
-	resultado, err := recipeService.cook(userCode, recipeObjectId, true)
+	resultado, err := recipeService.Cook(userCode, recipeObjectId, true)
 	if !resultado {
 		return nil, err
 	}
@@ -171,7 +171,7 @@ func (recipeService *RecipeService) Update(updateRecipe dto.RecipeDto) (*mongo.U
 	return res, nil
 }
 
-func (recipeService *RecipeService) cook(userCode string, recipeId primitive.ObjectID, cancel bool) (bool, error) {
+func (recipeService *RecipeService) Cook(userCode string, recipeId primitive.ObjectID, cancel bool) (bool, error) {
 	recipe, err := recipeService.recipeRepository.GetByCode(userCode, recipeId)
 	if err != nil {
 		return false, err
