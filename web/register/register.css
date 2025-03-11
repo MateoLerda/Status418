@@ -13,7 +13,6 @@ body {
     padding: 500px;
     justify-content: center;
     align-items: center;
-    border: solid 2px #2a6049;
 }
   
 .name-logo {
@@ -55,7 +54,7 @@ body {
 }
   
 .main-container {
-    width: 40%;
+    width: 30%;
     flex: 1;
 }
   
