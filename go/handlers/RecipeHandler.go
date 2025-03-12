@@ -94,7 +94,6 @@ func (recipeHandler *RecipeHandler) Delete(c *gin.Context) {
 	}
 	log.Printf("[handler: RecipeHandler][method: Delete] recipeId: %v", id)
 	c.JSON(http.StatusOK, gin.H{"message": "Successfully deleted recipe with id: " + id})
-
 }
 
 func (recipeHandler *RecipeHandler) Update(c *gin.Context) {
@@ -123,7 +122,7 @@ func (recipeHandler *RecipeHandler) Cook(c *gin.Context) {
 	recipeId := c.Param("recipeid")
 	recipeObjectId := utils.GetObjectIDFromStringID(recipeId)
 	userInfo := utils.GetUserInfoFromContext(c)
-
+    
 	if userInfo.Code == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "userInfo is required"})
 		return
@@ -136,11 +135,16 @@ func (recipeHandler *RecipeHandler) Cook(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to cancel recipe"})
 		return
 	}
-
+    
 	if err != nil && err.Error() == "notfound" {
 		c.JSON(http.StatusOK, gin.H{"message": "Not found any recipe with id: " + recipeId})
 		return
 	}
 	log.Printf("[handler: RecipeHandler][method: Cook] recipeId: %v", recipeId)
-	c.JSON(http.StatusOK, res)
+	var response dto.ResponseCook
+	if(res){
+
+		response.Succes= true;
+	}
+	c.JSON(http.StatusOK, response)
 }
