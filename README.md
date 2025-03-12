@@ -1,11 +1,15 @@
-# Status418
+# Status418 
 Integrantes: Canello Lucas, Lerda Mateo, Segura Mijael
 
 # Pasos para ejecutar la aplicación
-
-Desde la terminal (puede ser cmd o la que proporciona visual studio) insertar este comando:
-# docker-compose up --build #
-De esta manera se estarían creando los contenedores correspondientes al back y front de la aplicación
-asi como también se realiza el pull de la imagen oficial de MongoDB.
-Para poder utilizarla se debería acceder mediante el puerto 8080.
-http://localhost:8080
+1. Clonar el proyecto y abrirlo en VSCode<br>
+2. Desde la terminal (puede ser cmd o la que proporciona visual studio) insertar este comando:
+<b>docker-compose up --build</b>
+<br>
+Una vez ejecutado el comando se crearan los 3 contenedores correspondientes a la base de datos,
+backend y frontend.
+<br>
+<br>
+Por último ingresar desde el navegador a la siguiente URL:
+<br>
+<b>http://localhost:3000/web/home/home.html</b>
