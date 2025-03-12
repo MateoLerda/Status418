@@ -97,6 +97,7 @@ html {
   width: 150px;
   margin-top: 10px;
   margin-right: 3px;
+  cursor: pointer;
 }
 
 .user-mail {

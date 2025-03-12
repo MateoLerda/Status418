@@ -160,7 +160,7 @@ body {
     width: 150px;
     margin-top: 10px;
     color: #2a6049;
-
+    cursor: pointer;
 }
 
 .user-mail {
