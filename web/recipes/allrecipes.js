@@ -296,7 +296,7 @@ function successDelete(response) {
 }
 
 function successCook(response) {
-  showAlert("Successfully cook recipe")
+  showAlert("Successfully cooked recipe")
   document.getElementById("alert-button").addEventListener(('click'), () => {
     getRecipes()
 });
