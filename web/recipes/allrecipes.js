@@ -175,15 +175,28 @@ function showRecipes(data) {
     buttonsContainer.appendChild(showMoreBtn);
     buttonsContainer.appendChild(DeleteBtn);
     buttonsContainer.appendChild(UpdateBtn);
-    // if (!all) {
-    //   let CookBtn = document.createElement("button");
-    //   CookBtn.classList.add("btnS");
-    //   let CookIcon = document.createElement("i");
-    //   CookIcon.classList.add("fa-solid", "fa-utensils");
-    //   CookBtn.appendChild(CookIcon);
-    //   buttonsContainer.appendChild(CookBtn);
-    // }
 
+    if (!all) {
+      let CookBtn = document.createElement("button");
+      CookBtn.classList.add("btnS");
+      let CookIcon = document.createElement("i");
+      CookIcon.classList.add("fa-solid", "fa-utensils");
+      CookBtn.appendChild(CookIcon);
+      buttonsContainer.appendChild(CookBtn);
+      
+      CookBtn.addEventListener("click", () => {
+        makeRequest(
+          `http://localhost:8080/recipes/cook/${recipe._id}?cancel=false`, 
+          "GET",
+          "",
+          "application/json",
+          true,
+          successCook,
+          failed
+        );
+      });
+    }
+    
     // Agregar los elementos al contenedor de la receta
     recipeContainer.appendChild(recipeName);
     recipeContainer.appendChild(recipeMoment);
@@ -276,6 +289,14 @@ function failed(response, responseBody) {
 
 function successDelete(response) {
   showAlert("Successfully deleted recipe")
+  document.getElementById("alert-button").addEventListener(('click'), () => {
+    getRecipes()
+});
+  console.log("Éxito:", response);
+}
+
+function successCook(response) {
+  showAlert("Successfully cooked recipe")
   document.getElementById("alert-button").addEventListener(('click'), () => {
     getRecipes()
 });

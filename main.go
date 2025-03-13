@@ -65,7 +65,7 @@ func routes() {
 	recipesRoutes.DELETE("/:recipeid", recipeHandler.Delete)
 	recipesRoutes.PUT("/:recipeid", recipeHandler.Update) // falta modificar en el repositori
 	recipesRoutes.POST("/", recipeHandler.Create)
-	// recipesRoutes.PUT("/cook/:recipeid", recipeHandler.Cook) //falta probar solo (el de cocinar y el de deshacer)
+	recipesRoutes.GET("/cook/:recipeid", recipeHandler.Cook) //falta probar solo (el de cocinar y el de deshacer)
 
 	reportsRoutes := r.Group("/reports")
 	reportsRoutes.Use(authMiddleware.ValidateToken)
