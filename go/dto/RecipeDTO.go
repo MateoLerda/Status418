@@ -8,7 +8,7 @@ import (
 
 type RecipeDto struct {
 	Id          string            `json:"_id"`
-	Name        string            `json:"recipe_name" validate:"required,min=3,max=100" required:"recipe name cannot be empty"`
+	Name        string            `json:"recipe_name"`
 	Ingredients []FoodQuantityDTO `json:"recipe_ingredients" validate:"required" required:"recipe ingredients cannot be empty"`
 	Moment      string     		  `json:"recipe_moment" validate:"required" required:"recipe moment cannot be empty"`
 	Description string            `json:"recipe_description" validate:"required,max=180" required:"recipe description cannot be empty"`
