@@ -119,10 +119,10 @@ document.getElementById("createBtn").onclick = () => {
   const recipeMoment = document.getElementById("recipeMoment").value;
   const description = document.getElementById("recipeDescription").value;
   const bool = false;
-  // if (recipeName == "" || recipeMoment == "" || description == "") {
-  //   showAlert("Data is required");
-  //   bool = true;
-  // }
+  if (recipeName == "" || recipeMoment == "" || description == "") {
+    showAlert("Data is required");
+    bool = true;
+  }
   if (foodQuantity.length == 0 && !bool) {
     showAlert("You must select foods to create a recipe");
     return
